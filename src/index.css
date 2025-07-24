@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+@import "preline/variants.css";
+
+body {
+  background-color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+@layer utilities {
+  @keyframes expandCard {
+    0% {
+      width: 10%;
+      height: 10%;
+      opacity: 0;
+    }
+
+    50% {
+      width: 10%;
+      height: 50%;
+      opacity: 1;
+    }
+
+    75% {
+      width: 50%;
+      height: 100%;
+      opacity: 1;
+    }
+
+    100% {
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+    }
+  }
+
+  .animate-expand-card {
+    animation: expandCard 0.6s ease-out forwards;
+    overflow: hidden;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    100% {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .delay-show {
+    opacity: 0;
+    animation: fadeIn 0.1s ease-out forwards;
+    animation-delay: 0.4s;
+  }
+}

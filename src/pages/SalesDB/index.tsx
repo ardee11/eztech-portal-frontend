@@ -1,0 +1,44 @@
+import AccountsDB from "./AccountsDB";
+import DBSearch from "./DBSearch";
+import DBInfo from "./DBInfo";
+import { useState } from "react";
+import { useSalesAccounts } from "../../hooks/useSalesDB";
+import { ClipLoader } from "react-spinners";
+
+export default function SalesDB() {
+  const { loading } = useSalesAccounts();
+  const [selectedManagerFilter, setSelectedManagerFilter] = useState<string | null>(null);
+
+  return (
+    <div className="max-w-[85rem] px-6 py-4 mx-auto">
+      {!loading ? (
+        <div className="flex flex-row gap-4 items-stretch">
+          <div className="flex-1 min-w-0 h-[85vh] border border-gray-400 rounded-xl overflow-hidden bg-white">
+            <AccountsDB 
+              selectedManagerFilter={selectedManagerFilter} 
+              setSelectedManagerFilter={setSelectedManagerFilter}
+            />
+          </div>
+
+          <div className="flex-1 min-w-0 h-[85vh] flex flex-col gap-4">
+            <div className="flex-1 border border-gray-400 bg-white rounded-xl overflow-hidden">
+              <DBSearch /> 
+            </div>
+
+            <div className="flex-1 flex flex-col border border-gray-400 bg-white rounded-xl p-5 overflow-hidden">
+              <DBInfo
+                selectedManagerFilter={selectedManagerFilter}
+                setSelectedManagerFilter={setSelectedManagerFilter}
+              />
+            </div>
+          </div>
+        </div>
+      ):(
+        <div className="flex flex-col items-center justify-center h-[85vh]">
+          <ClipLoader color="#3498db" size={42} />
+          <p className="text-gray-400 text-xs mt-2">Loading data...</p>
+        </div>
+      )}
+    </div>
+  );
+}

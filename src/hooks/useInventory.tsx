@@ -1,0 +1,257 @@
+import { useState, useEffect, useRef } from "react";
+
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
+
+interface Item {
+  item_id: string;
+  item_name: string;
+  quantity: number;
+  distributor: string;
+  client_name: string;
+  entry_date: Date;
+  checked_by: string | null;
+  received_by: string | null;
+  delivered: boolean | null;
+  delivery_date: Date | null;
+  delivered_by: string | null;
+  item_status: string;
+  remarks: string | null;
+  notes: string | null;
+  created_at: Date;
+  created_by: string | null;
+  serialnumbers: SerialNumber[];
+}
+
+interface SerialNumber {
+  id: string;
+  remarks: string;
+  notes: string | null;
+}
+
+export function useInventory(month?: number, year?: number) {
+  const [items, setItems] = useState<Item[]>([]);
+  const [allItems, setAllItems] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
+  const ws = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found");
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchItems = async () => {
+      try {
+        const url = new URL(`${API_BASE_URL}/api/inventory`);
+        if (month && year) {
+          url.searchParams.append("month", month.toString());
+          url.searchParams.append("year", year.toString());
+        }
+
+        const response = await fetch(url.toString(), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await response.json();
+
+        const parsed = data.map((item: any) => ({
+          ...item,
+          entry_date: new Date(item.entry_date),
+          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+          created_at: new Date(item.created_at),
+        }));
+
+        if (isMounted) {
+          setItems(parsed);
+          setError(null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch inventory:", err);
+        if (isMounted) setError("Failed to load inventory.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    const fetchAllItems = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/inventory/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await response.json();
+
+        const parsed = data.map((item: any) => ({
+          ...item,
+          entry_date: new Date(item.entry_date),
+          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+          created_at: new Date(item.created_at),
+        }));
+
+        if (isMounted) {
+          setAllItems(parsed);
+        }
+      } catch (err) {
+        console.error("Failed to fetch all inventory items:", err);
+      }
+    };
+
+    fetchAllItems();
+    fetchItems();
+
+    const socket = new WebSocket(`ws://localhost:5000/ws/inventory?token=${token}`);
+    ws.current = socket;
+
+    socket.onopen = () => {
+      if (!isMounted) {
+        socket.close();
+        return;
+      }
+      //console.log("Inventory WebSocket connected");
+      setConnected(true);
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const updatedData: any[] = JSON.parse(event.data);
+    
+        const filtered = updatedData.filter((item) => {
+          const entryDate = new Date(item.entry_date);
+          return (
+            (!month || entryDate.getMonth() + 1 === month) &&
+            (!year || entryDate.getFullYear() === year)
+          );
+        });
+
+        const parsed = filtered
+        .map(item => ({
+          ...item,
+          entry_date: new Date(item.entry_date),
+          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+          created_at: new Date(item.created_at),
+        }))
+        .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());           
+    
+        setItems(parsed);
+      } catch (err) {
+        console.error("Failed to parse WS message:", err);
+      }
+    };    
+
+    socket.onerror = (event) => {
+      console.error("WebSocket error:", event);
+    };
+
+    socket.onclose = () => {
+      //console.log(`Inventory WebSocket closed: code=${event.code}, reason=${event.reason}`);
+      setConnected(false);
+    };
+
+    return () => {
+      isMounted = false;
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+  }, [month, year]);
+
+  return { allItems, items, loading, error, connected };
+}
+
+export function useAddInventory() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+
+  const addInventory = async (item: Item) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/inventory`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...item,
+          entry_date: item.entry_date.toISOString(),
+          delivery_date: item.delivery_date ? item.delivery_date.toISOString() : null,
+          serial_numbers: item.serialnumbers,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add inventory item");
+      }
+
+      setSuccess(true);
+    } catch (err: any) {
+      console.error("Add inventory error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { addInventory, loading, error, success };
+}
+
+export function useItemDetails(itemId: string | null) {
+  const [item, setItem] = useState<Item | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!itemId) return;
+
+    const fetchItem = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch item");
+        }
+
+        const data = await res.json();
+
+        setItem({
+          item_id: data.item_id,
+          item_name: data.item_name,
+          quantity: data.quantity,
+          distributor: data.distributor,
+          client_name: data.client_name,
+          entry_date: new Date(data.entry_date),
+          checked_by: data.checked_by,
+          received_by: data.received_by,
+          delivered: data.delivered,
+          delivery_date: data.delivery_date ? new Date(data.delivery_date) : null,
+          delivered_by: data.delivered_by,
+          item_status: data.item_status,
+          remarks: data.remarks,
+          notes: data.notes,
+          created_at: new Date(data.created_at),
+          created_by: data.created_by,
+          serialnumbers: data.serialnumbers ?? [],
+        });
+
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load item");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItem();
+  }, [itemId]);
+
+  return { item, loading, error };
+}
