@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
+import AddCompanyModal from "../../components/modal/SalesDB/AddCompanyModal";
 
 interface AccountsDBProps {
   selectedManagerFilter: string | null;
@@ -15,6 +16,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
   const [selectedRemarkFilter, setSelectedRemarkFilter] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const companyListRef = useRef<HTMLDivElement>(null);
+  const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
 
   const { userRole } = useAuth();
   const canViewAllDataRoles = ["Admin", "Super Admin", "Sales Manager"];
@@ -65,6 +67,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
   };
 
   return (
+    <>
       <div className="h-[85vh] p-6">
         <div className="flex justify-between items-center">
           <div className="flex space-x-2 items-center">
@@ -137,7 +140,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
           
           {!selectedCompany && (
             <button 
-              onClick={() => navigate(`/sales-database/add`)}
+              onClick={() => setIsAddCompanyModalOpen(true)}
               className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-800 bg-teal-200 hover:bg-teal-300 hover:cursor-pointer transition"
             >
               <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M12 5v14M5 12h14" /></svg>
@@ -208,6 +211,16 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
           </div>
         )}
       </div>
+
+      <AddCompanyModal
+        isOpen={isAddCompanyModalOpen}
+        onClose={() => setIsAddCompanyModalOpen(false)}
+        onSuccess={() => {
+          // Refresh the data or show success message
+          console.log("Company added successfully!");
+        }}
+      />
+    </>
   )
 }
 

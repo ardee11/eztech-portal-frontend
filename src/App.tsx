@@ -11,7 +11,7 @@ import Inventory from "./pages/Inventory";
 import ItemDetails from "./pages/Inventory/ItemDetails";
 import AddItem from "./pages/Inventory/AddItem";
 import SalesDB from "./pages/SalesDB";
-import AddCompany from "./pages/SalesDB/AddCompany";
+
 import EditCompany from "./pages/SalesDB/EditCompany";
 import SetUpPassword from "./pages/auth/SetUpPassword";
 
@@ -48,7 +48,7 @@ function App() {
 
               <Route element={<ProtectedRoute page="sales" />}>
                 <Route path="sales-database" element={<SalesDB />} />
-                <Route path="sales-database/add" element={<AddCompany />} />
+        
                 <Route path="sales-database/edit" element={<EditCompany />} />
               </Route>
 

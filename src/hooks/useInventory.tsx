@@ -299,3 +299,41 @@ export function useUpdateInventory() {
 
   return { updateInventory, loading, error, success };
 }
+
+export function useDeleteInventory() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const deleteInventory = async (itemId: string) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      const response = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete inventory item");
+      }
+
+      setSuccess(true);
+    } catch (err: any) {
+      console.error("Delete inventory error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { deleteInventory, loading, error, success };
+}

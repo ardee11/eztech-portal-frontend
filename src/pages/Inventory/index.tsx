@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useInventoryFilterOptions } from "../../hooks/useInventoryFilterOptions";
 import InventoryContextMenu from "../../components/elements/InventoryContextMenu";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
+import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
+import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
 
 type MonthYear = { month: number; year: number };
 
@@ -44,12 +46,36 @@ export default function Inventory() {
   const { options: monthYearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
+
+  const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
+  const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
+
+  const openMarkDeliveredModal = (itemId: string | null) => {
+    setMarkDeliveredItemId(itemId);
+    setIsMarkDeliveredModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
+  };
+
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
 
   const openDeliveryModal = (itemId: string | null) => {
     setModalItemId(itemId);
     setIsDeliveryModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
+  };
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteItemName, setDeleteItemName] = useState<string>("");
+
+  const openDeleteModal = (itemId: string | null) => {
+    if (itemId) {
+      const item = filteredItems.find(item => item.item_id === itemId);
+      setDeleteItemName(item?.item_name || "");
+    }
+    setDeleteItemId(itemId);
+    setIsDeleteModalOpen(true);
     setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
   };
  
@@ -239,7 +265,7 @@ export default function Inventory() {
               {!loading && !error && (
                 <div className="w-full overflow-y-auto h-[calc(100vh-220px)]">
                   <table className="min-w-full overflow-x-auto divide-y divide-gray-300">
-                    <thead className="bg-gray-50 sticky top-0 z-50">
+                    <thead className="bg-gray-50 sticky top-0">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date of Entry</th>
                         <th className="px-6 py-3 w-[18rem] text-left text-xs font-medium text-gray-700 uppercase">Item Description/Model</th>
@@ -281,10 +307,10 @@ export default function Inventory() {
                                 e.stopPropagation();  
                                 openDeliveryModal(item.item_id);
                               }}
-                              className={`${!item.delivered && item.item_status !== "For Delivery" ? "text-blue-500 hover:underline" : ""}`}>
-                                {item.delivered || item.item_status === "For Delivery" ? formatTimestampToFullDate(item.delivery_date) : 
-                                item.client_name === "EZTECH" ? "":
-                                "Set Delivery Date"
+                              className={`${item.item_status !== "Delivered" && item.item_status !== "For Delivery" ? "text-blue-500 hover:underline" : ""}`}>
+                                {item.client_name === "EZTECH" ? "":
+                                  item.item_status === "Delivered" || item.item_status === "For Delivery" ? formatTimestampToFullDate(item.delivery_date) : 
+                                  "Set Delivery Date"
                                 }
                             </p>
                           </td>
@@ -317,6 +343,8 @@ export default function Inventory() {
         itemDelivered={contextMenu.itemDelivered}
         onClose={() => setContextMenu(prev => ({ ...prev, visible: false }))}
         onOpenModal={openDeliveryModal}
+        onOpenMarkDeliveredModal={openMarkDeliveredModal}
+        onOpenDeleteModal={openDeleteModal}
       />
 
       {modalItemId && (
@@ -327,6 +355,22 @@ export default function Inventory() {
         />
       )}
 
+      {markDeliveredItemId && (
+        <MarkAsDeliveredModal
+          isOpen={isMarkDeliveredModalOpen}
+          onClose={() => setIsMarkDeliveredModalOpen(false)}
+          itemId={markDeliveredItemId}
+        />
+      )}
+
+      {deleteItemId && (
+        <DeleteItemModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          itemId={deleteItemId}
+          itemName={deleteItemName}
+        />
+      )}
     </div>
   );
 }

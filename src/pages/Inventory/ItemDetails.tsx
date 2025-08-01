@@ -8,6 +8,7 @@ import ItemDetailsModal from "../../components/modal/Inventory/EditItemDetails";
 import ItemNotesModal from "../../components/modal/Inventory/EditItemNotes";
 import ItemStatusModal from "../../components/modal/Inventory/EditItemStatus";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
+import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 
 function ItemDetails() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ function ItemDetails() {
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isSetDeliveryModalOpen, setIsSetDeliveryModalOpen] = useState(false);
+  const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -289,7 +291,9 @@ function ItemDetails() {
                       <p className="text-md font-semibold text-gray-800">Status</p>
 
                       {!item?.delivered && item?.item_status === "For Delivery" && (
-                      <p className="flex text-xs border border-blue-600 text-blue-600 px-2 rounded-full items-center hover:bg-blue-500/10 hover:cursor-pointer transition">
+                      <p 
+                        onClick={()=> setIsMarkDeliveredModalOpen(true)}
+                        className="flex text-xs border border-blue-600 text-blue-600 px-2 rounded-full items-center hover:bg-blue-500/10 hover:cursor-pointer transition">
                         Mark as Delivered
                       </p>
                       )}
@@ -352,8 +356,29 @@ function ItemDetails() {
                         </div>
                       </>
                     )}
+                    {!item?.delivered && item?.delivery_date && (
+                      <>
+                        <div className="my-1">
+                          <h3 className="text-xs font-medium uppercase text-gray-500">
+                            {formatTimestampToFullDate(item.delivery_date)}
+                          </h3>
+                        </div>
 
-                    {item?.delivered && item?.delivered_by && item?.delivery_date && (
+                        <div className="flex gap-x-2">
+                          <div className="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px]">
+                            <div className="relative z-10 size-7 flex justify-center items-center">
+                              <div className="size-2 rounded-full bg-green-300"></div>
+                            </div>
+                          </div>
+
+                          <div className="grow pt-0.5">
+                            <h3 className="font-semibold text-xs text-gray-800">For Dispatch</h3>
+                            <p className="mt-0.5 text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {item?.delivered && (
                       <>
                         <div className="my-1">
                           <h3 className="text-xs font-medium uppercase text-gray-500">
@@ -377,12 +402,6 @@ function ItemDetails() {
                     )}
                   </div>
                 </div>
-                <SetDeliveryModal
-                  isOpen={isSetDeliveryModalOpen}
-                  onClose={() => setIsSetDeliveryModalOpen(false)}
-                  itemId={item?.item_id ?? ""}
-                />
-
                 <ItemStatusModal 
                   isStatusModalOpen={isStatusModalOpen} 
                   onClose={() => setIsStatusModalOpen(false)} 
@@ -390,6 +409,19 @@ function ItemDetails() {
                   onUpdate={handleItemUpdate}
                 />
               </div>
+              <SetDeliveryModal
+                isOpen={isSetDeliveryModalOpen}
+                onClose={() => setIsSetDeliveryModalOpen(false)}
+                itemId={item?.item_id ?? ""}
+                onUpdate={handleItemUpdate}
+              />
+
+              <MarkAsDeliveredModal
+                isOpen={isMarkDeliveredModalOpen}
+                onClose={() => setIsMarkDeliveredModalOpen(false)}
+                itemId={item?.item_id ?? ""}
+                onUpdate={handleItemUpdate}
+              />
             </div>
           </div>
         )}
