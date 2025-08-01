@@ -30,7 +30,7 @@ export default function Admin() {
 
   return (
     <>
-      <div className="max-w-[85rem] p-6 mx-auto">
+      <div className="p-6 mx-auto">
         <div className="flex flex-col">
           <div className="overflow-x-auto">
             <div className="min-w-full">

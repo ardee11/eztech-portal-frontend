@@ -1,134 +1,131 @@
-import { useState } from "react";
-import { ClipLoader } from "react-spinners";
+import { useEffect, useState } from "react";
+import { Item, useUpdateInventory } from "../../../hooks/useInventory";
+import { useAdmin } from "../../../hooks/useAdmin";
+import StaffDropdown from "../../elements/StaffDropdown";
 
-const StatusModal = () => {
-  const [itemName, setItemName] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [itemDistributor, setItemDistributor] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const isFormValid = itemName.trim() !== "" && clientName.trim() !== "" && itemDistributor.trim() !== "";
+type Props = {
+  isStatusModalOpen: boolean;
+  onClose: () => void;
+  item: Item | null;
+  onUpdate: (updatedFields: Partial<Item>) => void;
+};
+
+const ItemStatusModal = ({ isStatusModalOpen, onClose, item, onUpdate }: Props) => {
+  const { admins } = useAdmin();
+  const { updateInventory, loading, success, error } = useUpdateInventory();
+  const [receivedBy, setReceivedBy] = useState("");
+  const [checkedBy, setCheckedBy] = useState("");
+  const [deliveredBy, setDeliveredBy] = useState("");
+
+  const isFormValid =
+    checkedBy.trim() !== "" &&
+    receivedBy.trim() !== "" &&
+    item !== null &&
+    (
+      checkedBy !== item.checked_by ||
+      receivedBy !== item.received_by
+    );
+
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+
+    if (!item || !item.item_id || !isFormValid) return;
+
+    try {
+      await updateInventory(item.item_id, {
+        received_by: receivedBy,
+        checked_by: checkedBy,
+        delivered_by: deliveredBy || "",
+      });
+
+      onUpdate({
+        received_by: receivedBy,
+        checked_by: checkedBy,
+        delivered_by: deliveredBy || "",
+      });
+      onClose();
+
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 1500);
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
   };
 
   const resetFormField = () => {
-    setItemName("");
-    setClientName("");
-    setItemDistributor("");
+    setCheckedBy("");
+    setReceivedBy("");
+    onClose();
   };
+
+  useEffect(() => {
+    if (item && isStatusModalOpen) {
+      setCheckedBy(item.checked_by || "");
+      setReceivedBy(item.received_by || "");
+    }
+  }, [item, isStatusModalOpen]);
 
   return (
     <>
-      <div
-        id="hs-status-modal-form"
-        className="hs-overlay hidden size-full fixed flex items-center justify-center inset-0 z-80 overflow-x-hidden"
-        role="dialog"
-        tabIndex={-1}
-        aria-labelledby="hs-status-modal-form-label"
-      >
-        <div className="bg-white rounded-xl shadow-2xl w-full sm:mx-auto animate-expand-card max-w-3xl max-h-90">
-          <div className="px-8 py-6 delay-show">
-            <h3 id="status-modal-label" className="text-lg font-bold text-gray-800">
-              Edit Item Status
-            </h3>
+      {isStatusModalOpen && (
+      <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60">
+        <div className="bg-white rounded-xl shadow-2xl w-full sm:mx-auto animate-expand-card max-w-3xl max-h-94 flex flex-col">
 
-            <form className="mt-5" onSubmit={handleSubmit}>
-              <div className="grid gap-y-4">
- 
-                <div>
-                  <label htmlFor="itemName" className="block text-xs mb-1">
-                    Received By
-                  </label>
-                  <input
-                    type="text"
-                    id="itemName"
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    value={itemName}
-                    onChange={(e) => setItemName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="clientName" className="block text-xs mb-1">
-                    Checked By
-                  </label>
-                  <input
-                    type="text"
-                    id="clientName"
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="itemDistributor" className="block text-xs mb-1">
-                    Delivered by
-                  </label>
-                  <input
-                    type="text"
-                    id="itemDistributor"
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    value={itemDistributor}
-                    onChange={(e) => setItemDistributor(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="flex mt-4 gap-12 justify-center items-center">
-                  <button
-                    type="submit"
-                    disabled={loading || !isFormValid}
-                    className="text-xs px-24 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer disabled:pointer-events-none transition"
-                    aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-success-modal" data-hs-overlay="#hs-success-modal"
-                  >
-                    Submit
-                  </button>
-                  <button
-                    type="button"
-                    className="text-xs px-24 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 hover:cursor-pointer transition"
-                    onClick={()=>resetFormField()}
-                    data-hs-overlay={!error ? `#hs-status-modal-form` : ""}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      {!error && (
-      <div
-        id="hs-success-modal"
-        className="hs-overlay hidden size-full fixed flex items-center justify-center inset-0 z-80 overflow-x-hidden overflow-y-auto"
-        role="dialog"
-        tabIndex={-1}
-        aria-labelledby="hs-success-modal-label"
-      >
-        <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-          {!loading ? (
-            <>
-              <h2 className="text-xl font-bold text-gray-800">Admin Added Successfully</h2>
-            </>
-          ) : (
-            <div>
-              <ClipLoader color="#3498db" size={32} />
+          <div className="delay-show">       
+            <div className="px-8 py-4 border-b border-gray-200">
+              <h3 id="status-modal-label" className="text-lg font-bold text-gray-800">
+                Edit Item Status
+              </h3>
             </div>
-          )}
-            <button
-              className="mt-4 bg-teal-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-teal-600 hover:cursor-pointer transition disabled:bg-teal-100"
-              data-hs-overlay="#hs-success-modal"
-              disabled={loading}
-            >
-              Close
-            </button>
+
+            <div className="px-12 py-6 overflow-y-auto flex-grow">
+              <form id="editStatus" className="grid gap-y-4" onSubmit={handleSubmit}>
+                <StaffDropdown
+                  label="Received By"
+                  value={receivedBy}
+                  onChange={setReceivedBy}
+                  options={admins}
+                />
+
+                <StaffDropdown
+                  label="Checked By"
+                  value={checkedBy}
+                  onChange={setCheckedBy}
+                  options={admins}
+                />
+             
+                <StaffDropdown
+                  label="Delivered By"
+                  value={deliveredBy}
+                  onChange={setDeliveredBy}
+                  options={admins}
+                />
+              </form>
+            </div>
+
+            <div className="py-5 border-t border-gray-200 flex justify-center gap-12">
+              <button
+                type="submit"
+                form="editStatus" 
+                disabled={loading || !isFormValid}
+                className="text-xs px-24 py-2 bg-teal-500 text-white rounded-lg hover:cursor-pointer hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none transition"
+              >
+                Submit
+              </button>
+              <button
+                type="button"
+                className="text-xs px-24 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 hover:cursor-pointer transition"
+                onClick={resetFormField}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       )}
@@ -136,4 +133,4 @@ const StatusModal = () => {
   );
 };
 
-export default StatusModal;
+export default ItemStatusModal;

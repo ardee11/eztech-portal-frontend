@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const DatePicker = ({ onDateSelect }: { onDateSelect: (date: string) => void }) => {
+type DatePickerProps = {
+  onDateSelect: (dateString: string, date: Date) => void;
+  selectedDate: string | null;
+  onClose: () => void;
+};
+
+const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) => {
+  const pickerRef = useRef<HTMLDivElement>(null);
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay(); // 0: Sunday
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1; // shift to Monday start
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1; 
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
@@ -29,11 +34,13 @@ const DatePicker = ({ onDateSelect }: { onDateSelect: (date: string) => void }) 
     }
   };
 
+  const formatDate = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
   const handleDateClick = (day: number) => {
-    const date = new Date(currentYear, currentMonth, day);
-    const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-    setSelectedDate(dateString);
-    onDateSelect?.(dateString);
+    const date = new Date(Date.UTC(currentYear, currentMonth, day));
+    const dateString = formatDate(date);
+    onDateSelect?.(dateString, date);
   };
 
   const daysArray = Array.from({ length: startOffset + daysInMonth }, (_, index) => {
@@ -48,8 +55,21 @@ const DatePicker = ({ onDateSelect }: { onDateSelect: (date: string) => void }) 
 
   const weekDays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
+
   return (
-    <div className="w-80 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden p-3 text-sm">
+    <div 
+      ref={pickerRef}
+      className="fade-in w-80 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden p-3 text-sm">
       {/* Header */}
       <div className="grid grid-cols-5 items-center mb-3 w-80">
         <button onClick={handlePrevMonth} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
@@ -82,7 +102,7 @@ const DatePicker = ({ onDateSelect }: { onDateSelect: (date: string) => void }) 
           today.getMonth() === currentMonth &&
           today.getFullYear() === currentYear;
 
-        const dateString = new Date(currentYear, currentMonth, day).toISOString().split("T")[0];
+        const dateString = formatDate(new Date(currentYear, currentMonth, day));
         const isSelected = selectedDate === dateString;
 
         return (

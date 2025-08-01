@@ -10,7 +10,7 @@ export default function SalesDB() {
   const [selectedManagerFilter, setSelectedManagerFilter] = useState<string | null>(null);
 
   return (
-    <div className="max-w-[85rem] px-6 py-4 mx-auto">
+    <div className="max-w-full px-6 py-4 mx-auto">
       {!loading ? (
         <div className="flex flex-row gap-4 items-stretch">
           <div className="flex-1 min-w-0 h-[85vh] border border-gray-400 rounded-xl overflow-hidden bg-white">

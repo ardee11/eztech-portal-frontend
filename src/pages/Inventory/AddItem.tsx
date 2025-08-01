@@ -1,22 +1,18 @@
-//import { verify } from "crypto";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "../../components/elements/DatePicker";
 import { useAdmin } from "../../hooks/useAdmin";
+import StaffDropdown from "../../components/elements/StaffDropdown";
+import { useAddInventory } from "../../hooks/useInventory";
 
 export default function AddItem() {
   const { admins } = useAdmin();
   const navigate = useNavigate();
-  //const [deliveredChecked, setDeliveredChecked] = useState(false);
-  const [showPicker, setShowPicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const { addInventory, loading, error, success } = useAddInventory();
 
-  const handleDateSelect = (dateString: string) => {
-    setSelectedDate(dateString);
-    setShowPicker(false);
-  };
-  //const [entryDate, setEntryDate] = useState("");
+  const [showPicker, setShowPicker] = useState(false);
+  const [entryDate, setEntryDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState("");
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [hasSerial, setHasSerial] = useState(false);
@@ -26,10 +22,16 @@ export default function AddItem() {
   const [checkedBy, setCheckedBy] = useState("");
   const [itemNote, setitemNote] = useState("");
   const [serialNumbers, setSerialNumbers] = useState<string>("");
+  const [serialVerified, setSerialVerified] = useState(false);
   const [verifiedSerials, setVerifiedSerials] = useState<
     { serial: string; note: string; isGood: boolean }[]
   >([]);
-  const [serialVerified, setSerialVerified] = useState(false);
+  
+  const handleDateSelect = (dateString: string, date: Date) => {
+    setEntryDate(date);
+    setSelectedDate(dateString);
+    setShowPicker(false);
+  };
 
   const handleToggle = () => {
     setHasSerial((prev) => !prev);
@@ -73,9 +75,57 @@ export default function AddItem() {
     setVerifiedSerials(structuredSerials);
   }
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!receivedBy) {
+      alert("Please select who received the item.");
+      return;
+    }
+    if (!checkedBy) {
+      alert("Please select who checked the item.");
+      return;
+    }
+
+    const serialnumbers = hasSerial
+      ? verifiedSerials.map((s) => ({
+          id: s.serial,
+          inventory_id: null,
+          remarks: s.isGood ? "Good" : "Defective",
+          notes: s.note || null,
+        }))
+      : [];
+
+    const newItem = {
+      item_id: null,
+      item_name: itemName.trim(),
+      quantity: Number(quantity),
+      distributor: distributor.trim(),
+      client_name: clientName.trim(),
+      entry_date: entryDate || new Date(),
+      checked_by: checkedBy,
+      received_by: receivedBy,
+      delivered: false,
+      delivery_date: null,
+      delivered_by: null,
+      item_status: "Pending",
+      notes: itemNote.trim(),
+      created_at: new Date(),
+      created_by: receivedBy,
+      serialnumbers,
+    };
+
+    await addInventory(newItem);
+
+    if (!error) {
+      alert("Item added successfully!");
+      navigate(-1);
+    }
+  };
+
   return (
     <>
-      <div className="max-w-[85rem] mx-auto px-6 py-4 relative">
+      <div className="mx-auto px-6 py-4 relative">
         <div className="flex items-center mb-3">
           <div
             onClick={() => navigate(-1)}
@@ -107,7 +157,10 @@ export default function AddItem() {
           </p>
         </div>
 
-        <div className="flex flex-row min-w-0 h-[82vh] px-8 py-6 gap-x-10 items-start bg-white border border-gray-200 rounded-lg shadow-md">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-row px-8 py-6 gap-x-10 bg-white border border-gray-200 rounded-lg shadow-md"
+        >
           <div className="flex-1 flex flex-col gap-y-6">
             <div className="border border-gray-300 rounded-lg h-[75vh] flex flex-col py-6">
               <div className="flex-1 flex flex-col gap-y-2 overflow-y-auto px-6">
@@ -122,15 +175,18 @@ export default function AddItem() {
                       id="entryDate"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="p-2 pr-10 block w-full text-xs border border-gray-500 rounded-lg"
+                      className="p-2 pr-10 block w-full text-xs border border-gray-500 rounded-lg cursor-default"
                       required
                       readOnly
                     />
 
                     <button
                       type="button"
-                      onClick={() => setShowPicker((prev) => !prev)}
-                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-800"
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        setShowPicker((prev) => !prev);
+                      }}
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 hover:cursor-pointer"
                       aria-label="Open calendar"
                     >
                       <svg
@@ -151,8 +207,12 @@ export default function AddItem() {
                   </div>
 
                   {showPicker && (
-                    <div className="absolute z-50 mt-2">
-                      <DatePicker onDateSelect={handleDateSelect} />
+                    <div className="absolute top-full right-0 mt-2 z-50">
+                      <DatePicker
+                        onDateSelect={handleDateSelect}
+                        selectedDate={selectedDate}
+                        onClose={() => setShowPicker(false)} 
+                      />
                     </div>
                   )}
                 </div>
@@ -161,22 +221,26 @@ export default function AddItem() {
                   <label htmlFor="itemName" className="block text-xs mb-1">
                     Item Name
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     id="itemName"
+                    autoComplete="off"
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    required
+                    className="p-2 w-full h-16 text-xs border border-gray-500 rounded-lg resize-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs mb-1">Qty</label>
+                  <label htmlFor="itemQty" className="block text-xs mb-1">
+                    Qty
+                  </label>
+
                   <div className="flex gap-4">
                     <div className="w-1/2">
                       <input
+                        id="itemQty"
                         type="number"
+                        autoComplete="off"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         disabled={serialVerified}
@@ -206,6 +270,7 @@ export default function AddItem() {
                   <input
                     type="text"
                     id="clientName"
+                    autoComplete="off"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
@@ -220,6 +285,7 @@ export default function AddItem() {
                   <input
                     type="text"
                     id="distributor"
+                    autoComplete="off"
                     value={distributor}
                     onChange={(e) => setDistributor(e.target.value)}
                     className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
@@ -227,84 +293,23 @@ export default function AddItem() {
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="receivedBy" className="block text-xs mb-1">
-                    Received By
-                  </label>
-                  <select
-                    id="receivedBy"
+                <div className="relative hs-dropdown">
+                  <StaffDropdown
+                    label="Received By"
                     value={receivedBy}
-                    onChange={(e) => setReceivedBy(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    required
-                  >
-                    <option value="" disabled>-- Select staff --</option>
-                    {admins.map((admin) => (
-                      <option key={admin.aid} value={admin.name}>
-                        {admin.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setReceivedBy}
+                    options={admins}
+                  />
                 </div>
 
-                <div>
-                  <label htmlFor="receivedBy" className="block text-xs mb-1">
-                    Checked By
-                  </label>
-                  <select
-                    id="checkedBy"
+                <div className="relative hs-dropdown">
+                  <StaffDropdown
+                    label="Checked By"
                     value={checkedBy}
-                    onChange={(e) => setCheckedBy(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    required
-                  >
-                    <option value="" disabled>-- Select staff --</option>
-                    {admins.map((admin) => (
-                      <option key={admin.aid} value={admin.name}>
-                        {admin.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* <div className="flex items-center gap-1">
-                  <input
-                    type="checkbox"
-                    className="shrink-0 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                    id="delivered"
-                    checked={deliveredChecked}
-                    onChange={(e) => setDeliveredChecked(e.target.checked)}
-                  />
-                  <label htmlFor="delivered" className="text-xs">
-                    Mark as Delivered
-                  </label>
-                </div>
-
-                <div>
-                  <label htmlFor="deliveryDate" className={`block text-xs mb-1 ${deliveredChecked ? "" : "text-gray-500"}`}>
-                    Date of Delivery
-                  </label>
-                  <input
-                    type="text"
-                    id="deliveryDate"
-                    disabled={!deliveredChecked}
-                    className={`p-2 block w-full text-xs border border-gray-500 rounded-lg ${deliveredChecked ? "" : "bg-gray-100 cursor-not-allowed"}`}
-                    required
+                    onChange={setCheckedBy}
+                    options={admins}
                   />
                 </div>
-
-                <div>
-                  <label htmlFor="deliveredBy" className={`block text-xs mb-1 ${deliveredChecked ? "" : "text-gray-500"}`}>
-                    Delivered by
-                  </label>
-                  <input
-                    type="text"
-                    id="deliveredBy"
-                    disabled={!deliveredChecked}
-                    className={`p-2 block w-full text-xs border border-gray-500 rounded-lg ${deliveredChecked ? "" : "bg-gray-100 cursor-not-allowed"}`}
-                    required
-                  />
-                </div> */}
 
                 <div>
                   <label htmlFor="itemNotes" className="block text-xs mb-1">
@@ -312,17 +317,16 @@ export default function AddItem() {
                   </label>
                   <textarea
                     id="itemNotes"
+                    autoComplete="off"
                     value={itemNote}
                     onChange={(e) => setitemNote(e.target.value)}
-                    className="p-2 w-full h-24 text-xs border border-gray-500 rounded-lg resize-y"
-                    required
+                    className="p-2 w-full h-24 text-xs border border-gray-500 rounded-lg resize-none"
                   />
                 </div>
 
                 <div>
                   <button
-                    type="button"
-                    //onClick={verifySerials}
+                    type="submit"
                     className="text-xs w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
                   >
                     Add Item
@@ -343,7 +347,7 @@ export default function AddItem() {
                     id="serialNumbers"
                     value={serialNumbers}
                     onChange={(e) => setSerialNumbers(e.target.value)}
-                    className="p-2 w-full h-20 text-xs border border-gray-500 rounded-lg resize-y"
+                    className="p-2 w-full h-20 text-xs border border-gray-500 rounded-lg resize-none"
                     required
                   />
                 </div>
@@ -409,7 +413,7 @@ export default function AddItem() {
                         <textarea
                           value={item.note}
                           onChange={(e) => updateSerialField(index, "note", e.target.value)}
-                          className="flex-1 p-1 border border-gray-500 rounded-lg text-xs resize-y"
+                          className="flex-1 p-1 border border-gray-500 rounded-lg text-xs resize-none"
                         />
                       </div>
                     </div>
@@ -418,7 +422,7 @@ export default function AddItem() {
               </div>
             )}
           </div>
-        </div>
+        </form>
       </div>
     </>
   );

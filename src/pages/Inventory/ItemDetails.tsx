@@ -1,16 +1,35 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useItemDetails } from "../../hooks/useInventory";
 import { ClipLoader } from "react-spinners";
 import { formatTimestampToFullDate } from "../../utils/DateFormat";
+import { Item, useItemDetails } from "../../hooks/useInventory";
+
 import ItemDetailsModal from "../../components/modal/Inventory/EditItemDetails";
-import { useEffect } from "react";
 import ItemNotesModal from "../../components/modal/Inventory/EditItemNotes";
-import StatusModal from "../../components/modal/Inventory/EditItemStatus";
+import ItemStatusModal from "../../components/modal/Inventory/EditItemStatus";
+import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 
 function ItemDetails() {
   const navigate = useNavigate();
   const { itemId } = useParams<{ itemId: string }>();
-  const { item, loading, error } = useItemDetails(itemId!);
+  const { item: fetchedItem, loading, error, refetch } = useItemDetails(itemId!);
+  const [item, setItem] = useState<Item | null>(null);
+
+  useEffect(() => {
+    if (fetchedItem) {
+      setItem(fetchedItem);
+    }
+  }, [fetchedItem]);
+
+  const handleItemUpdate = (updatedFields: Partial<Item>) => {
+    setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
+    refetch();
+  };
+
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isSetDeliveryModalOpen, setIsSetDeliveryModalOpen] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -22,7 +41,7 @@ function ItemDetails() {
     }
   }, [item]);
   return (
-    <div className="max-w-[85rem] mx-auto px-6 py-4 relative">
+    <div className="max-w-full mx-auto px-6 py-4 relative">
       <div className="flex items-center mb-3">
         <div
           onClick={() => navigate(-1)}
@@ -75,7 +94,7 @@ function ItemDetails() {
                       Item Details
                     </p>
                     <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer"
-                      aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-item-modal-form" data-hs-overlay="#hs-item-modal-form">
+                      onClick={() => setIsItemModalOpen(true)}>
                       Edit
                     </p>
                   </div>
@@ -110,128 +129,135 @@ function ItemDetails() {
                     </p>
                   </div>
                 </div>
-                <ItemDetailsModal />
+                <ItemDetailsModal 
+                  isItemModalOpen={isItemModalOpen} 
+                  onClose={() => setIsItemModalOpen(false)} 
+                  item={item}
+                  onUpdate={handleItemUpdate}
+                />
 
-                <div className="bg-white border border-gray-200 shadow-md overflow-hidden">
-                  <div className="w-full overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-blue-50">
-                        <tr>
-                          <th className="px-6 py-3 w-40 text-left text-xs font-medium text-gray-700 uppercase">
-                            Serial No.
-                          </th>
-                          <th className="px-6 py-3 w-100 text-left text-xs font-medium text-gray-700 uppercase">
-                            Remarks
-                          </th>
-                          <th className="px-6 py-3 w-70 text-left text-xs font-medium text-gray-700 uppercase">
-                            Notes
-                          </th>
-                          <th className="px-6 py-3 w-10 text-left text-xs font-medium text-gray-700 uppercase">
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {item?.serialnumbers?.map((serial, index) => (
-                          <tr key={serial.id} className="hover:bg-gray-100/60 transition">
-                            <td className="px-6 py-4 w-40 whitespace-nowrap text-xs">
-                              <p>{index + 1}. <span className="font-medium text-blue-600">{serial.id}</span></p>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-800">
-                              {serial.remarks === "Good" ? (
-                                <>
-                                  <span className="py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
-                                    <svg
-                                      className="size-2.5 mr-1"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                                    </svg>
-                                    Checked
-                                  </span>
-                                  <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
-                                    <svg
-                                      className="size-2.5 mr-1"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                                    </svg>
-                                    Passed
-                                  </span>
-                                  <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
-                                    <svg
-                                      className="size-2.5 mr-1"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                                    </svg>
-                                    Good
-                                  </span>
-                                  <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
-                                    <svg
-                                      className="size-2.5 mr-1"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
-                                    </svg>
-                                    Sealed
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-red-200 text-red-800">
-                                  <svg
-                                    className="size-2.5 mr-1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
-                                  </svg>
-                                  Defective
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 text-xs whitespace-nowrap text-gray-800">
-                              {serial.notes ?? "..."}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-800 cursor-pointer">
-                              <div 
-                                className="hover:bg-gray-200 py-1 px-1.5 rounded-full"
-                                //onClick={}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
-                                </svg>
-                              </div>
-                            </td>
+                {item?.serialnumbers && item.serialnumbers.length > 0 && (
+                  <div className="bg-white border border-gray-200 shadow-md overflow-hidden">
+                    <div className="w-full overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-blue-50">
+                          <tr>
+                            <th className="px-6 py-3 w-40 text-left text-xs font-medium text-gray-700 uppercase">
+                              Serial No.
+                            </th>
+                            <th className="px-6 py-3 w-100 text-left text-xs font-medium text-gray-700 uppercase">
+                              Remarks
+                            </th>
+                            <th className="px-6 py-3 w-70 text-left text-xs font-medium text-gray-700 uppercase">
+                              Notes
+                            </th>
+                            <th className="px-6 py-3 w-10 text-left text-xs font-medium text-gray-700 uppercase">
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {item?.serialnumbers?.map((serial, index) => (
+                            <tr key={serial.id} className="hover:bg-gray-100/60 transition">
+                              <td className="px-6 py-4 w-40 whitespace-nowrap text-xs">
+                                <p>{index + 1}. <span className="font-medium text-blue-600">{serial.id}</span></p>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-800">
+                                {serial.remarks === "Good" ? (
+                                  <>
+                                    <span className="py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
+                                      <svg
+                                        className="size-2.5 mr-1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        fill="currentColor"
+                                        viewBox="0 0 16 16"
+                                      >
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                      </svg>
+                                      Checked
+                                    </span>
+                                    <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
+                                      <svg
+                                        className="size-2.5 mr-1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        fill="currentColor"
+                                        viewBox="0 0 16 16"
+                                      >
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                      </svg>
+                                      Passed
+                                    </span>
+                                    <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
+                                      <svg
+                                        className="size-2.5 mr-1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        fill="currentColor"
+                                        viewBox="0 0 16 16"
+                                      >
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                      </svg>
+                                      Good
+                                    </span>
+                                    <span className="ml-2 py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-teal-100 text-teal-800">
+                                      <svg
+                                        className="size-2.5 mr-1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        fill="currentColor"
+                                        viewBox="0 0 16 16"
+                                      >
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                      </svg>
+                                      Sealed
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="py-0.5 px-2 inline-flex items-center text-xs font-medium rounded-full bg-red-200 text-red-800">
+                                    <svg
+                                      className="size-2.5 mr-1"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+                                    </svg>
+                                    Defective
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-xs whitespace-nowrap text-gray-800">
+                                {serial.notes ?? "..."}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-800 cursor-pointer">
+                                <div 
+                                  className="hover:bg-gray-200 py-1 px-1.5 rounded-full"
+                                  //onClick={}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-4 w-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+                                  </svg>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Notes */}
@@ -239,25 +265,44 @@ function ItemDetails() {
                 <div className="bg-white shadow-md border border-gray-200 px-4 py-3 min-h-48">
                   <div className="flex justify-between">
                     <p className="text-md font-semibold text-gray-800">Notes</p>
-                    <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer"
-                    aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-notes-modal-form" data-hs-overlay="#hs-notes-modal-form">
+                    <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer" onClick={() => setIsNoteModalOpen(true)}>
                       Edit
                     </p>
                   </div>
                   <div className="mt-3 ml-3">
-                    <p className="text-xs text-gray-800 break-words whitespace-pre-line">
+                    <p className="text-xs text-gray-800 break-words whitespace-pre-wrap">
                       {item?.notes ?? "No additional notes."}
                     </p>
                   </div>
                 </div>
-                <ItemNotesModal/>
+                <ItemNotesModal 
+                  isNoteModalOpen={isNoteModalOpen} 
+                  onClose={() => setIsNoteModalOpen(false)} 
+                  item={item}
+                  onUpdate={handleItemUpdate}
+                />
 
                 {/* Status */}
                 <div className="bg-white border border-gray-200 shadow-md px-4 py-3">
                   <div className="flex justify-between">
-                    <p className="text-md font-semibold text-gray-800">Status</p>
-                    <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer"
-                    aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-status-modal-form" data-hs-overlay="#hs-status-modal-form">
+                    <div className="flex gap-x-2">
+                      <p className="text-md font-semibold text-gray-800">Status</p>
+
+                      {!item?.delivered && item?.item_status === "For Delivery" && (
+                      <p className="flex text-xs border border-blue-600 text-blue-600 px-2 rounded-full items-center hover:bg-blue-500/10 hover:cursor-pointer transition">
+                        Mark as Delivered
+                      </p>
+                      )}
+
+                      {!item?.delivered && item?.item_status === "Pending" && (
+                      <p
+                        onClick={() => setIsSetDeliveryModalOpen(true)}
+                        className="flex text-xs border border-blue-600 text-blue-600 px-2 rounded-full items-center hover:bg-blue-500/10 hover:cursor-pointer transition">
+                        Set Delivery Date
+                      </p>
+                      )}
+                    </div>
+                    <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer" onClick={() => setIsStatusModalOpen(true)}>
                       Edit
                     </p>
                   </div>
@@ -332,7 +377,18 @@ function ItemDetails() {
                     )}
                   </div>
                 </div>
-                <StatusModal />
+                <SetDeliveryModal
+                  isOpen={isSetDeliveryModalOpen}
+                  onClose={() => setIsSetDeliveryModalOpen(false)}
+                  itemId={item?.item_id ?? ""}
+                />
+
+                <ItemStatusModal 
+                  isStatusModalOpen={isStatusModalOpen} 
+                  onClose={() => setIsStatusModalOpen(false)} 
+                  item={item}
+                  onUpdate={handleItemUpdate}
+                />
               </div>
             </div>
           </div>

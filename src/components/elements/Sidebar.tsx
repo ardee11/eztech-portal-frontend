@@ -115,37 +115,59 @@ export default function Sidebar() {
                 </li>
               )}
 
-              {userRole && hasAccess(userRole, "admin") && (
-                <li>
-                  <NavLink
-                    to="/admin"
-                    className={({ isActive }) =>
-                      isActive ? "bg-white/10 text-blue-400" : "text-white"
-                    }
+              <li className="hs-accordion" id="account-accordion">
+                <button type="button" className="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-white rounded-lg hover:bg-white/10 focus:outline-hidden focus:bg-white/10 hover:cursor-pointer" aria-expanded="true" aria-controls="account-accordion-child">
+                  <svg 
+                    className="shrink-0 size-4 mt-1 text-gray-800 dark:text-neutral-200" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
                   >
-                    <div className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg hover:bg-white/10">
-                      <svg
-                        className="shrink-0 size-4"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                      </svg>
-                      Access Control
-                    </div>
-                  </NavLink>
-                </li>
-              )}
+                    <path d="m7 11 2-2-2-2"/>
+                    <path d="M11 13h4"/>
+                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                  </svg>
+                  System Setup
+
+                  <svg className="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+
+                  <svg className="hs-accordion-active:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
+
+                <div id="account-accordion-child" className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="account-accordion">
+                  <ul className="ps-6 pt-1 space-y-1">
+                    {userRole && hasAccess(userRole, "admin") && (
+                      <li>
+                        <NavLink
+                          to="/admin"
+                          className={({ isActive }) =>
+                            isActive ? "bg-white/10 text-blue-400" : "text-white"
+                          }
+                        >
+                          <div className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg hover:bg-white/10">
+                            <svg className="shrink-0 mt-0.5 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m21.7 16.4-.9-.3"/><path d="m15.2 13.9-.9-.3"/><path d="m16.6 18.7.3-.9"/><path d="m19.1 12.2.3-.9"/><path d="m19.6 18.7-.4-1"/><path d="m16.8 12.3-.4-1"/><path d="m14.3 16.6 1-.4"/><path d="m20.7 13.8 1-.4"/></svg>
+                            Access Management
+                          </div>
+                        </NavLink>
+                      </li>
+                    )}
+
+                    {/*
+                    <li>
+                      <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-white rounded-lg hover:bg-white/10 focus:outline-hidden focus:bg-white/10" href="#">
+                        Link 3
+                      </a>
+                    </li> */}
+
+                  </ul>
+                </div>
+              </li>
             </ul>
           </nav>
         </div>

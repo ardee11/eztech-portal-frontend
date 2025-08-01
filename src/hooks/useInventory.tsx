@@ -2,28 +2,28 @@ import { useState, useEffect, useRef } from "react";
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
 
-interface Item {
-  item_id: string;
+export interface Item {
+  item_id: string | null;
   item_name: string;
   quantity: number;
   distributor: string;
   client_name: string;
   entry_date: Date;
-  checked_by: string | null;
-  received_by: string | null;
+  checked_by: string;
+  received_by: string;
   delivered: boolean | null;
   delivery_date: Date | null;
   delivered_by: string | null;
   item_status: string;
-  remarks: string | null;
   notes: string | null;
   created_at: Date;
-  created_by: string | null;
+  created_by: string | null; //to be not nulled
   serialnumbers: SerialNumber[];
 }
 
 interface SerialNumber {
   id: string;
+  inventory_id: string | null;
   remarks: string;
   notes: string | null;
 }
@@ -118,30 +118,35 @@ export function useInventory(month?: number, year?: number) {
 
     socket.onmessage = (event) => {
       try {
-        const updatedData: any[] = JSON.parse(event.data);
-    
-        const filtered = updatedData.filter((item) => {
-          const entryDate = new Date(item.entry_date);
-          return (
-            (!month || entryDate.getMonth() + 1 === month) &&
-            (!year || entryDate.getFullYear() === year)
-          );
-        });
+        const message = JSON.parse(event.data);
 
-        const parsed = filtered
-        .map(item => ({
+    if (message.type === 'inventory_update' && Array.isArray(message.data)) {
+      const filtered = (message.data as Item[]).filter((item) => {
+        const entryDate = new Date(item.entry_date);
+        return (
+          (!month || entryDate.getMonth() + 1 === month) &&
+          (!year || entryDate.getFullYear() === year)
+        );
+      });
+
+      const parsed = filtered
+        .map((item) => ({
           ...item,
           entry_date: new Date(item.entry_date),
           delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
           created_at: new Date(item.created_at),
         }))
-        .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());           
-    
-        setItems(parsed);
-      } catch (err) {
-        console.error("Failed to parse WS message:", err);
-      }
-    };    
+        .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());
+
+      setItems(parsed);
+    } else {
+      console.warn("Unhandled WebSocket message:", message);
+    }
+  } catch (err) {
+    console.error("Failed to parse WS message:", err);
+  }
+};
+
 
     socket.onerror = (event) => {
       console.error("WebSocket error:", event);
@@ -209,49 +214,88 @@ export function useItemDetails(itemId: string | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchItem = async () => {
     if (!itemId) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`);
+      if (!res.ok) throw new Error("Failed to fetch item");
 
-    const fetchItem = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch item");
-        }
+      const data = await res.json();
 
-        const data = await res.json();
+      setItem({
+        item_id: data.item_id,
+        item_name: data.item_name,
+        quantity: data.quantity,
+        distributor: data.distributor,
+        client_name: data.client_name,
+        entry_date: new Date(data.entry_date),
+        checked_by: data.checked_by,
+        received_by: data.received_by,
+        delivered: data.delivered,
+        delivery_date: data.delivery_date ? new Date(data.delivery_date) : null,
+        delivered_by: data.delivered_by,
+        item_status: data.item_status,
+        notes: data.notes,
+        created_at: new Date(data.created_at),
+        created_by: data.created_by,
+        serialnumbers: data.serialnumbers ?? [],
+      });
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load item");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setItem({
-          item_id: data.item_id,
-          item_name: data.item_name,
-          quantity: data.quantity,
-          distributor: data.distributor,
-          client_name: data.client_name,
-          entry_date: new Date(data.entry_date),
-          checked_by: data.checked_by,
-          received_by: data.received_by,
-          delivered: data.delivered,
-          delivery_date: data.delivery_date ? new Date(data.delivery_date) : null,
-          delivered_by: data.delivered_by,
-          item_status: data.item_status,
-          remarks: data.remarks,
-          notes: data.notes,
-          created_at: new Date(data.created_at),
-          created_by: data.created_by,
-          serialnumbers: data.serialnumbers ?? [],
-        });
-
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load item");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchItem();
   }, [itemId]);
 
-  return { item, loading, error };
+  return { item, loading, error, refetch: fetchItem };
+}
+
+export function useUpdateInventory() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const updateInventory = async (itemId: string, updates: Partial<Item>) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      const cleanedUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+      );
+
+      const response = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cleanedUpdates),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update inventory item");
+      }
+
+      setSuccess(true);
+    } catch (err: any) {
+      console.error("Update inventory error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateInventory, loading, error, success };
 }
