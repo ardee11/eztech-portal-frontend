@@ -20,11 +20,11 @@ export default function Sidebar() {
     >
       <div className="flex flex-col h-full max-h-full relative">
         {/* Logo */}
-        <div className="px-6 pt-4 flex items-center flex-shrink-0">
+        <div className="px-6 pt-6 flex items-center flex-shrink-0">
           <img src={logo} className="w-28 h-auto" alt="Logo" />
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 mt-4">
+        <div className="flex-1 overflow-y-auto px-3 mt-5">
           <nav className="w-full flex flex-col">
             <ul className="flex flex-col space-y-1">
               <li>
@@ -44,7 +44,7 @@ export default function Sidebar() {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="2"
+                      strokeWidth="3"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
@@ -73,7 +73,7 @@ export default function Sidebar() {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -101,7 +101,7 @@ export default function Sidebar() {
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
@@ -118,7 +118,7 @@ export default function Sidebar() {
               <li className="hs-accordion" id="account-accordion">
                 <button type="button" className="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-white rounded-lg hover:bg-white/10 focus:outline-hidden focus:bg-white/10 hover:cursor-pointer" aria-expanded="true" aria-controls="account-accordion-child">
                   <svg 
-                    className="shrink-0 size-4 mt-1 text-gray-800 dark:text-neutral-200" 
+                    className="shrink-0 size-4 mt-1 text-white-800 dark:text-neutral-200" 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="24" 
                     height="24" 
