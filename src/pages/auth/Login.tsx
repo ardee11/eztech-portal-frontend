@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import logo from "../../assets/ez-logo.png";
 import bgImg from "../../assets/Thumb.png";
 import { useAuth } from "../../contexts/authContext";
@@ -9,6 +9,11 @@ const Login: React.FC = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,63 +40,82 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-cover bg-center">
+    <div className="min-h-screen flex items-center justify-center relative">
       <div className="absolute inset-0">
         <img src={bgImg} alt="Background" className="w-full h-full object-cover" />
       </div>
+      <div className="relative z-10 w-full max-w-md">
+        {/* Form Card */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+          {/* Logo Section */}
+                     <div className="text-center mb-8">
+             <div className="flex justify-center mb-3">
+               <img 
+                 src={logo} 
+                 className="w-24 h-24 object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300" 
+                 alt="EZ Tech Logo" 
+               />
+             </div>
+             <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
+             <p className="text-gray-600 mt-1">Sign in to your account</p>
+           </div>
 
-      <div className="absolute w-full max-w-xs sm:max-w-sm rounded-xl border border-white/30 bg-white/70 backdrop-blur-xl shadow-xl p-5 backdrop-saturate-150">
-        <div className="text-center">
-          <img src={logo} className="w-32 h-auto mx-auto" alt="Logo" />
-        </div>
-
-        <div className="mt-6">
-          <form onSubmit={handleSubmit}>
-            {(error) && (
-              <div
-                className={`p-3 mx-12 rounded-md mb-2 text-xs font-semibold text-center ${
-                  error ? "bg-red-50/60 text-red-500" : "bg-green-50/60 text-green-500"
-                }`}
-              >
-                {error ? error : "Login link sent! Check your email."}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
               </div>
             )}
-            <div className="grid sm:px-3">
-              <div>
-                <label htmlFor="email" className="block text-xs font-semibold mb-2 text-gray-800">
-                  Email Address:
-                </label>
-                <input
-                  ref={emailRef}
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="p-2 w-full border border-black/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
 
-              <div className="mt-4">
-                <label htmlFor="password" className="block text-xs font-semibold mb-2 text-gray-800">
-                  Password:
-                </label>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <input
+                ref={emailRef}
+                type="email"
+                id="email"
+                name="email"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                placeholder="Enter your email"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
                 <input
                   ref={passwordRef}
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  className="p-2 w-full border border-black/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12"
+                  placeholder="Enter your password"
+                  required
+                  autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
+                  tabIndex={-1}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </div>
-
-              <button
-                type="submit"
-                className="mt-6 w-full py-2 text-xs font-medium rounded-lg bg-blue-600 text-gray-200 hover:bg-blue-700 disabled:opacity-50 hover:cursor-pointer"
-                disabled={loading}
-              >
-                {loading ? "Signing in..." : "Sign in"}
-              </button>
             </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </button>
           </form>
         </div>
       </div>
@@ -100,3 +124,6 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
+
+      
