@@ -44,7 +44,7 @@ export default function Header() {
               {/* Dropdown */}
               <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                 <button id="hs-dropdown-account" type="button" className="size-9.5 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:cursor-pointer focus:outline-hidden disabled:opacity-50 disabled:pointer-events-none" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                  <img className="shrink-0 size-9 rounded-full border border-gray-200" src={staffAvatar} alt="Avatar" />
+                  <img className="shrink-0 size-9 rounded-full border border-gray-300" src={staffAvatar} alt="Avatar" />
                 </button>
 
                 <div className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg mt-2 after:h-4 after:absolute after:-bottom-4 after:start-0 after:w-full before:h-4 before:absolute before:-top-4 before:start-0 before:w-full" role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-account">
