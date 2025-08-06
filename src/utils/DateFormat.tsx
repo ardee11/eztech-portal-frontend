@@ -2,8 +2,19 @@ import { Timestamp } from "firebase/firestore";
 
 export const formatTimestampToFullDate = (timestamp: Timestamp | Date | null): string => {
   if (!timestamp) return "";
+  
+  let date: Date;
 
-  const date = timestamp instanceof Timestamp ? timestamp.toDate() : timestamp;
+  if (timestamp instanceof Timestamp) {
+    date = timestamp.toDate();
+  } else if (timestamp instanceof Date) {
+    date = timestamp;
+  } else if (typeof timestamp === "string") {
+    date = new Date(timestamp);
+  } else {
+    console.warn("Invalid date passed to formatTimestampToFullDateTime:", timestamp);
+    return "";
+  }
 
   return new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -12,22 +23,44 @@ export const formatTimestampToFullDate = (timestamp: Timestamp | Date | null): s
   }).format(date);
 };
 
-export const formatTimestampToFullDateTime = (timestamp: Timestamp | Date | null): string => {
+export const formatTimestampToFullDateTime = (timestamp: Timestamp | Date | string | null): string => {
   if (!timestamp) return "";
 
-  const date = timestamp instanceof Timestamp ? timestamp.toDate() : timestamp;
-  const currentYear = new Date().getFullYear();
-  const dateYear = date.getFullYear();
+  let date: Date;
 
-  let formattedDate = new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
+  if (timestamp instanceof Timestamp) {
+    date = timestamp.toDate();
+  } else if (timestamp instanceof Date) {
+    date = timestamp;
+  } else if (typeof timestamp === "string") {
+    date = new Date(timestamp);
+  } else {
+    console.warn("Invalid date passed to formatTimestampToFullDateTime:", timestamp);
+    return "";
+  }
+
+  if (isNaN(date.getTime())) {
+    console.warn("Invalid date passed to formatTimestampToFullDateTime:", timestamp);
+    return "";
+  }
+
+  const datePart = new Intl.DateTimeFormat("en-US", {
     month: "long",
-    ...(dateYear !== currentYear && { year: "numeric" }),
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true, 
+    day: "numeric",
+    year: "numeric",
+    timeZone: "Asia/Manila",
   }).format(date);
 
-  return formattedDate.replace("am", "AM").replace("pm", "PM");
+  const timePart = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Manila",
+  }).format(date);
+
+  return `${datePart} ${timePart.toUpperCase()}`;
 };
+
+
+
 

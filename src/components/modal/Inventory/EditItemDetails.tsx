@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { Item, useUpdateInventory } from "../../../hooks/useInventory";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isItemModalOpen: boolean;
@@ -14,7 +15,6 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
   const [itemName, setItemName] = useState("");
   const [clientName, setClientName] = useState("");
   const [itemDistributor, setItemDistributor] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const isFormValid =
     itemName.trim() !== "" &&
@@ -46,14 +46,10 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
         client_name: clientName,
         distributor: itemDistributor,
       });
-      onClose();
-
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 500); 
+      resetFormField()
+      showToast("Item details updated successfully!", "success");
     } catch (err) {
-      console.error("Update failed", err);
+      showToast("Update failed! Try again.", "error");
     }
   };
 
@@ -80,9 +76,18 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
 
             <div className="delay-show">
               <div className="px-8 py-4 border-b border-gray-200">
-                <h3 id="details-modal-label" className="text-lg font-bold text-gray-800">
-                  Edit Item Details
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900">Edit Item Details</h3>
+
+                  <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <div className="px-12 py-4 overflow-y-auto flex-grow">
@@ -129,7 +134,7 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
                   type="submit"
                   form="editDetails"
                   disabled={loading || !isFormValid}
-                  className="bg-teal-500 text-xs text-white px-20 py-2 rounded-lg hover:bg-teal-600 disabled:bg-teal-500 disabled:opacity-50 disabled:pointer-events-none hover:cursor-pointer"
+                  className="px-12 py-2 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
                   {loading ? <ClipLoader size={18} color="#fff" /> : "Submit"}
                 </button>
@@ -137,26 +142,12 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
                 <button
                   type="button"
                   onClick={resetFormField}
-                  className="bg-gray-400 text-xs text-white px-20 py-2 rounded-lg hover:bg-gray-500 hover:cursor-pointer"
+                  className="px-12 py-2 text-xs font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {showSuccess && (
-        <div className="fixed inset-0 z-[998] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg p-6 text-center shadow-lg w-full max-w-sm">
-            <h2 className="text-lg font-bold text-gray-800">Item Saved Successfully!</h2>
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

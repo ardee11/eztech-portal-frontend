@@ -4,6 +4,7 @@ import DatePicker from "../../components/elements/DatePicker";
 import { useAdmin } from "../../hooks/useAdmin";
 import StaffDropdown from "../../components/elements/StaffDropdown";
 import { useAddInventory } from "../../hooks/useInventory";
+import { showToast } from "../../utils/toastUtils";
 
 export default function AddItem() {
   const { admins } = useAdmin();
@@ -78,12 +79,16 @@ export default function AddItem() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!entryDate) {
+      showToast("Please select an entry date", "warning");
+      return;
+    }
     if (!receivedBy) {
-      alert("Please select who received the item.");
+      showToast("Please select who received the item.", "warning");
       return;
     }
     if (!checkedBy) {
-      alert("Please select who checked the item.");
+      showToast("Please select who checked the item.", "warning");
       return;
     }
 
@@ -115,11 +120,12 @@ export default function AddItem() {
       serialnumbers,
     };
 
-    await addInventory(newItem);
-
-    if (!error) {
-      alert("Item added successfully!");
+    try {
+      await addInventory(newItem);
+      showToast("Item added successfully!", "success");
       navigate(-1);
+    } catch (err: any) {
+      showToast("Failed to add item. Please try again.", "error");
     }
   };
 
@@ -226,6 +232,7 @@ export default function AddItem() {
                     autoComplete="off"
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
+                    required
                     className="p-2 w-full h-16 text-xs border border-gray-500 rounded-lg resize-none"
                   />
                 </div>

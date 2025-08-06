@@ -5,6 +5,7 @@ import { useAdmin } from "../../../hooks/useAdmin";
 
 import StaffDropdown from "../../elements/StaffDropdown";
 import DatePickerPopover from "../../elements/DatePickerPopover";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isOpen: boolean;
@@ -37,15 +38,15 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
       };
 
       await updateInventory(itemId, updatedFields);
-
-      onClose();
       onResetForm();
       
       if (onUpdate) {
         onUpdate(updatedFields);
       }
+
+      showToast("Delivery details updated successfully", "success");
     } catch (err) {
-      console.error("Update failed", err);
+      showToast("Failed to update delivery details", "error");
     }
   };
 
@@ -62,10 +63,11 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
   };
 
   const onResetForm = () => {
-      setDelivered(false);
-      setDeliveryDate(null);
-      setDeliveredBy("");
-      setSelectedDate("");
+    setDelivered(false);
+    setDeliveryDate(null);
+    setDeliveredBy("");
+    setSelectedDate("");
+    onClose();
   }
 
   return (
@@ -75,9 +77,18 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
           <div className="bg-white animate-expand-card rounded-xl shadow-2xl w-full max-w-2xl max-h-80 overflow-visible">
             <div className="delay-show">
               <div className="px-8 py-4 border-b border-gray-200">
-                <h3 id="details-modal-label" className="text-lg font-bold text-gray-800">
-                  Edit Delivery Details
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900">Edit Delivery Details</h3>
+
+                  <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <div className="px-12 py-6 flex-grow">
@@ -104,7 +115,6 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
                           type="button"
                           onMouseDown={handleCalendarClick}
                           className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 hover:cursor-pointer"
-                          aria-label="Open calendar"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"

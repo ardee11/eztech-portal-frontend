@@ -135,4 +135,53 @@ export const removeAdmin = async (
   }
 };
 
+export function useAccountManagers() {
+  const [accountManagers, setAccountManagers] = useState<{ name: string; aid: number }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authorization token missing.");
+      setLoading(false);
+      return;
+    }
+
+    async function fetchAccountManagers() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/account-managers`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch account managers");
+
+        const managers: string[] = await res.json();
+
+        const formatted = managers.map((name, index) => ({
+          name,
+          aid: index,
+        }));
+
+        setAccountManagers(formatted);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching account managers:", error);
+        setAccountManagers([]);
+        setError("Failed to load account managers.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAccountManagers();
+  }, []);
+
+  return { accountManagers, loading, error };
+};
+
 

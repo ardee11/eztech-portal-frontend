@@ -76,7 +76,7 @@ export default function Inventory() {
     }
     setDeleteItemId(itemId);
     setIsDeleteModalOpen(true);
-    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
+    setContextMenu(prev => ({ ...prev, visible: false }));
   };
  
   useEffect(() => {

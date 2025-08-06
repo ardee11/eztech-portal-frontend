@@ -2,31 +2,25 @@ import { useEffect, useState } from "react";
 import { useAdmin, useAdminDetails } from "../../hooks/useAdmin";
 import { ClipLoader } from "react-spinners";
 import AdminModal from "../../components/modal/Admin/AdminAddModal";
-import AdminRemoveModal from "../../components/modal/Admin/AdminRemoveModal";
+import { AdminRemoveModal } from "../../components/modal/Admin/AdminRemoveModal";
 
 export default function Admin() {
   const [refresh, setRefresh] = useState(false);
   const { admins, loading, error } = useAdmin(refresh);
+  const [adminToDelete, setAdminToDelete] = useState<null | { aid: number; name: string; email: string }>(null);
   const [selectedID, setSelectedID] = useState<string | null>(null);
+  const [isAddAdminModalOpen, setIsAddCompanyModalOpen] = useState(false);
   const {} = useAdminDetails(selectedID);
-
-  const convertToSafeId = (email: string) => {
-    return email.replace(/[^a-zA-Z0-9-]/g, '-');
-  };
 
   const handleModalClose = () => {
     setRefresh(prev => !prev); 
+    setIsAddCompanyModalOpen(false);
   };
 
-  useEffect(() => {
-    if (admins) {
-      setTimeout(() => {
-        if (window.HSOverlay) {
-          window.HSOverlay.autoInit();
-        }
-      }, 100);
-    }
-  }, [admins]);
+  const handleRemoveModalClose = () => {
+    setRefresh(prev => !prev); 
+    setAdminToDelete(null);
+  };
 
   return (
     <>
@@ -45,7 +39,7 @@ export default function Admin() {
                   <div>
                     <button 
                       className="py-2 px-3 inline-flex items-center gap-x-2 text-xs font-medium rounded-lg text-teal-800 bg-teal-200 shadow-2xs hover:bg-teal-400 hover:cursor-pointer transition"
-                      aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-modal-form" data-hs-overlay="#hs-modal-form"
+                      onClick={()=>setIsAddCompanyModalOpen(true)}
                     >
                       <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                       Add
@@ -53,7 +47,12 @@ export default function Admin() {
                   </div>
                 </div>
                 
-                <AdminModal onClose={handleModalClose} />
+                {isAddAdminModalOpen && (
+                  <AdminModal
+                    isOpen={isAddAdminModalOpen}
+                    onClose={handleModalClose}
+                  />
+                )}
                 
                 {loading && (
                   <div className="p-4 flex justify-center">
@@ -93,20 +92,32 @@ export default function Admin() {
                           <div className="px-6 py-2 w-[20%]">{admin.role}</div>
                           <div className="px-6 py-2 ml-auto text-xs">
                             <button 
-                              className="text-neutral-600 hover:cursor-pointer hover:bg-gray-200 hover:text-red-400 p-2 rounded-full transition duration-200" 
-                              aria-haspopup="dialog" aria-expanded="false" aria-controls={`hs-modal-admin-${convertToSafeId(admin.email)}`} data-hs-overlay={`#hs-modal-admin-${convertToSafeId(admin.email)}`}>
+                              className="text-neutral-600 hover:cursor-pointer hover:bg-gray-200 hover:text-red-400 p-2 rounded-full transition duration-200"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setAdminToDelete({
+                                  aid: admin.aid,
+                                  name: admin.name,
+                                  email: admin.email
+                                });
+                              }}
+                            >
                               <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6" /></svg>
                             </button>
-                            <AdminRemoveModal 
-                              aid={admin.aid}
-                              safeEmail={convertToSafeId(admin.email)}
-                              onClose={handleModalClose}
-                            />
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
+                )}
+                {adminToDelete && (
+                  <AdminRemoveModal
+                    aid={adminToDelete.aid}
+                    name={adminToDelete.name}
+                    email={adminToDelete.email}
+                    isOpen={true}
+                    onClose={handleRemoveModalClose}
+                  />
                 )}
                 <div className="py-5 flex justify-between border-t border-gray-300">
                 </div>
@@ -118,3 +129,4 @@ export default function Admin() {
     </>
   );
 }
+

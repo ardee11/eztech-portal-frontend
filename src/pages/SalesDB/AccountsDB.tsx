@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../contexts/authContext";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
 import AddCompanyModal from "../../components/modal/SalesDB/AddCompanyModal";
+import EditCompanyModal from "../../components/modal/SalesDB/EditCompanyModal";
+import { formatTimestampToFullDate, formatTimestampToFullDateTime } from "../../utils/DateFormat";
+import DeleteCompanyModal from "../../components/modal/SalesDB/DeleteCompanyModal";
 
 interface AccountsDBProps {
   selectedManagerFilter: string | null;
@@ -10,21 +12,25 @@ interface AccountsDBProps {
 }
 
 const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelectedManagerFilter }) => {
-  const { data, loading, error } = useSalesAccounts();
+  const [reloadFlag, setReloadFlag] = useState(false);
+  const { data, loading, error } = useSalesAccounts(reloadFlag);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRemarkFilter, setSelectedRemarkFilter] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
   const companyListRef = useRef<HTMLDivElement>(null);
   const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
+  const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editingCompanyId, setEditingCompanyId] = useState<number | null>(null);
 
-  const { userRole } = useAuth();
+  const { userRole, userName } = useAuth();
   const canViewAllDataRoles = ["Admin", "Super Admin", "Sales Manager"];
-  
+
   // Filtering and searching
   const filteredCompanyNames = data
     .filter(company => {
-      const matchesSearch = company.comp_email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = company.comp_name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRemark = selectedRemarkFilter ? company.remarks === selectedRemarkFilter : true;
       const matchesManager = selectedManagerFilter ? company.acc_manager === selectedManagerFilter : true;
       return matchesSearch && matchesRemark && matchesManager;
@@ -44,10 +50,28 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
   };
 
   const canEditSelectedCompany = () => {
-    return userRole !== null && ["Sales Manager", "Admin", "Super Admin"].includes(userRole);
+    if (!selectedCompany || !userName) return false;
+
+    if (["Admin", "Super Admin", "Sales Manager"].includes(userRole || "")) {
+      return true;
+    }
+    return selectedCompany.acc_manager === userName;
   };
 
-  const navigate = useNavigate();
+  const canDeleteData = () => {
+    if (["Admin", "Super Admin", "Sales Manager"].includes(userRole || "")) {
+      return true;
+    }
+  };
+
+  useEffect(() => {
+    if (selectedCompany) {
+      const updated = data.find(c => c.comp_id === selectedCompany.comp_id);
+      if (updated) {
+        setSelectedCompany(updated);
+      }
+    }
+  }, [data]);
 
   const getRemarkColorClass = (remark: string) => {
     switch (remark) {
@@ -66,10 +90,15 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
     }
   };
 
+  useEffect(() => {
+    setSelectedCompany(null);
+  }, [selectedManagerFilter]);
+
   return (
     <>
       <div className="h-[85vh] p-6">
         <div className="flex justify-between items-center">
+
           <div className="flex space-x-2 items-center">
             <div
               onClick={handleBackToList}
@@ -84,10 +113,13 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
               selectedManagerFilter ? `${selectedManagerFilter.trim().split(" ")[0]}'s Managed Accounts` :
               canViewAllDataRoles.includes(userRole || "") ? "Managed Accounts" : "My Managed Accounts"}
             </div>
-
+            
+            {/*remark filter */}
             {!selectedCompany && (
               <div className="relative">
+                <label htmlFor="remark-filter" className="sr-only">Remark Filter</label>
                 <select
+                  id="remark-filter"
                   value={selectedRemarkFilter || ""}
                   onChange={(e) => setSelectedRemarkFilter(e.target.value || null)}
                   className="py-1 px-2 pe-3 block w-full appearance-none border border-gray-500 rounded-lg text-xs hover:cursor-pointer"
@@ -108,6 +140,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
               </div>
             )}
             
+            {/*clear filter button */}
             {(selectedManagerFilter || selectedRemarkFilter) && !selectedCompany && (
               <button
                 onClick={() => {
@@ -122,21 +155,31 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
                 Clear Filter
               </button>
             )} 
-
           </div>
-          {selectedCompany && canEditSelectedCompany() && (
-            <div 
-              className="text-blue-600 border px-4 py-1 rounded-lg text-xs hover:bg-blue-50 hover:cursor-pointer transition duration-150"
-              onClick={() => {
-                const companyId = selectedCompany.comp_id;
-                navigate(`/sales-database/edit?id=${companyId}`, {
-                  state: selectedCompany
-                });
-              }}                        
-            >
-              Edit
-            </div>
-          )}
+
+          {/* Add and edit company button */}
+          <div className="flex items-center space-x-2">
+            {selectedCompany && canEditSelectedCompany() && (
+              <div 
+                className="text-blue-600 border px-4 py-1 rounded-lg text-xs hover:bg-blue-50 hover:cursor-pointer transition duration-150"
+                onClick={() => {
+                  setEditingCompanyId(selectedCompany.comp_id);
+                  setIsEditCompanyModalOpen(true);
+                }}                        
+              >
+                Edit
+              </div>
+            )}
+
+            {selectedCompany && canDeleteData() && (
+              <div
+                className="text-red-600 border px-4 py-1 rounded-lg text-xs hover:bg-red-50 hover:cursor-pointer transition duration-150"
+                onClick={() => setIsDeleteModalOpen(true)}
+              >
+                Delete
+              </div>
+            )}
+          </div>
           
           {!selectedCompany && (
             <button 
@@ -199,6 +242,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
         ) : (
           <div className="text-sm space-y-2 px-4 mt-8">
             <p><span className="font-medium">Company Name:</span> {selectedCompany["comp_name"]}</p>
+            <p><span className="font-medium">Date Added:</span> {formatTimestampToFullDate(selectedCompany["created_at"])}</p>
             <p><span className="font-medium">Account Manager:</span> {selectedCompany["acc_manager"]}</p>
             <p><span className="font-medium">Contact Person:</span> {selectedCompany["comp_person"] || "N/A"}</p>
             <p><span className="font-medium">Contact Number:</span> {selectedCompany["comp_number"] || "N/A"}</p>
@@ -215,10 +259,28 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
       <AddCompanyModal
         isOpen={isAddCompanyModalOpen}
         onClose={() => setIsAddCompanyModalOpen(false)}
-        onSuccess={() => {
-          // Refresh the data or show success message
-          console.log("Company added successfully!");
+        onSuccess={() => setReloadFlag(flag => !flag)}
+      />
+
+      <EditCompanyModal
+        isOpen={isEditCompanyModalOpen}
+        onClose={() => {
+          setIsEditCompanyModalOpen(false);
+          setEditingCompanyId(null);
         }}
+        companyId={editingCompanyId || 0}
+        onSuccess={() => setReloadFlag(flag => !flag)}
+      />
+
+      <DeleteCompanyModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onCompanyDelete={() => {
+          setReloadFlag(flag => !flag)
+          setSelectedCompany(null);
+        }}
+        companyId={selectedCompany?.comp_id || 0}
+        companyName={selectedCompany?.comp_name || ""}
       />
     </>
   )

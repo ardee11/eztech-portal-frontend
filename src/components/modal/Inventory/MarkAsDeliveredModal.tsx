@@ -1,5 +1,6 @@
 import { ClipLoader } from "react-spinners";
 import { useUpdateInventory } from "../../../hooks/useInventory";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isOpen: boolean;
@@ -27,8 +28,9 @@ const MarkAsDeliveredModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
       if (onUpdate) {
         onUpdate(updatedFields);
       }
+      showToast("Item marked as delivered successfully", "success");
     } catch (err) {
-      console.error("Update failed", err);
+      showToast("Failed to mark item as delivered", "error");
     }
   };
 

@@ -343,7 +343,7 @@ function ItemDetails() {
                         </div>
 
                         <div className="flex gap-x-2">
-                          <div className={`relative after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] ${ item.delivered && item.delivery_date && item.delivered_by ? "after:bg-gray-300" : ""}`}>
+                          <div className={`relative after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] ${ item.checked_by && item.delivery_date ? "after:bg-gray-300" : ""}`}>
                             <div className="relative z-10 size-7 flex justify-center items-center">
                               <div className="size-2 rounded-full bg-yellow-500"></div>
                             </div>

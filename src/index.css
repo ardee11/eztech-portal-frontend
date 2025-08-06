@@ -15,9 +15,15 @@ body {
       opacity: 0;
     }
 
-    50% {
+    25% {
       width: 10%;
       height: 50%;
+      opacity: 1;
+    }
+
+    50% {
+      width: 10%;
+      height: 100%;
       opacity: 1;
     }
 

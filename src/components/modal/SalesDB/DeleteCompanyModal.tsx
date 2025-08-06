@@ -1,41 +1,40 @@
-import { useState } from "react";
-import { removeAdmin } from "../../../hooks/useAdmin";
-//import { useAuth } from "../../contexts/authContext";
-import { ClipLoader } from "react-spinners";
+
+import { useSalesAccounts } from "../../../hooks/useSalesDB";
 import { showToast } from "../../../utils/toastUtils";
 
-type AdminModalProps = {
-  aid: number;
-  name: string;
-  email: string;
-  onClose: () => void;
+type Props = {
   isOpen: boolean;
+  companyId: string | null;
+  companyName: string | null;
+  onClose: () => void;
+  onCompanyDelete?: () => void;
 };
 
-export const AdminRemoveModal = ({aid, name, email, isOpen, onClose}: AdminModalProps) => {
-  //const { currentUser } = useAuth();
-  //const [reason, setReason] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function DeleteCompanyModal({ companyName, isOpen, companyId, onClose, onCompanyDelete }: Props) {
+  const { removeCompany, loading, error } = useSalesAccounts();
 
   const handleDelete = async () => {
-    setLoading(true);
-    if (!aid) return;
+    if (!companyId) return;
     
     try {
-      await removeAdmin(aid);
-      showToast("Admin removed successfully!", "success");
-      onClose();
+      await removeCompany(companyId);
+      showToast("Company details removed successfully!", "success");
+      onCompanyDelete?.();
     } catch (err) {
-      showToast("Failed to remove admin. Please try again.", "error");
+      showToast("Failed to remove company details. Please try again.", "error");
     } finally {
-      setLoading(false);
+      onClose();
     }
   };
 
   if (!isOpen) return null;
 
+  if (error) {
+    showToast("An error occurred while removing the details.", "error");
+  }
+
   return (
-    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center">
+    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white animate-expand-card rounded-lg p-6 max-w-xl w-full mx-4 max-h-60">
         <div className="delay-show">
           <div className="flex items-center">
@@ -45,21 +44,21 @@ export const AdminRemoveModal = ({aid, name, email, isOpen, onClose}: AdminModal
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-lg font-medium text-gray-900">Remove Admin</h3>
+              <h3 className="text-lg font-medium text-gray-900">Delete Company Details<span className="font-medium ml-2"></span></h3>
             </div>
           </div>
         
           <div className="text-center mt-8">
             <p className="text-sm text-gray-800">
-              Are you sure you want to remove <span className="font-medium">{name}({email})</span>
+              Are you sure you want to remove the company details for <span className="font-semibold">{companyName}</span>?
             </p>
             <p className="text-xs text-red-600 mt-4 italic">
-              This action cannot be undone. All associated data will also be removed.
+              This action cannot be undone. All associated serial numbers will also be deleted.
             </p>
           </div>
 
           <div className="flex justify-between mx-20 mt-8">
-                         <button
+            <button
                type="button"
                onClick={() => {
                  onClose();

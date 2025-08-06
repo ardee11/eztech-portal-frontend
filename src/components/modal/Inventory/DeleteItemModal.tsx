@@ -1,5 +1,5 @@
 import { useDeleteInventory } from "../../../hooks/useInventory";
-import { useEffect, useState } from "react";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isOpen: boolean;
@@ -10,34 +10,28 @@ type Props = {
 
 export default function DeleteItemModal({ isOpen, onClose, itemId }: Props) {
   const { deleteInventory, loading, error, success } = useDeleteInventory();
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      setLocalError(null);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    setLocalError(error);
-  }, [error]);
 
   const handleDelete = async () => {
     if (!itemId) return;
     
     try {
       await deleteInventory(itemId);
+      showToast("Item deleted successfully!", "success");
       onClose();
     } catch (err) {
-      console.error("Failed to delete item:", err);
+      showToast("Failed to delete item. Please try again.", "error");
     }
   };
 
   if (!isOpen) return null;
 
+  if (error) {
+    showToast("An error occurred while deleting the item.", "error");
+  }
+
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
-      <div className={`bg-white animate-expand-card rounded-lg p-6 max-w-xl w-full mx-4 ${localError ? "max-h-72" : "max-h-60"}`}>
+      <div className="bg-white animate-expand-card rounded-lg p-6 max-w-xl w-full mx-4 max-h-60">
         <div className="delay-show">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -59,17 +53,10 @@ export default function DeleteItemModal({ isOpen, onClose, itemId }: Props) {
             </p>
           </div>
 
-                     {localError && (
-             <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-xs">
-               {localError}
-             </div>
-           )}
-
           <div className="flex justify-between mx-20 mt-8">
-                         <button
+            <button
                type="button"
                onClick={() => {
-                 setLocalError(null);
                  onClose();
                }}
                disabled={loading}
