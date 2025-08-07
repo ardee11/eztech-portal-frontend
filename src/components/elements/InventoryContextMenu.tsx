@@ -9,7 +9,9 @@ type Props = {
   itemStatus: string;
   itemDelivered: boolean | null;
   onClose: () => void;
-  onOpenModal: (itemId: string | null) => void; 
+  onOpenModal: (itemId: string | null) => void;
+  onOpenMarkDeliveredModal: (itemId: string | null) => void;
+  onOpenDeleteModal: (itemId: string | null) => void;
 };
 
 export default function InventoryContextMenu({
@@ -21,6 +23,8 @@ export default function InventoryContextMenu({
   itemDelivered,
   onClose,
   onOpenModal,
+  onOpenMarkDeliveredModal,
+  onOpenDeleteModal,
 }: Props) {
   const navigate = useNavigate();
   const menuRef = useRef<HTMLUListElement>(null);
@@ -83,7 +87,7 @@ export default function InventoryContextMenu({
         <li
           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
           onClick={() => {
-            onClose();
+            onOpenMarkDeliveredModal(itemId);
           }}
         >
           Mark as Delivered
@@ -91,8 +95,9 @@ export default function InventoryContextMenu({
       )}
 
       <li
-        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600 hover:text-red-700"
         onClick={() => {
+          onOpenDeleteModal(itemId);
           onClose();
         }}
       >

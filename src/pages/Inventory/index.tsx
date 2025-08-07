@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useInventoryFilterOptions } from "../../hooks/useInventoryFilterOptions";
 import InventoryContextMenu from "../../components/elements/InventoryContextMenu";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
+import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
+import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
 
 type MonthYear = { month: number; year: number };
 
@@ -44,6 +46,16 @@ export default function Inventory() {
   const { options: monthYearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
+
+  const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
+  const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
+
+  const openMarkDeliveredModal = (itemId: string | null) => {
+    setMarkDeliveredItemId(itemId);
+    setIsMarkDeliveredModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
+  };
+
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -52,6 +64,20 @@ export default function Inventory() {
     setModalItemId(itemId || "");
     setIsDeliveryModalOpen(true);
     setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
+  };
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [deleteItemName, setDeleteItemName] = useState<string>("");
+
+  const openDeleteModal = (itemId: string | null) => {
+    if (itemId) {
+      const item = filteredItems.find(item => item.item_id === itemId);
+      setDeleteItemName(item?.item_name || "");
+    }
+    setDeleteItemId(itemId);
+    setIsDeleteModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false }));
   };
  
   useEffect(() => {
@@ -379,25 +405,86 @@ export default function Inventory() {
                 )}
               </div>
 
-              {/* Add Item Button */}
-              <button
-                onClick={() => navigate(`/inventory/add`)}
-                className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-              >
-                <svg
-                  className="w-4 h-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                <span>Add Item</span>
-              </button>
+              {loading && (
+                <div className="p-4 flex justify-center">
+                  <ClipLoader color="#3498db" size={42} />
+                </div>
+              )}
+
+              {error && (
+                <div className="p-4 flex justify-center">
+                  <p>{error}</p>
+                </div>
+              )}
+
+              {/* Inventory Table */}
+              {!loading && !error && (
+                <div className="w-full overflow-y-auto h-[calc(100vh-220px)]">
+                  <table className="min-w-full overflow-x-auto divide-y divide-gray-300">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date of Entry</th>
+                        <th className="px-6 py-3 w-[18rem] text-left text-xs font-medium text-gray-700 uppercase">Item Description/Model</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Qty</th>
+                        <th className="px-6 py-3 w-48 text-left text-xs font-medium text-gray-700 uppercase">Distributor</th>
+                        <th className="px-6 py-3 w-48 text-left text-xs font-medium text-gray-700 uppercase">Client</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Delivery Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white text-xs divide-y divide-gray-200">
+                      {filteredItems.map((item, index) => (
+                        <tr
+                          key={item.item_id}
+                          onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
+                          className={`hover:cursor-pointer transition border-b border-gray-200 
+                            ${getStatusStyles(item.item_status).row}`}
+
+                          onClick={() => navigate(`/inventory/${item.item_id}`)}
+                        >
+                          <td className="px-6 py-4">
+                            <p className="">{index+1}. 
+                              <span className="ml-1 font-medium text-blue-700">{formatTimestampToFullDate(item.entry_date)}</span>
+                            </p>
+                          </td>
+                          <td className="px-6 py-4  w-[18rem] break-words">
+                            <div className="flex flex-col">
+                              <span className="font-medium text-xs mb-2">{item.item_id}</span>
+                              <span className="whitespace-pre-wrap">{item.item_name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">{item.quantity}</td>
+                          <td className="px-6 py-4 w-48 break-words">{item.distributor}</td>
+                          <td className="px-6 py-4  w-48 break-words">{item.client_name}</td>
+                          <td className="px-6 py-4">
+                            <p 
+                              onClick={(e) => {
+                                if(item.item_status === "For Delivery" || item.delivered) return; 
+                                e.stopPropagation();  
+                                openDeliveryModal(item.item_id);
+                              }}
+                              className={`${item.item_status !== "Delivered" && item.item_status !== "For Delivery" ? "text-blue-500 hover:underline" : ""}`}>
+                                {item.client_name === "EZTECH" ? "":
+                                  item.item_status === "Delivered" || item.item_status === "For Delivery" ? formatTimestampToFullDate(item.delivery_date) : 
+                                  "Set Delivery Date"
+                                }
+                            </p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`py-1 px-4 inline-flex items-center font-medium rounded-full 
+                              ${getStatusStyles(item.item_status).badge}`}
+                            >
+                              {item.item_status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <div className="py-4 flex justify-between border-t border-gray-300"></div>
             </div>
           </div>
         </div>
@@ -538,6 +625,8 @@ export default function Inventory() {
         itemDelivered={contextMenu.itemDelivered}
         onClose={() => setContextMenu(prev => ({ ...prev, visible: false }))}
         onOpenModal={openDeliveryModal}
+        onOpenMarkDeliveredModal={openMarkDeliveredModal}
+        onOpenDeleteModal={openDeleteModal}
       />
 
       {modalItemId && (
@@ -545,6 +634,23 @@ export default function Inventory() {
           isOpen={isDeliveryModalOpen}
           onClose={() => setIsDeliveryModalOpen(false)}
           itemId={modalItemId}
+        />
+      )}
+
+      {markDeliveredItemId && (
+        <MarkAsDeliveredModal
+          isOpen={isMarkDeliveredModalOpen}
+          onClose={() => setIsMarkDeliveredModalOpen(false)}
+          itemId={markDeliveredItemId}
+        />
+      )}
+
+      {deleteItemId && (
+        <DeleteItemModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          itemId={deleteItemId}
+          itemName={deleteItemName}
         />
       )}
     </div>

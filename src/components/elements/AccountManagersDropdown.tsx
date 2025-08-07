@@ -1,21 +1,18 @@
-import { useEffect, useRef, useState, useId } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-type StaffDropdownProps = {
-  label: string;
+type AccountManagersDropdown = {
+  id?: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   options: { name: string; aid: string | number }[];
 };
 
-export default function StaffDropdown({ label, value, onChange, options }: StaffDropdownProps) {
+export default function AccountManagersDropdown({ id, label, value, onChange, options }: AccountManagersDropdown) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const id = useId(); // unique ID for accessibility
-  const buttonId = `staff-dropdown-button-${id}`;
-  const labelId = `staff-dropdown-label-${id}`;
 
   const [dropdownStyles, setDropdownStyles] = useState<{
     top: number;
@@ -35,49 +32,46 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
         setIsOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+useEffect(() => {
+  if (isOpen && buttonRef.current) {
+    const rect = buttonRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-      const dropdownHeight = Math.min(options.length, 9) * 32;
-      const spaceBelow = viewportHeight - rect.bottom;
-      const spaceAbove = rect.top;
+    const dropdownHeight = Math.min(options.length, 9) * 32; 
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
 
-      let openUpward = false;
-      if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
-        openUpward = true;
-      }
+    let openUpward = false;
 
-      setDropdownStyles({
-        top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-        openUpward,
-      });
+    if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
+      openUpward = true;
     }
-  }, [isOpen, options.length]);
+
+    setDropdownStyles({
+      top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+      openUpward,
+    });
+  }
+}, [isOpen, options.length]);
 
   return (
     <div className="relative">
-      <label id={labelId} htmlFor={buttonId} className="block text-xs mb-1">
-        {label}
-      </label>
+      <label htmlFor={id} className="block text-xs mb-1">{label}</label>
 
       <button
-        id={buttonId}
+        id={id}
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-labelledby={labelId}
       >
         {value || "-- Select staff --"}
         <svg
@@ -101,7 +95,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
           <div
             ref={dropdownRef}
             role="listbox"
-            aria-labelledby={labelId}
+            tabIndex={-1}
             className="bg-white mt-2 shadow-md border border-gray-400 rounded-lg max-h-36 overflow-y-auto"
             style={{
               position: "absolute",
@@ -116,7 +110,6 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
                 <button
                   key={option.aid}
                   role="option"
-                  aria-selected={value === option.name}
                   onClick={() => {
                     onChange(option.name);
                     setIsOpen(false);

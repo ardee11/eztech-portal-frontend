@@ -1,6 +1,8 @@
 import { AuthProvider, useAuth } from "./contexts/authContext";
 import PrelineInitializer from "./utils/PrelineInitializer";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./pages/auth/Login";
 import Layout from "./components/layout/Layout";
@@ -11,8 +13,6 @@ import Inventory from "./pages/Inventory";
 import ItemDetails from "./pages/Inventory/ItemDetails";
 import AddItem from "./pages/Inventory/AddItem";
 import SalesDB from "./pages/SalesDB";
-import AddCompany from "./pages/SalesDB/AddCompany";
-import EditCompany from "./pages/SalesDB/EditCompany";
 import SetUpPassword from "./pages/auth/SetUpPassword";
 
 function App() {
@@ -48,8 +48,6 @@ function App() {
 
               <Route element={<ProtectedRoute page="sales" />}>
                 <Route path="sales-database" element={<SalesDB />} />
-                <Route path="sales-database/add" element={<AddCompany />} />
-                <Route path="sales-database/edit" element={<EditCompany />} />
               </Route>
 
               {/* Admin-only routes */}
@@ -62,6 +60,7 @@ function App() {
           {/* Redirect all other paths to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <ToastContainer />
       </AuthProvider>
     </Router>
   );

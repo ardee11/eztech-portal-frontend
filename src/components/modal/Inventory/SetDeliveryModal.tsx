@@ -5,14 +5,16 @@ import { useAdmin } from "../../../hooks/useAdmin";
 
 import StaffDropdown from "../../elements/StaffDropdown";
 import DatePickerPopover from "../../elements/DatePickerPopover";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   itemId: string;
+  onUpdate?: (updatedFields: any) => void;
 };
 
-const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
+const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
   const { admins } = useAdmin();
   const { updateInventory, loading } = useUpdateInventory();
   const [delivered, setDelivered] = useState(false);
@@ -29,15 +31,22 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
     try {
       if (!itemId) return;
 
-      await updateInventory(itemId, {
+      const updatedFields = {
         delivered: delivered,
         delivery_date: deliveryDate,
         delivered_by: deliveredBy,
-      });
+      };
 
-      onClose();
+      await updateInventory(itemId, updatedFields);
+      onResetForm();
+      
+      if (onUpdate) {
+        onUpdate(updatedFields);
+      }
+
+      showToast("Delivery details updated successfully", "success");
     } catch (err) {
-      console.error("Update failed", err);
+      showToast("Failed to update delivery details", "error");
     }
   };
 
@@ -53,6 +62,14 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
     setShowPicker((prev) => !prev);
   };
 
+  const onResetForm = () => {
+    setDelivered(false);
+    setDeliveryDate(null);
+    setDeliveredBy("");
+    setSelectedDate("");
+    onClose();
+  }
+
   return (
     <>
       {isOpen && (
@@ -60,9 +77,18 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
           <div className="bg-white animate-expand-card rounded-xl shadow-2xl w-full max-w-2xl max-h-80 overflow-visible">
             <div className="delay-show">
               <div className="px-8 py-4 border-b border-gray-200">
-                <h3 id="details-modal-label" className="text-lg font-bold text-gray-800">
-                  Edit Delivery Details
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900">Edit Delivery Details</h3>
+
+                  <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <div className="px-12 py-6 flex-grow">
@@ -89,7 +115,6 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
                           type="button"
                           onMouseDown={handleCalendarClick}
                           className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 hover:cursor-pointer"
-                          aria-label="Open calendar"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -141,20 +166,23 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId }: Props) => {
                 </form>
               </div>
 
-              <div className="mt-3 p-4 border-t border-gray-200 flex justify-center gap-10">
+              <div className="mt-3 p-4 border-t border-gray-200 flex justify-center gap-8">
                 <button
                   type="submit"
                   form="editDetails"
-                  disabled={loading}
-                  className="bg-teal-500 text-xs text-white px-20 py-2 rounded-lg hover:bg-teal-600 disabled:bg-teal-500 disabled:opacity-50 disabled:pointer-events-none hover:cursor-pointer"
+                  disabled={loading || !deliveryDate || !deliveredBy}
+                  className="px-12 py-2.5 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
                   {loading ? <ClipLoader size={18} color="#fff" /> : "Submit"}
                 </button>
 
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="bg-gray-400 text-xs text-white px-20 py-2 rounded-lg hover:bg-gray-500 hover:cursor-pointer"
+                  onClick={() => {
+                    onClose();
+                    onResetForm();
+                  }}
+                  className="px-6 py-2.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors hover:cursor-pointer"
                 >
                   Cancel
                 </button>

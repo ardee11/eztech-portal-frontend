@@ -32,7 +32,7 @@ const DatePickerPopover = ({ pos, selectedDate, onDateSelect, onClose }: Props) 
   return createPortal(
     <div
       ref={pickerRef}
-      className="absolute z-[9999] bg-white shadow-lg border border-gray-300 rounded-lg"
+      className="absolute z-[9999]"
       style={{
         position: "absolute",
         top: pos.y + offsetY + window.scrollY,

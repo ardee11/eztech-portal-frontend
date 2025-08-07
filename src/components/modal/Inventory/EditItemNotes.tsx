@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Item, useUpdateInventory } from "../../../hooks/useInventory";
+import { ClipLoader } from "react-spinners";
+import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
   isNoteModalOpen: boolean;
@@ -11,7 +13,6 @@ type Props = {
 const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => {
   const { updateInventory, loading, success, error } = useUpdateInventory();
   const [note, setNote] = useState("");
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const isFormValid = note.trim() !== "" && note !== (item?.notes ?? "");
 
@@ -23,14 +24,10 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
     try {
       await updateInventory(item.item_id, { notes: note });
       onUpdate({ notes: note });
-      onClose();
-
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 1500);
+      resetFormField();
+      showToast("Notes updated successfully!", "success");
     } catch (err) {
-      console.error("Failed to update notes", err);
+      showToast("Failed to update notes", "error");
     }
   };
 
@@ -50,17 +47,26 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
     <>
       {isNoteModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60">
-          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-lg max-h-94">
+          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-lg max-h-96">
 
             <div className="delay-show">
               <div className="px-8 py-4 border-b border-gray-200">
-                <h3 id="notes-modal-label" className="text-lg font-bold text-gray-800">
-                  Add Notes
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-bold text-gray-900">Add Notes</h3>
+
+                  <button
+                    onClick={onClose}
+                    className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              <div className="px-6 py-2 overflow-y-auto flex-grow">
-                <form id="editNotes" className="mt-3 mx-6" onSubmit={handleSubmit}>
+              <div className="px-14 py-4 overflow-y-auto flex-grow">
+                <form id="editNotes" onSubmit={handleSubmit}>
                   <label htmlFor="itemNote" className="block text-xs mb-1">
                     Notes:
                   </label>
@@ -74,39 +80,25 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
                 </form>
               </div>
 
-              <div className="p-4 border-t border-gray-200 flex justify-center gap-10">
+              <div className="p-5 border-t border-gray-200 flex justify-center gap-10">
                 <button
                   type="submit"
                   form="editNotes"
                   disabled={loading || !isFormValid}
-                  className="text-xs px-16 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer disabled:bg-teal-500 disabled:opacity-50 disabled:pointer-events-none transition"
-                  aria-haspopup="dialog" aria-expanded="false" aria-controls="hs-success-modal" data-hs-overlay="#hs-success-modal"
+                  className="px-12 py-2 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
-                  Submit
+                  {loading ? <ClipLoader size={18} color="#fff" /> : "Submit"}
                 </button>
+
                 <button
                   type="button"
-                  className="text-xs px-16 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 hover:cursor-pointer transition"
-                  onClick={()=>resetFormField()}
+                  onClick={resetFormField}
+                  className="px-12 py-2 text-xs font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
-              </div>
+              </div>    
             </div>
-          </div>
-        </div>
-      )}
-
-      {showSuccess && (
-        <div className="fixed inset-0 z-[998] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-lg p-6 text-center shadow-lg w-full max-w-sm">
-            <h2 className="text-lg font-bold text-gray-800">Item Saved Successfully!</h2>
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
