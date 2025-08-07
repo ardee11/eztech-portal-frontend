@@ -164,12 +164,6 @@ function ItemDetails() {
                     </div>
                   </div>
                 </div>
-                <ItemDetailsModal 
-                  isItemModalOpen={isItemModalOpen} 
-                  onClose={() => setIsItemModalOpen(false)} 
-                  item={item}
-                  onUpdate={handleItemUpdate}
-                />
 
                 {/* Enhanced Serial Numbers Table */}
                 {item?.serialnumbers && item.serialnumbers.length > 0 && (
@@ -319,12 +313,6 @@ function ItemDetails() {
                     </div>
                   </div>
                 </div>
-                <ItemNotesModal 
-                  isNoteModalOpen={isNoteModalOpen} 
-                  onClose={() => setIsNoteModalOpen(false)} 
-                  item={item}
-                  onUpdate={handleItemUpdate}
-                />
 
                 {/* Enhanced Status Card */}
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
@@ -333,228 +321,268 @@ function ItemDetails() {
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                           </svg>
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <h2 className="text-xl font-bold text-gray-900">Status</h2>
-                          
-                          {/* Action Buttons */}
-                          {!item?.delivered && item?.item_status === "For Delivery" && (
-                            <button className="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-full transition-colors duration-200">
-                              <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                              </svg>
-                              Mark as Delivered
-                            </button>
-                          )}
-
-                          {!item?.delivered && item?.item_status === "Pending" && (
-                            <button
-                              onClick={() => setIsSetDeliveryModalOpen(true)}
-                              className="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
-                            >
-                              <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                              </svg>
-                              Set Delivery Date
-                            </button>
-                          )}
-                          {!item?.delivered && item?.item_status === "For Delivery" && (
-                            <p 
-                              onClick={()=> setIsMarkDeliveredModalOpen(true)}
-                              className="flex text-xs border border-blue-600 text-blue-600 px-2 rounded-full items-center hover:bg-blue-500/10 hover:cursor-pointer transition">
-                              Mark as Delivered
-                            </p>
-                          )}
-                        </div>
+                        <h2 className="text-xl font-bold text-gray-900">Status</h2>
                       </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="flex items-center space-x-2">
+                        {!item?.delivered && item?.item_status === "For Delivery" && (
+                          <button 
+                            onClick={() => setIsMarkDeliveredModalOpen(true)}
+                            className="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
+                          >
+                            <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Mark as Delivered
+                          </button>
+                        )}
 
+                        {!item?.delivered && item?.item_status === "Pending" && (
+                          <button
+                            onClick={() => setIsSetDeliveryModalOpen(true)}
+                            className="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
+                          >
+                            <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            Set Delivery Date
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    {/* Current Status Display */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-semibold text-gray-700">Current Status</h3>
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                          item?.item_status === "Delivered" 
+                            ? "bg-green-100 text-green-800" 
+                            : item?.item_status === "For Delivery"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}>
+                          {item?.item_status || "Pending"}
+                        </span>
+                      </div>
+                      
+                      {/* Current Status Summary */}
+                      {item?.item_status === "Pending" && (
+                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-lg font-bold text-gray-900">Pending</h4>
+                            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                              In Progress
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium">Entry Date:</span> {formatTimestampToFullDate(item.entry_date)}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Received By:</span> <span className="text-blue-600 font-semibold">{item.received_by || "Not specified"}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {item?.item_status === "For Delivery" && (
+                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-lg font-bold text-gray-900">For Delivery</h4>
+                            <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                              Ready
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium">Delivery Date:</span> {item.delivery_date ? formatTimestampToFullDate(item.delivery_date) : "Not set"}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Assigned To:</span> <span className="text-blue-600 font-semibold">{item.delivered_by || "Not assigned"}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      {item?.item_status === "Delivered" && (
+                        <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-lg font-bold text-gray-900">Delivered</h4>
+                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                              ✓ Complete
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium">Delivery Date:</span> {formatTimestampToFullDate(item.delivery_date)}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Delivered By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Status Summary */}
+                    <div className="space-y-4 mb-6">
                       {/* Checked Stage */}
                       {item?.checked_by && (
-                        <div className="relative">
-                          <div className="flex items-start space-x-4">
-                            <div className="flex flex-col items-center">
-                              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                              </div>
-                              {(item.delivered && item.delivery_date && item.delivered_by) && (
-                                <div className="w-0.5 h-8 bg-gradient-to-b from-amber-300 to-green-300 mt-2"></div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
-                                <div className="flex items-center justify-between mb-2">
-                                  <h3 className="text-lg font-bold text-gray-900">Checked</h3>
-                                  <span className="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                    ✓ Complete
-                                  </span>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-1">
-                                  <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  <span className="font-medium">By:</span> <span className="text-amber-600 font-semibold">{item.checked_by}</span>
-                                </p>
-                              </div>
-                            </div>
+                        <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-lg font-bold text-gray-900">Checked</h3>
+                            <span className="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                              ✓ Complete
+                            </span>
                           </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">By:</span> <span className="text-amber-600 font-semibold">{item.checked_by}</span>
+                          </p>
                         </div>
                       )}
 
                       {/* Delivered Stage */}
                       {item?.delivered && item?.delivered_by && item?.delivery_date && (
-                        <div className="relative">
-                          <div className="flex items-start space-x-4">
-                            <div className="flex flex-col items-center">
-                              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                              </div>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                                <div className="flex items-center justify-between mb-2">
-                                  <h3 className="text-lg font-bold text-gray-900">Delivered</h3>
-                                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                                    ✓ Complete
-                                  </span>
-                                </div>
-                                <p className="text-sm text-gray-600 mb-1">
-                                  <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.delivery_date)}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  <span className="font-medium">By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
-                                </p>
-                              </div>
-                            </div>
+                        <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-lg font-bold text-gray-900">Delivered</h3>
+                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                              ✓ Complete
+                            </span>
                           </div>
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.delivery_date)}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
+                          </p>
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-blue-600 hover:font-semibold hover:cursor-pointer" onClick={() => setIsStatusModalOpen(true)}>
-                      Edit
-                    </p>
-                  </div>
-                  <div className="m-4">
-                    {item?.received_by && (
-                      <>
-                        <div className="my-1">
-                          <h3 className="text-xs font-medium uppercase text-gray-500">
-                            {formatTimestampToFullDate(item.entry_date)}
-                          </h3>
-                        </div>
 
-                        <div className="flex gap-x-2">
-                          <div className={`relative after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] ${ item.checked_by ? "after:bg-gray-300" : ""}`}>
-                            <div className="relative z-10 size-7 flex justify-center items-center">
-                              <div className="size-2 rounded-full bg-blue-500"></div>
+                    {/* Status Timeline */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-gray-700">Status Timeline</h3>
+                        <button 
+                          onClick={() => setIsStatusModalOpen(true)}
+                          className="text-xs text-blue-600 hover:text-blue-700 hover:font-semibold transition-colors"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {item?.received_by && (
+                          <div className="flex gap-x-3">
+                            <div className="relative">
+                              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              </div>
+                              {item.checked_by && (
+                                <div className="absolute top-6 left-1/2 w-px h-8 bg-gray-300 transform -translate-x-1/2"></div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-gray-800">Received</h4>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.received_by}</span></p>
                             </div>
                           </div>
+                        )}
 
-                          <div className="grow pt-1.5 pb-5">
-                            <h3 className="font-semibold text-xs text-gray-800">Received</h3>
-                            <p className="mt-0.5 text-xs text-gray-600">By <span className="text-blue-600">{item.received_by}</span></p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {item?.checked_by && (
-                      <>
-                        <div className="my-1">
-                          <h3 className="text-xs font-medium uppercase text-gray-500">
-                            {formatTimestampToFullDate(item.entry_date)}
-                          </h3>
-                        </div>
-
-                        <div className="flex gap-x-2">
-                          <div className={`relative after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] ${ item.checked_by && item.delivery_date ? "after:bg-gray-300" : ""}`}>
-                            <div className="relative z-10 size-7 flex justify-center items-center">
-                              <div className="size-2 rounded-full bg-yellow-500"></div>
+                        {item?.checked_by && (
+                          <div className="flex gap-x-3">
+                            <div className="relative">
+                              <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              </div>
+                              {item.delivery_date && (
+                                <div className="absolute top-6 left-1/2 w-px h-8 bg-gray-300 transform -translate-x-1/2"></div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-gray-800">Checked</h4>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.checked_by}</span></p>
                             </div>
                           </div>
+                        )}
 
-                          <div className="grow pt-1.5 pb-5">
-                            <h3 className="font-semibold text-xs text-gray-800">Checked</h3>
-                            <p className="mt-0.5 text-xs text-gray-600">By <span className="text-blue-600">{item.checked_by}</span></p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {!item?.delivered && item?.delivery_date && (
-                      <>
-                        <div className="my-1">
-                          <h3 className="text-xs font-medium uppercase text-gray-500">
-                            {formatTimestampToFullDate(item.delivery_date)}
-                          </h3>
-                        </div>
-
-                        <div className="flex gap-x-2">
-                          <div className="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px]">
-                            <div className="relative z-10 size-7 flex justify-center items-center">
-                              <div className="size-2 rounded-full bg-green-300"></div>
+                        {!item?.delivered && item?.delivery_date && (
+                          <div className="flex gap-x-3">
+                            <div className="relative">
+                              <div className="w-6 h-6 bg-green-300 rounded-full flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-gray-800">For Dispatch</h4>
+                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
+                        )}
 
-                          <div className="grow pt-0.5">
-                            <h3 className="font-semibold text-xs text-gray-800">For Dispatch</h3>
-                            <p className="mt-0.5 text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {item?.delivered && (
-                      <>
-                        <div className="my-1">
-                          <h3 className="text-xs font-medium uppercase text-gray-500">
-                            {formatTimestampToFullDate(item.delivery_date)}
-                          </h3>
-                        </div>
-
-                        <div className="flex gap-x-2">
-                          <div className="relative last:after:hidden after:absolute after:top-7 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px]">
-                            <div className="relative z-10 size-7 flex justify-center items-center">
-                              <div className="size-2 rounded-full bg-green-500"></div>
+                        {item?.delivered && (
+                          <div className="flex gap-x-3">
+                            <div className="relative">
+                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-semibold text-gray-800">Delivered</h4>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
-
-                          <div className="grow pt-0.5">
-                            <h3 className="font-semibold text-xs text-gray-800">Delivered</h3>
-                            <p className="mt-0.5 text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <ItemStatusModal 
-                  isStatusModalOpen={isStatusModalOpen} 
-                  onClose={() => setIsStatusModalOpen(false)} 
-                  item={item}
-                  onUpdate={handleItemUpdate}
-                />
               </div>
-              <SetDeliveryModal
-                isOpen={isSetDeliveryModalOpen}
-                onClose={() => setIsSetDeliveryModalOpen(false)}
-                itemId={item?.item_id ?? ""}
-                onUpdate={handleItemUpdate}
-              />
-
-              <MarkAsDeliveredModal
-                isOpen={isMarkDeliveredModalOpen}
-                onClose={() => setIsMarkDeliveredModalOpen(false)}
-                itemId={item?.item_id ?? ""}
-                onUpdate={handleItemUpdate}
-              />
             </div>
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <ItemDetailsModal 
+        isItemModalOpen={isItemModalOpen} 
+        onClose={() => setIsItemModalOpen(false)} 
+        item={item}
+        onUpdate={handleItemUpdate}
+      />
+
+      <ItemNotesModal 
+        isNoteModalOpen={isNoteModalOpen} 
+        onClose={() => setIsNoteModalOpen(false)} 
+        item={item}
+        onUpdate={handleItemUpdate}
+      />
+
+      <ItemStatusModal 
+        isStatusModalOpen={isStatusModalOpen} 
+        onClose={() => setIsStatusModalOpen(false)} 
+        item={item}
+        onUpdate={handleItemUpdate}
+      />
+
+      <SetDeliveryModal
+        isOpen={isSetDeliveryModalOpen}
+        onClose={() => setIsSetDeliveryModalOpen(false)}
+        itemId={item?.item_id ?? ""}
+        onUpdate={handleItemUpdate}
+      />
+
+      <MarkAsDeliveredModal
+        isOpen={isMarkDeliveredModalOpen}
+        onClose={() => setIsMarkDeliveredModalOpen(false)}
+        itemId={item?.item_id ?? ""}
+        onUpdate={handleItemUpdate}
+      />
     </div>
   );
 }
