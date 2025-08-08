@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function DeleteItemModal({ isOpen, onClose, itemId }: Props) {
-  const { deleteInventory, loading, error, success } = useDeleteInventory();
+  const { deleteInventory, loading, error } = useDeleteInventory();
 
   const handleDelete = async () => {
     if (!itemId) return;

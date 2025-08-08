@@ -14,14 +14,12 @@ const AdminModal = ({ isOpen, onClose }: AdminModalProps) => {
   const [position, setPosition] = useState("");
   const [role, setRole] = useState("Sales");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const isFormValid = name.trim() !== "" && email.trim() !== "" && position.trim() !== "" && role.trim() !== "";
   const { addAdmin } = useAddAdmin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
   
     const result = await addAdmin(name, email, position, role);
     

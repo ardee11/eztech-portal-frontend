@@ -9,7 +9,7 @@ import { showToast } from "../../utils/toastUtils";
 export default function AddItem() {
   const { admins } = useAdmin();
   const navigate = useNavigate();
-  const { addInventory, loading, error, success } = useAddInventory();
+  const { addInventory } = useAddInventory();
 
   const [showPicker, setShowPicker] = useState(false);
   const [entryDate, setEntryDate] = useState<Date | null>(null);
@@ -300,7 +300,7 @@ export default function AddItem() {
                   />
                 </div>
 
-                <div className="relative hs-dropdown">
+                <div className="relative">
                   <StaffDropdown
                     label="Received By"
                     value={receivedBy}
@@ -309,7 +309,7 @@ export default function AddItem() {
                   />
                 </div>
 
-                <div className="relative hs-dropdown">
+                <div className="relative">
                   <StaffDropdown
                     label="Checked By"
                     value={checkedBy}

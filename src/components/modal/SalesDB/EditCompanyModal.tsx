@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/authContext";
 import { useSalesAccounts, SalesAccount } from "../../../hooks/useSalesDB";
 import { useAccountManagers } from "../../../hooks/useAdmin";
-import AccountManagersDropdown from "../../elements/AccountManagersDropdown";
 import { showToast } from "../../../utils/toastUtils";
+import StaffDropdown from "../../elements/StaffDropdown";
 
 type Props = {
   isOpen: boolean;
@@ -14,10 +14,9 @@ type Props = {
 
 export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose }: Props) {
   const { userRole } = useAuth();
-  const { accountManagers, loading: loadingManagers, error: managerError } = useAccountManagers();
+  const { accountManagers } = useAccountManagers();
   const { data, loading, updateSalesAccount } = useSalesAccounts();
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<SalesAccount | null>(null);
 
   const canEditAccountManager = ["Admin", "Sales Manager", "Super Admin"].includes(userRole || "");
@@ -53,9 +52,6 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
           comp_address: match.comp_address,
           remarks: match.remarks,
         });
-        setError(null);
-      } else {
-        setError("Company not found.");
       }
     }
   }, [loading, data, companyId, isOpen]);
@@ -90,7 +86,6 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
       remarks: "Open",
     });
     setSelectedCompany(null);
-    setError(null);
   };
 
   const handleClose = () => {
@@ -101,16 +96,13 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoadingSubmit(true);
-    setError(null);
 
     if (!selectedCompany) {
-      setError("No selected company.");
       setLoadingSubmit(false);
       return;
     }
 
     if (isFormDataUnchanged()) {
-      setError("No changes detected.");
       setLoadingSubmit(false);
       return;
     }
@@ -185,18 +177,11 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                       Account Manager
                     </label>
                     <div className="relative">
-                      <AccountManagersDropdown
-                        id="acc_manager"
+                      <StaffDropdown
                         value={formData.acc_manager}
                         onChange={(val) => setFormData((prev) => ({ ...prev, acc_manager: val }))}
                         options={accountManagers}
                       />
-
-                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
                     </div>
                   </div>
                 )}

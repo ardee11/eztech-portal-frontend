@@ -11,7 +11,7 @@ type Props = {
 };
 
 const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => {
-  const { updateInventory, loading, success, error } = useUpdateInventory();
+  const { updateInventory, loading } = useUpdateInventory();
   const [note, setNote] = useState("");
 
   const isFormValid = note.trim() !== "" && note !== (item?.notes ?? "");

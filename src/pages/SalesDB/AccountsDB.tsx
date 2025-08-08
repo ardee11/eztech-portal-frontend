@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/authContext";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
 import AddCompanyModal from "../../components/modal/SalesDB/AddCompanyModal";
 import EditCompanyModal from "../../components/modal/SalesDB/EditCompanyModal";
-import { formatTimestampToFullDate, formatTimestampToFullDateTime } from "../../utils/DateFormat";
+import { formatTimestampToFullDate } from "../../utils/DateFormat";
 import DeleteCompanyModal from "../../components/modal/SalesDB/DeleteCompanyModal";
 
 interface AccountsDBProps {

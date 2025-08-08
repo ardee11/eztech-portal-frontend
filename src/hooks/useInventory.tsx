@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
-
 export interface Item {
   item_id: string | null;
   item_name: string;
@@ -48,7 +46,8 @@ export function useInventory(month?: number, year?: number) {
 
     const fetchItems = async () => {
       try {
-        const url = new URL(`${API_BASE_URL}/api/inventory`);
+        //const url = new URL(`/api/inventory`);
+        const url = new URL(`/api/inventory`, window.location.origin);
         if (month && year) {
           url.searchParams.append("month", month.toString());
           url.searchParams.append("year", year.toString());
@@ -80,7 +79,7 @@ export function useInventory(month?: number, year?: number) {
     };
     const fetchAllItems = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/inventory/all`, {
+        const response = await fetch(`/api/inventory/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -104,7 +103,7 @@ export function useInventory(month?: number, year?: number) {
     fetchAllItems();
     fetchItems();
 
-    const socket = new WebSocket(`ws://localhost:5000/ws/inventory?token=${token}`);
+    const socket = new WebSocket(`ws://${window.location.host}/ws/inventory?token=${token}`);
     ws.current = socket;
 
     socket.onopen = () => {
@@ -180,7 +179,7 @@ export function useAddInventory() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      const response = await fetch(`${API_BASE_URL}/api/inventory`, {
+      const response = await fetch(`/api/inventory`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -217,7 +216,7 @@ export function useItemDetails(itemId: string | null) {
     if (!itemId) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`);
+      const res = await fetch(`/api/inventory/${itemId}`);
       if (!res.ok) throw new Error("Failed to fetch item");
 
       const data = await res.json();
@@ -273,7 +272,7 @@ export function useUpdateInventory() {
         Object.entries(updates).filter(([_, v]) => v !== undefined)
       );
 
-      const response = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`, {
+      const response = await fetch(`/api/inventory/${itemId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -313,7 +312,7 @@ export function useDeleteInventory() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
 
-      const response = await fetch(`${API_BASE_URL}/api/inventory/${itemId}`, {
+      const response = await fetch(`/api/inventory/${itemId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

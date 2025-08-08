@@ -14,7 +14,7 @@ type Props = {
 
 const ItemStatusModal = ({ isStatusModalOpen, onClose, item, onUpdate }: Props) => {
   const { admins } = useAdmin();
-  const { updateInventory, loading, success, error } = useUpdateInventory();
+  const { updateInventory, loading } = useUpdateInventory();
   const [receivedBy, setReceivedBy] = useState("");
   const [checkedBy, setCheckedBy] = useState("");
   const [deliveredBy, setDeliveredBy] = useState("");

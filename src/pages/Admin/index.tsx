@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAdmin, useAdminDetails } from "../../hooks/useAdmin";
 import { ClipLoader } from "react-spinners";
 import AdminModal from "../../components/modal/Admin/AdminAddModal";
