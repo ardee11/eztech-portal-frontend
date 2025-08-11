@@ -80,7 +80,7 @@ const Login: React.FC = () => {
                   type="password"
                   id="password"
                   name="password"
-                  className="p-2 w-full border border-black/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+                  className="p-2 w-full border border-white/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
