@@ -38,7 +38,7 @@ export default function Sidebar() {
                   end
                 >
                   {({ isActive }) => (
-                    <div className="flex items-center gap-x-3 py-3 px-4 text-sm rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
+                    <div className="flex items-center gap-x-3 py-3 px-4 text-xs rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
                       {isActive && <div className="w-1 h-6 bg-blue-400 rounded-r"></div>}
                     <div className="p-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-200">
                       <svg
@@ -74,7 +74,7 @@ export default function Sidebar() {
                      }
                    >
                      {({ isActive }) => (
-                       <div className="flex items-center gap-x-3 py-3 px-4 text-sm rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
+                       <div className="flex items-center gap-x-3 py-3 px-4 text-xs rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
                          {isActive && <div className="w-1 h-6 bg-blue-400 rounded-r"></div>}
                       <div className="p-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-md group-hover:from-green-500/30 group-hover:to-emerald-500/30 transition-all duration-200">
                         <svg
@@ -111,7 +111,7 @@ export default function Sidebar() {
                      }
                    >
                      {({ isActive }) => (
-                       <div className="flex items-center gap-x-3 py-3 px-4 text-sm rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
+                       <div className="flex items-center gap-x-3 py-3 px-4 text-xs rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
                          {isActive && <div className="w-1 h-6 bg-blue-400 rounded-r"></div>}
                       <div className="p-1.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-md group-hover:from-orange-500/30 group-hover:to-red-500/30 transition-all duration-200">
                         <svg
@@ -139,7 +139,7 @@ export default function Sidebar() {
               <li className="hs-accordion" id="account-accordion">
                                  <button 
                    type="button" 
-                   className="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-3 px-4 text-sm text-slate-300 rounded-r-lg hover:bg-white/5 hover:text-white focus:outline-none focus:bg-white/5 transition-all duration-200 group" 
+                   className="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-3 px-4 text-xs text-slate-300 rounded-r-lg hover:bg-white/5 hover:text-white focus:outline-none focus:bg-white/5 transition-all duration-200 group" 
                    aria-expanded="true" 
                    aria-controls="account-accordion-child"
                  >
@@ -181,7 +181,7 @@ export default function Sidebar() {
                            }
                          >
                            {({ isActive }) => (
-                             <div className="flex items-center gap-x-3 py-2.5 px-4 text-sm rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
+                             <div className="flex items-center gap-x-3 py-2.5 px-4 text-xs rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
                                {isActive && <div className="w-1 h-6 bg-purple-400 rounded-r"></div>}
                             <div className="p-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-md group-hover:from-purple-500/30 group-hover:to-pink-500/30 transition-all duration-200">
                               <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m21.7 16.4-.9-.3"/><path d="m15.2 13.9-.9-.3"/><path d="m16.6 18.7.3-.9"/><path d="m19.1 12.2.3-.9"/><path d="m19.6 18.7-.4-1"/><path d="m16.8 12.3-.4-1"/><path d="m14.3 16.6 1-.4"/><path d="m20.7 13.8 1-.4"/></svg>
@@ -210,7 +210,7 @@ export default function Sidebar() {
         {/* Sign Out Section */}
         <div className="flex-shrink-0 border-t border-slate-700/50 p-4">
           <button
-            className="w-full text-left text-sm text-slate-400 hover:text-red-400 hover:cursor-pointer flex items-center gap-x-3 py-3 px-4 rounded-lg hover:bg-red-500/10 transition-all duration-200 group"
+            className="w-full text-left text-xs text-slate-400 hover:text-red-400 hover:cursor-pointer flex items-center gap-x-3 py-3 px-4 rounded-lg hover:bg-red-500/10 transition-all duration-200 group"
             onClick={handleSignOut}
           >
             <div className="p-1.5 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-md group-hover:from-red-500/30 group-hover:to-pink-500/30 transition-all duration-200">

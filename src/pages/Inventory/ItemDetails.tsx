@@ -73,15 +73,11 @@ function ItemDetails() {
             </svg>
           </div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Item Details</p>
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-xs text-gray-500 font-medium">Item Details</p>
+            <p className="text-sm font-bold text-gray-900">
               ITEM ID: <span className="text-blue-600">{item?.item_id}</span>
             </p>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-sm text-gray-500">Live</span>
         </div>
       </div>
 
@@ -117,16 +113,16 @@ function ItemDetails() {
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                           </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-900">Item Details</h2>
+                        <h2 className="text-sm font-bold text-gray-900">Item Details</h2>
                       </div>
                       <button
                         onClick={() => setIsItemModalOpen(true)}
-                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors duration-200"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -138,26 +134,26 @@ function ItemDetails() {
                   <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="group">
-                        <label className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Model Name</label>
-                        <p className="text-lg font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Model Name</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
                           {item?.item_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Quantity</label>
-                        <p className="text-lg font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Quantity</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
                           {item?.quantity ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Client Name</label>
-                        <p className="text-lg font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Client Name</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
                           {item?.client_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Distributor</label>
-                        <p className="text-lg font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Distributor</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
                           {item?.distributor ?? "-"}
                         </p>
                       </div>
@@ -170,12 +166,12 @@ function ItemDetails() {
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
                     <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-100">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
                           </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-900">Serial Numbers</h2>
+                        <h2 className="text-sm font-bold text-gray-900">Serial Numbers</h2>
                         <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                           {item.serialnumbers.length} items
                         </span>
@@ -183,18 +179,18 @@ function ItemDetails() {
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50">  
                           <tr>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                            <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                               Serial No.
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/2">
+                            <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-1/2">
                               Status
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                            <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                               Notes
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">
+                            <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-16">
                               Actions
                             </th>
                           </tr>
@@ -204,35 +200,35 @@ function ItemDetails() {
                             <tr key={serial.id} className="hover:bg-blue-50/50 transition-all duration-200 group">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+                                  <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
                                     {index + 1}
                                   </div>
-                                  <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">{serial.id}</span>
+                                  <span className="font-semibold text-gray-900 text-xs group-hover:text-blue-600 transition-colors">{serial.id}</span>
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex flex-wrap gap-2">
                                   {serial.remarks === "Good" ? (
                                     <>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Checked
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Passed
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-green-100 text-green-800 border border-green-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Good
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
@@ -240,7 +236,7 @@ function ItemDetails() {
                                       </span>
                                     </>
                                   ) : (
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-red-100 text-red-800 border border-red-200">
                                       <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                       </svg>
@@ -249,7 +245,7 @@ function ItemDetails() {
                                   )}
                                 </div>
                               </td>
-                              <td className="px-6 py-4 text-sm text-gray-700">
+                              <td className="px-6 py-4 text-xs text-gray-700">
                                 <div className="max-w-full" title={serial.notes || "No notes available"}>
                                   {serial.notes || <span className="text-gray-400 italic">No notes</span>}
                                 </div>
@@ -285,16 +281,16 @@ function ItemDetails() {
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                           </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-900">Notes</h2>
+                        <h2 className="text-sm font-bold text-gray-900">Notes</h2>
                       </div>
                       <button
                         onClick={() => setIsNoteModalOpen(true)}
-                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors duration-200"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -305,7 +301,7 @@ function ItemDetails() {
                   </div>
                   <div className="p-6">
                     <div className="prose prose-sm max-w-none">
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[120px]">
+                      <p className="text-gray-700 text-xs leading-relaxed whitespace-pre-wrap min-h-[120px]">
                         {item?.notes || (
                           <span className="text-gray-400 italic">No additional notes available.</span>
                         )}
@@ -319,12 +315,12 @@ function ItemDetails() {
                   <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                           </svg>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-900">Status</h2>
+                        <h2 className="text-sm font-bold text-gray-900">Status</h2>
                       </div>
                       
                       {/* Action Buttons */}
@@ -360,7 +356,7 @@ function ItemDetails() {
                     {/* Current Status Display */}
                     <div className="mb-6">
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-sm font-semibold text-gray-700">Current Status</h3>
+                        <h3 className="text-xs font-semibold text-gray-700">Current Status</h3>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                           item?.item_status === "Delivered" 
                             ? "bg-green-100 text-green-800" 
@@ -376,15 +372,15 @@ function ItemDetails() {
                       {item?.item_status === "Pending" && (
                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">Pending</h4>
+                            <h4 className="text-xs font-bold text-gray-900">Pending</h4>
                             <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                               In Progress
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium">Entry Date:</span> {formatTimestampToFullDate(item.entry_date)}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs text-gray-600">
                             <span className="font-medium">Received By:</span> <span className="text-blue-600 font-semibold">{item.received_by || "Not specified"}</span>
                           </p>
                         </div>
@@ -393,15 +389,15 @@ function ItemDetails() {
                       {item?.item_status === "For Delivery" && (
                         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">For Delivery</h4>
+                            <h4 className="text-xs font-bold text-gray-900">For Delivery</h4>
                             <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                               Ready
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium">Delivery Date:</span> {item.delivery_date ? formatTimestampToFullDate(item.delivery_date) : "Not set"}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs text-gray-600">
                             <span className="font-medium">Assigned To:</span> <span className="text-blue-600 font-semibold">{item.delivered_by || "Not assigned"}</span>
                           </p>
                         </div>

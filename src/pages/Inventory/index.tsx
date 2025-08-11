@@ -159,94 +159,79 @@ export default function Inventory() {
 
   return (
     <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
-      {/* Enhanced Header */}
-      <div className="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-        <div className="flex items-center space-x-4">
-          <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-            <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Inventory Management</p>
-            <p className="text-lg font-bold text-gray-900">Manage and track your inventory items</p>
-          </div>
-        </div>
-      </div>
-
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Total Items</h3>
+              <h3 className="text-md font-bold text-gray-900">Total Items</h3>
             </div>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-bold text-gray-900">{filteredItems.length}</p>
-            <p className="text-sm text-gray-600 mt-1">All inventory items</p>
+            <p className="text-2xl font-bold text-gray-900">{filteredItems.length}</p>
+            <p className="text-xs text-gray-600 mt-1">All inventory items</p>
           </div>
         </div>
         
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Delivered</h3>
+              <h3 className="text-md font-bold text-gray-900">Delivered</h3>
             </div>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-gray-900">
               {filteredItems.filter(item => item.item_status === "Delivered").length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Successfully delivered</p>
+            <p className="text-xs text-gray-600 mt-1">Successfully delivered</p>
           </div>
         </div>
         
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">For Delivery</h3>
+              <h3 className="text-md font-bold text-gray-900">For Delivery</h3>
             </div>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-gray-900">
               {filteredItems.filter(item => item.item_status === "For Delivery").length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Ready for delivery</p>
+            <p className="text-xs text-gray-600 mt-1">Ready for delivery</p>
           </div>
         </div>
         
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-2 border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Pending</h3>
+              <h3 className="text-md font-bold text-gray-900">Pending</h3>
             </div>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-gray-900">
               {filteredItems.filter(item => item.item_status === "Pending").length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Awaiting processing</p>
+            <p className="text-xs text-gray-600 mt-1">Awaiting processing</p>
           </div>
         </div>
       </div>
@@ -256,12 +241,12 @@ export default function Inventory() {
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">Inventory Items</h2>
+              <h2 className="text-md font-bold text-gray-900">Inventory Items</h2>
             </div>
             
             {/* Search and Filter Controls */}
@@ -280,7 +265,7 @@ export default function Inventory() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoComplete="off"
-                  className="w-64 pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-64 pl-10 pr-10 py-1 border border-gray-400 rounded-lg bg-white text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
@@ -301,7 +286,7 @@ export default function Inventory() {
                   id="monthYearSelect"
                   type="button"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="py-2 px-3 inline-flex items-center gap-x-2 text-sm rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
+                  className="py-1 px-1.5 inline-flex items-center gap-x-2 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
                   aria-haspopup="menu"
                   aria-expanded={isDropdownOpen}
                   aria-label="Dropdown"
@@ -317,12 +302,7 @@ export default function Inventory() {
                         : "Select Month Year"}
                   </div>
                   {selectedMonthYear && !isSearching && (
-                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                      {monthYearOptions.filter(option => 
-                        option.month === selectedMonthYear.month && 
-                        option.year === selectedMonthYear.year
-                      ).length}
-                    </span>
+                    <span className="inline-flex items-center justify-center"></span>
                   )}
                   <svg
                     className={`size-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -337,37 +317,14 @@ export default function Inventory() {
                     <path d="m6 9 6 6 6-6" />
                   </svg>
                 </button>
-
                 {isDropdownOpen && (
                   <div
-                    className="absolute z-[100] min-w-48 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 transform opacity-100 scale-100 transition-all duration-200"
+                    className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 transform opacity-100 scale-100 transition-all duration-200"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="hs-dropdown-default"
                   >
                     <div className="p-2">
-                      {/* Clear All Filters Option */}
-                      {(selectedMonthYear || isSearching) && (
-                        <div className="border-b border-gray-200 pb-2 mb-2">
-                          <button
-                            onClick={() => {
-                              setSelectedMonthYear(null);
-                              setSearchQuery("");
-                              setIsDropdownOpen(false);
-                            }}
-                            className="block w-full text-left text-xs text-red-600 px-3 py-2 hover:bg-red-50 hover:cursor-pointer rounded-md transition-colors"
-                            role="menuitem"
-                          >
-                            <div className="flex items-center gap-x-2">
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                              Clear all filters
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                      
                       {/* Filter Options */}
                       <div className="space-y-1">
                         {monthYearOptions.map(({ month, year }) => {
@@ -382,7 +339,7 @@ export default function Inventory() {
                                 setSelectedMonthYear({ month, year });
                                 setIsDropdownOpen(false);
                               }}
-                              className={`block w-full text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
+                              className={`block w-full text-left text-2xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
                                 isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
                               }`}
                               role="menuitem"
@@ -412,7 +369,7 @@ export default function Inventory() {
           {loading && (
             <div className="flex flex-col items-center justify-center h-[60vh]">
               <ClipLoader color="#3498db" size={42} />
-              <p className="text-gray-400 text-xs mt-2">Loading inventory items...</p>
+              <p className="text-gray-400 text-2xs mt-2">Loading inventory items...</p>
             </div>
           )}
 
@@ -440,25 +397,25 @@ export default function Inventory() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Date of Entry
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Qty
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Distributor
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Delivery Date
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -474,27 +431,27 @@ export default function Inventory() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+                          <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-2xs font-bold text-blue-600">
                             {index + 1}
                           </div>
-                          <span className="font-medium text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
+                          <span className="font-medium text-xs text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-gray-900 mb-1">{item.item_id}</span>
-                          <span className="text-sm text-gray-600 whitespace-pre-wrap">{item.item_name}</span>
+                          <span className="text-xs font-semibold text-gray-900 mb-1">{item.item_id}</span>
+                          <span className="text-xs text-gray-600 whitespace-pre-wrap">{item.item_name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-2xs font-medium bg-blue-100 text-blue-800">
                           {item.quantity}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 break-words">
+                      <td className="px-6 py-4 text-xs text-gray-700 break-words">
                         {item.distributor}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-700 break-words">
+                      <td className="px-6 py-4 text-xs text-gray-700 break-words">
                         {item.client_name}
                       </td>
                       <td className="px-6 py-4">
@@ -504,7 +461,7 @@ export default function Inventory() {
                             e.stopPropagation();  
                             openDeliveryModal(item.item_id);
                           }}
-                          className={`text-sm ${
+                          className={`text-xs ${
                             !item.delivered && item.item_status !== "For Delivery" 
                               ? "text-blue-600 hover:text-blue-700 hover:underline" 
                               : "text-gray-600"
@@ -519,7 +476,7 @@ export default function Inventory() {
                         </button>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold 
                           ${getStatusStyles(item.item_status).badge}`}
                         >
                           {item.item_status}

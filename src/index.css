@@ -8,6 +8,11 @@ body {
 }
 
 @layer utilities {
+  .text-2xs {
+    font-size: 0.625rem; /* 10px - smaller than text-xs which is 0.75rem (12px) */
+    line-height: 0.875rem;
+  }
+
   @keyframes expandCard {
     0% {
       width: 10%;
