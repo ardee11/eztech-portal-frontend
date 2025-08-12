@@ -30,6 +30,10 @@ const Login: React.FC = () => {
       await login(email, password);
     } catch (err: any) {
       setError(err.message || "Failed to log in.");
+
+      if (passwordRef.current) {
+    passwordRef.current.value = "";
+      }
     } finally {
       setLoading(false);
     }
@@ -62,21 +66,24 @@ const Login: React.FC = () => {
 
             <div className="flex justify-center items-center p-4 z-20">
               
-            
               <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-[inset_0_15px_30px_rgba(255,255,255,0.1),inset_0_-15px_30px_rgba(255,255,255,0.4)]
-              rounded-2xl p-8 w-full max-w-sm">
+              rounded-2xl px-6 py-4 w-full max-w-sm">
                 
                 <div
-                  className="w-25 h-25 mx-auto rounded-full bg-no-repeat bg-cover mb-4 shadow-md"
+                  className="w-35 h-35 mx-auto rounded-full bg-no-repeat bg-cover drop-shadow-sm"
                   style={{ backgroundImage: `url(${userImg})` }}>
                 </div>
+                
 
                 <h2 className="text-center text-xl font-medium text-black mb-3">
                  <span className="wave-hand text-3xl">👋</span> Hello,<span className="italic"> Welcome Back!</span>
                 </h2>
 
                 {error && (
-                  <p className="text-center text-red-500 text-sm mb-4">{error}</p>
+                  <div className="flex items-center justify-center text-red-700 text-base rounded-xl px-4 py-1 mb-4 bg-red-500/10 backdrop-blur-sm">
+                    <span className="mr-2">⚠️</span>
+                    <span>{error}</span>
+                  </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -101,7 +108,7 @@ const Login: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-[50%] bg-[#4067c4] drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-2 hover:bg-transparent text-gray filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
+                    className="w-[50%] bg-[#4067c4] drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-2 mb-2 hover:bg-blue-700/90 transition text-gray filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
                   >
                     {loading ? "Signing in..." : "Sign in"}
                   </button>
