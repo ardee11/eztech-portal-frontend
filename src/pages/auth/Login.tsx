@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import logo from "../../assets/ez-logo.png";
-import bgImg from "../../assets/Thumb.png";
+import bgImg from "../../assets/testbg.png";
 import { useAuth } from "../../contexts/authContext";
 
 const Login: React.FC = () => {
@@ -35,68 +35,77 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-cover bg-center">
-      <div className="absolute inset-0">
-        <img src={bgImg} alt="Background" className="w-full h-full object-cover" />
-      </div>
+  <div className="relative flex items-center justify-center min-h-screen bg-cover bg-center">
+    <div className="absolute inset-0">
+      <img
+        src={bgImg}
+        alt="Background"
+        className="w-full h-full object-cover"
+        style={{ filter: "blur(2px)" }}
+      />
+    </div>
 
-      <div className="absolute w-full max-w-xs sm:max-w-sm rounded-xl border border-white/30 bg-white/70 backdrop-blur-xl shadow-xl p-5 backdrop-saturate-150">
-        <div className="text-center">
-          <img src={logo} className="w-32 h-auto mx-auto" alt="Logo" />
+    <div className="relative w-[700px] rounded-xl overflow-hidden bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-2xl border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_32px_rgba(0,0,0,0.37)]">
+      <div className="grid grid-cols-2">
+        <div className="flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-xl">
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-32 drop-shadow-[0_0_6px_rgba(255,255,255,0.8)]"
+          />
+          <p className="mt-5 text-sm text-white/80 text-center">
+            Welcome to EZTech Portal
+          </p>
         </div>
 
-        <div className="mt-6">
+        <div className="p-6">
           <form onSubmit={handleSubmit}>
-            {(error) && (
+            {error && (
               <div
-                className={`p-3 mx-12 rounded-md mb-2 text-xs font-semibold text-center ${
+                className={`p-3 mx-0 rounded-md mb-2 text-xs font-semibold text-center ${
                   error ? "bg-red-50/60 text-red-500" : "bg-green-50/60 text-green-500"
                 }`}
               >
                 {error ? error : "Login link sent! Check your email."}
               </div>
             )}
-            <div className="grid sm:px-3">
-              <div>
-                <label htmlFor="email" className="block text-xs font-semibold mb-2 text-gray-800">
-                  Email Address:
-                </label>
-                <input
-                  ref={emailRef}
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="p-2 w-full border border-black/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
 
-              <div className="mt-4">
-                <label htmlFor="password" className="block text-xs font-semibold mb-2 text-gray-800">
-                  Password:
-                </label>
-                <input
-                  ref={passwordRef}
-                  type="password"
-                  id="password"
-                  name="password"
-                  className="p-2 w-full border border-white/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
+            <label className="block text-xs font-semibold mb-2 text-white">
+              Email Address:
+            </label>
+            <input
+              ref={emailRef}
+              type="email"
+              id="email"
+              name="email"
+              className="p-2 mb-4 w-full bg-white/30 rounded-lg text-xs text-white border-none outline-none focus:ring-1 focus:ring-white"
+            />
 
-              <button
-                type="submit"
-                className="mt-6 w-full py-2 text-xs font-medium rounded-lg bg-blue-600 text-gray-200 hover:bg-blue-700 disabled:opacity-50 hover:cursor-pointer"
-                disabled={loading}
-              >
-                {loading ? "Signing in..." : "Sign in"}
-              </button>
-            </div>
+            <label className="block text-xs font-semibold mb-2 text-white">
+              Password:
+            </label>
+            <input
+              ref={passwordRef}
+              type="password"
+              id="password"
+              name="password"
+              className="p-2 mb-4 w-full bg-white/30 rounded-lg text-xs text-white border-none outline-none focus:ring-1 focus:ring-white"
+            />
+
+            <button
+              type="submit"
+              className="mt-6 w-full py-2 text-xs font-medium rounded-lg text-white bg-blue-500 hover:text-white hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-600 disabled:opacity-50 hover:cursor-pointer transition-colors duration-500 ease-in-out"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Login"}
+            </button>
           </form>
         </div>
+
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Login;
