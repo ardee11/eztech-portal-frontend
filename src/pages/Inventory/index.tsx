@@ -285,7 +285,7 @@ export default function Inventory() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoComplete="off"
-                  className="text-xs 3xl:text-sm w-86 pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="text-xs 3xl:text-sm w-86 3xl:w-110 pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
@@ -440,7 +440,7 @@ export default function Inventory() {
           )}
 
           {error && (
-            <div className="flex flex-col items-center justify-center h-[60vh] bg-white rounded-2xl shadow-lg border border-red-100 mx-auto max-w-md">
+            <div className="flex flex-col items-center justify-center h-[40vh] bg-white mx-auto max-w-md">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -450,7 +450,7 @@ export default function Inventory() {
               <p className="text-red-600 text-center mb-4">Unable to load inventory items. Please try again later.</p>
               <button 
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+                className="px-6 py-2 font-semibold bg-red-600 hover:bg-red-700 hover:cursor-pointer text-white rounded-lg transition-colors duration-200"
               >
                 Retry
               </button>

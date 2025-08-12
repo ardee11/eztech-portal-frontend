@@ -47,12 +47,12 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
     <>
       {isNoteModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60">
-          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-lg max-h-96">
+          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-lg 3xl:max-w-xl max-h-96 3xl:max-h-104">
 
             <div className="delay-show">
-              <div className="px-8 py-4 border-b border-gray-200">
+              <div className="px-8 py-4 3xl:py-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900">Add Notes</h3>
+                  <h3 className="text-lg 3xl:text-xl font-bold text-gray-900">Add Notes</h3>
 
                   <button
                     onClick={onClose}
@@ -67,7 +67,7 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
 
               <div className="px-14 py-4 overflow-y-auto flex-grow">
                 <form id="editNotes" onSubmit={handleSubmit}>
-                  <label htmlFor="itemNote" className="block text-xs mb-1">
+                  <label htmlFor="itemNote" className="block text-xs 3xl:text-sm mb-1">
                     Notes:
                   </label>
                   <textarea
@@ -85,7 +85,7 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
                   type="submit"
                   form="editNotes"
                   disabled={loading || !isFormValid}
-                  className="px-12 py-2 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
+                  className="px-12 py-2 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
                   {loading ? <ClipLoader size={18} color="#fff" /> : "Submit"}
                 </button>
@@ -93,7 +93,7 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
                 <button
                   type="button"
                   onClick={resetFormField}
-                  className="px-12 py-2 text-xs font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
+                  className="px-12 py-2 text-xs 3xl:text-sm font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>

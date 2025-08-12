@@ -340,7 +340,7 @@ function ItemDetails() {
                         {!item?.delivered && item?.item_status === "For Delivery" && (
                           <button 
                             onClick={() => setIsMarkDeliveredModalOpen(true)}
-                            className="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
+                            className="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 hover:cursor-pointer text-white text-xs font-semibold rounded-full transition-colors duration-200"
                           >
                             <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -401,15 +401,15 @@ function ItemDetails() {
                       {item?.item_status === "For Delivery" && (
                         <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">For Delivery</h4>
+                            <h4 className="text-md 3xl:text-lg font-bold text-gray-900">For Delivery</h4>
                             <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                               Ready
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-xs 3xl:text-sm text-gray-600 mb-1">
                             <span className="font-medium">Delivery Date:</span> {item.delivery_date ? formatTimestampToFullDate(item.delivery_date) : "Not set"}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs 3xl:text-sm text-gray-600">
                             <span className="font-medium">Assigned To:</span> <span className="text-blue-600 font-semibold">{item.delivered_by || "Not assigned"}</span>
                           </p>
                         </div>
@@ -427,7 +427,7 @@ function ItemDetails() {
                             <span className="font-medium">Delivery Date:</span> {formatTimestampToFullDate(item.delivery_date)}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Delivered By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
+                            <span className="font-medium">Delivered By:</span> <span className="text-blue-600 font-semibold">{item.delivered_by}</span>
                           </p>
                         </div>
                       )}
@@ -448,7 +448,7 @@ function ItemDetails() {
                             <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Checked By:</span> <span className="text-amber-600 font-semibold">{item.checked_by}</span>
+                            <span className="font-medium">Checked By:</span> <span className="text-blue-600 font-semibold">{item.checked_by}</span>
                           </p>
                         </div>
                       )}
