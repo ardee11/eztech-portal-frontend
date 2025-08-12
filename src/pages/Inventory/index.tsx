@@ -146,9 +146,10 @@ export default function Inventory() {
     return options.reduce((acc, { month, year }) => {
       if (!acc[year]) acc[year] = [];
       acc[year].push(month);
+      acc[year].sort((a, b) => a - b);
       return acc;
     }, {} as Record<number, number[]>);
-  }
+  };
 
   const [expandedYears, setExpandedYears] = useState<number[]>([]);
   
@@ -195,7 +196,7 @@ export default function Inventory() {
                 {/* <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p> */}
                 <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount()}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -213,7 +214,7 @@ export default function Inventory() {
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
                 <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Delivered")}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -231,7 +232,7 @@ export default function Inventory() {
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
                 <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("For Delivery")}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -249,7 +250,7 @@ export default function Inventory() {
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
                 <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Pending")}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
