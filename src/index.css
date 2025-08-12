@@ -2,6 +2,10 @@
 @import "tailwindcss";
 @import "preline/variants.css";
 
+@theme {
+  --breakpoint-3xl: 100rem;
+}
+
 body {
   background-color: #f8fafc;
   font-family: 'Inter', sans-serif;
