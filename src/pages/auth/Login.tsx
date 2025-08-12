@@ -36,7 +36,7 @@ const Login: React.FC = () => {
   };
 
   return (
-      <div className="relative flex items-center justify-center min-h-screen bg-[#99DEEF] px-4">
+      <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-[#99DEEF] to-[#799EFF] px-4">
   
         <img
           src={element1}
@@ -47,68 +47,67 @@ const Login: React.FC = () => {
         
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
 
-        
-          <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg">
-            <img
-              src={element2}
-              alt="Background Element"
-              className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 scale-100 md:scale-180"
-            />
-            <img
-              src={logo}
-              alt="EZTech Logo"
-              className="w-sm md:w-[325px] mt-10 object-contain z-10"
-            />
-          </div>
-
-          
-          <div className="flex justify-center items-center p-4 z-20">
-            <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-[inset_0_15px_30px_rgba(255,255,255,0.1),inset_0_-15px_30px_rgba(255,255,255,0.4)]
-             rounded-2xl p-8 w-full max-w-sm">
-              
-              <div
-                className="w-25 h-25 mx-auto rounded-full bg-no-repeat bg-cover mb-4 shadow-md"
-                style={{ backgroundImage: `url(${userImg})` }}
-              ></div>
-
-              <h2 className="text-center text-xl font-medium text-black mb-5">
-                Hello, Welcome <span className="italic">Back!</span>
-              </h2>
-
-              {error && (
-                <p className="text-center text-red-500 text-sm mb-4">{error}</p>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm italic text-gray-800 ml-2">Email</label>
-                  <input
-                    type="email"
-                    ref={emailRef}
-                    className="w-full rounded-lg bg-white/30 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm italic text-gray-800 ml-2">Password</label>
-                  <input
-                    type="password"
-                    ref={passwordRef}
-                    className="w-full rounded-lg bg-white/30 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-[50%] bg-[#4067c4] drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-2 hover:opacity-90 transition shadow-inner shadow-gray-100/90"
-                >
-                  {loading ? "Signing in..." : "Sign in"}
-                </button>
-              </form>
+            <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg">
+              <img
+                src={element2}
+                alt="Background Element"
+                className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 scale-100 md:scale-180"
+              />
+              <img
+                src={logo}
+                alt="EZTech Logo"
+                className="w-sm md:w-[325px] mt-13 object-contain z-10"
+              />
             </div>
-          </div>
 
+            <div className="flex justify-center items-center p-4 z-20">
+              
+            
+              <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-[inset_0_15px_30px_rgba(255,255,255,0.1),inset_0_-15px_30px_rgba(255,255,255,0.4)]
+              rounded-2xl p-8 w-full max-w-sm">
+                
+                <div
+                  className="w-25 h-25 mx-auto rounded-full bg-no-repeat bg-cover mb-4 shadow-md"
+                  style={{ backgroundImage: `url(${userImg})` }}>
+                </div>
+
+                <h2 className="text-center text-xl font-medium text-black mb-3">
+                 <span className="wave-hand text-3xl">👋</span> Hello,<span className="italic"> Welcome Back!</span>
+                </h2>
+
+                {error && (
+                  <p className="text-center text-red-500 text-sm mb-4">{error}</p>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm italic text-gray-800 ml-2">Email</label>
+                    <input
+                      type="email"
+                      ref={emailRef}
+                      className="w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm italic text-gray-800 ml-2">Password</label>
+                    <input
+                      type="password"
+                      ref={passwordRef}
+                      className="w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-[50%] bg-[#4067c4] drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-2 hover:bg-transparent text-gray filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
+                  >
+                    {loading ? "Signing in..." : "Sign in"}
+                  </button>
+                </form>
+              </div>
+            </div>
         </div>
       </div>
     );
