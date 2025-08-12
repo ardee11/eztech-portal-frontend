@@ -173,7 +173,7 @@ export default function Inventory() {
             </div>
           </div>
           <div className="p-6">
-            <p className="text-2xl font-bold text-gray-900">{filteredItems.length}</p>
+            <p className="text-2xl font-bold text-gray-900">{allItems.length}</p>
             <p className="text-xs text-gray-600 mt-1">All inventory items</p>
           </div>
         </div>
@@ -191,7 +191,7 @@ export default function Inventory() {
           </div>
           <div className="p-6">
             <p className="text-2xl font-bold text-gray-900">
-              {filteredItems.filter(item => item.item_status === "Delivered").length}
+              {allItems.filter(item => item.item_status === "Delivered").length}
             </p>
             <p className="text-xs text-gray-600 mt-1">Successfully delivered</p>
           </div>
@@ -210,7 +210,7 @@ export default function Inventory() {
           </div>
           <div className="p-6">
             <p className="text-2xl font-bold text-gray-900">
-              {filteredItems.filter(item => item.item_status === "For Delivery").length}
+              {allItems.filter(item => item.item_status === "For Delivery").length}
             </p>
             <p className="text-xs text-gray-600 mt-1">Ready for delivery</p>
           </div>
@@ -229,7 +229,7 @@ export default function Inventory() {
           </div>
           <div className="p-6">
             <p className="text-2xl font-bold text-gray-900">
-              {filteredItems.filter(item => item.item_status === "Pending").length}
+              {allItems.filter(item => item.item_status === "Pending").length}
             </p>
             <p className="text-xs text-gray-600 mt-1">Awaiting processing</p>
           </div>
@@ -251,6 +251,17 @@ export default function Inventory() {
             
             {/* Search and Filter Controls */}
             <div className="flex items-center space-x-4">
+              {/* Add Item Button */}
+              <button
+                onClick={() => navigate('/inventory/add')}
+                className="inline-flex items-center gap-x-1.5 px-1.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Item
+              </button>
+              
               {/* Search Input */}
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

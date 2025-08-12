@@ -98,7 +98,7 @@ function ItemDetails() {
             <p className="text-red-600 text-center mb-4">Unable to load item details. Please try again later.</p>
             <button 
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 hover:cursor-pointer text-white rounded-lg transition-colors duration-200"
             >
               Retry
             </button>
@@ -122,9 +122,15 @@ function ItemDetails() {
                       </div>
                       <button
                         onClick={() => setIsItemModalOpen(true)}
-                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors duration-200"
+                        className="inline-flex items-center 
+                                            px-2 py-1 text-xs 
+                                            2xs:px-2 2xs:py-1.5 2xs:text-xs 
+                                            xs:px-2 xs:py-1.5 xs:text-base
+                                            bg-blue-600 hover:bg-blue-700 hover:cursor-pointer
+                                            text-white font-medium rounded-full 
+                                            transition-colors duration-200"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 mr-1.5 xs:w-4 xs:h-4 2xs:w-5 2xs:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                         <span>Edit</span>
@@ -210,25 +216,25 @@ function ItemDetails() {
                                 <div className="flex flex-wrap gap-2">
                                   {serial.remarks === "Good" ? (
                                     <>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                      <span className="inline-flex items-center px-1.5 py-1 rounded-full text-2xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Checked
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                                      <span className="inline-flex items-center px-1.5 py-1 rounded-full text-2xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Passed
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                      <span className="inline-flex items-center px-1.5 py-1 rounded-full text-2xs font-semibold bg-green-100 text-green-800 border border-green-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Good
                                       </span>
-                                      <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                      <span className="inline-flex items-center px-1.5 py-1 rounded-full text-2xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
@@ -236,7 +242,7 @@ function ItemDetails() {
                                       </span>
                                     </>
                                   ) : (
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                    <span className="inline-flex items-center px-1.5 py-1 rounded-full text-2xs font-semibold bg-red-100 text-red-800 border border-red-200">
                                       <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                       </svg>
@@ -290,9 +296,15 @@ function ItemDetails() {
                       </div>
                       <button
                         onClick={() => setIsNoteModalOpen(true)}
-                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors duration-200"
+                        className="inline-flex items-center 
+                                            px-2 py-1 text-xs 
+                                            2xs:px-2 2xs:py-1.5 2xs:text-xs 
+                                            xs:px-2 xs:py-1.5 xs:text-base
+                                            bg-blue-600 hover:bg-blue-700 hover:cursor-pointer
+                                            text-white font-medium rounded-full 
+                                            transition-colors duration-200"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3 mr-1.5 xs:w-4 xs:h-4 2xs:w-5 2xs:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                         <span>Edit</span>
@@ -328,7 +340,7 @@ function ItemDetails() {
                         {!item?.delivered && item?.item_status === "For Delivery" && (
                           <button 
                             onClick={() => setIsMarkDeliveredModalOpen(true)}
-                            className="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
+                            className="inline-flex items-center px-2 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
                           >
                             <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -339,14 +351,29 @@ function ItemDetails() {
 
                         {!item?.delivered && item?.item_status === "Pending" && (
                           <button
-                            onClick={() => setIsSetDeliveryModalOpen(true)}
-                            className="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full transition-colors duration-200"
-                          >
-                            <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                            </svg>
-                            Set Delivery Date
-                          </button>
+                                  onClick={() => setIsSetDeliveryModalOpen(true)}
+                                  className="inline-flex items-center 
+                                            px-2 py-1 text-xs 
+                                            2xs:px-2 2xs:py-1.5 2xs:text-xs 
+                                            xs:px-2 xs:py-1.5 xs:text-base
+                                            bg-blue-600 hover:bg-blue-700 hover:cursor-pointer
+                                            text-white font-medium rounded-full 
+                                            transition-colors duration-200"
+                                >
+                              <svg 
+                                className="w-3 h-3 mr-1.5 xs:w-4 xs:h-4 2xs:w-5 2xs:h-5" 
+                                fill="currentColor" 
+                                viewBox="0 0 20 20"
+                              >
+                                <path 
+                                  fillRule="evenodd" 
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" 
+                                  clipRule="evenodd" 
+                                />
+                              </svg>
+                              Schedule
+                            </button>
+
                         )}
                       </div>
                     </div>
@@ -356,7 +383,7 @@ function ItemDetails() {
                     {/* Current Status Display */}
                     <div className="mb-6">
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xs font-semibold text-gray-700">Current Status</h3>
+                        <h3 className="text-xs font-semibold text-gray-700">Current Status:</h3>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                           item?.item_status === "Delivered" 
                             ? "bg-green-100 text-green-800" 
@@ -406,16 +433,16 @@ function ItemDetails() {
                       {item?.item_status === "Delivered" && (
                         <div className="bg-green-50 rounded-lg p-4 border border-green-200">
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-lg font-bold text-gray-900">Delivered</h4>
-                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <h4 className="text-sm font-bold text-gray-900">Delivered</h4>
+                            <span className="bg-green-100 text-green-800 text-2xs font-semibold px-2.5 py-0.5 rounded-full">
                               ✓ Complete
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
-                            <span className="font-medium">Delivery Date:</span> {formatTimestampToFullDate(item.delivery_date)}
+                          <p className="text-xs text-gray-600 mb-1">
+                            <span className="font-medium text-xs">Delivery Date:</span> <span className="text-green-600 text-xs font-semibold">{formatTimestampToFullDate(item.delivery_date)}</span>
                           </p>
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium">Delivered By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
+                          <p className="text-xs text-gray-600">
+                            <span className="font-medium text-xs">Delivered By:</span> <span className="text-green-600 text-2xs font-semibold">{item.delivered_by}</span>
                           </p>
                         </div>
                       )}
@@ -427,16 +454,16 @@ function ItemDetails() {
                       {item?.checked_by && (
                         <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg font-bold text-gray-900">Checked</h3>
-                            <span className="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <h3 className="text-sm font-bold text-gray-900">Checked</h3>
+                            <span className="bg-amber-100 text-amber-800 text-2xs font-semibold px-2.5 py-0.5 rounded-full">
                               ✓ Complete
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
-                            <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
+                          <p className="text-xs text-gray-600 mb-1">
+                            <span className="font-medium text-xs">Date:</span> <span className="text-amber-600 text-xs font-semibold">{formatTimestampToFullDate(item.entry_date)}</span>
                           </p>
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium">By:</span> <span className="text-amber-600 font-semibold">{item.checked_by}</span>
+                          <p className="text-xs text-gray-600">
+                            <span className="font-medium text-xs">By:</span> <span className="text-amber-600 text-xs font-semibold">{item.checked_by}</span>
                           </p>
                         </div>
                       )}
@@ -445,16 +472,16 @@ function ItemDetails() {
                       {item?.delivered && item?.delivered_by && item?.delivery_date && (
                         <div className="bg-green-50 rounded-lg p-4 border border-green-100">
                           <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-lg font-bold text-gray-900">Delivered</h3>
+                            <h3 className="text-xs font-bold text-gray-900">Delivered</h3>
                             <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                               ✓ Complete
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.delivery_date)}
                           </p>
-                          <p className="text-sm text-gray-600">
-                            <span className="font-medium">By:</span> <span className="text-green-600 font-semibold">{item.delivered_by}</span>
+                          <p className="text-xs text-gray-600">
+                            <span className="font-medium">By:</span> <span className="text-green-600 text-xs font-semibold">{item.delivered_by}</span>
                           </p>
                         </div>
                       )}
@@ -463,7 +490,7 @@ function ItemDetails() {
                     {/* Status Timeline */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-gray-700">Status Timeline</h3>
+                        <h3 className="text-xs font-semibold text-gray-700">Status Timeline</h3>
                         <button 
                           onClick={() => setIsStatusModalOpen(true)}
                           className="text-xs text-blue-600 hover:text-blue-700 hover:font-semibold transition-colors"
@@ -484,7 +511,7 @@ function ItemDetails() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-800">Received</h4>
+                              <h4 className="text-xs font-semibold text-gray-800">Received</h4>
                               <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.received_by}</span></p>
                             </div>
                           </div>
@@ -501,7 +528,7 @@ function ItemDetails() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-800">Checked</h4>
+                              <h4 className="text-xs font-semibold text-gray-800">Checked</h4>
                               <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.checked_by}</span></p>
                             </div>
                           </div>
@@ -515,7 +542,7 @@ function ItemDetails() {
                               </div>
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-800">For Dispatch</h4>
+                              <h4 className="text-xs font-semibold text-gray-800">For Dispatch</h4>
                               <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
@@ -529,7 +556,7 @@ function ItemDetails() {
                               </div>
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-800">Delivered</h4>
+                              <h4 className="text-xs font-semibold text-gray-800">Delivered</h4>
                               <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
