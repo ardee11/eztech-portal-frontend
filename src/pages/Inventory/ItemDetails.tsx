@@ -75,7 +75,7 @@ function ItemDetails() {
           <div>
             <p className="text-xs text-gray-500 font-medium">Item Details</p>
             <p className="text-sm font-bold text-gray-900">
-              ITEM ID: <span className="text-blue-600">{item?.item_id}</span>
+              ITEM ID: <span className="text-blue-600 whitespace-pre-wrap">{item?.item_id}</span>
             </p>
           </div>
         </div>
@@ -141,25 +141,25 @@ function ItemDetails() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="group">
                         <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Model Name</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
                           {item?.item_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
                         <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Quantity</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
                           {item?.quantity ?? "-"}
                         </p>
                       </div>
                       <div className="group">
                         <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Client Name</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
                           {item?.client_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
                         <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Distributor</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors">
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
                           {item?.distributor ?? "-"}
                         </p>
                       </div>
@@ -252,7 +252,7 @@ function ItemDetails() {
                                 </div>
                               </td>
                               <td className="px-6 py-4 text-xs text-gray-700">
-                                <div className="max-w-full" title={serial.notes || "No notes available"}>
+                                <div className="max-w-full whitespace-pre-wrap" title={serial.notes || "No notes available"}>
                                   {serial.notes || <span className="text-gray-400 italic">No notes</span>}
                                 </div>
                               </td>
@@ -463,7 +463,7 @@ function ItemDetails() {
                             <span className="font-medium text-xs">Date:</span> <span className="text-amber-600 text-xs font-semibold">{formatTimestampToFullDate(item.entry_date)}</span>
                           </p>
                           <p className="text-xs text-gray-600">
-                            <span className="font-medium text-xs">By:</span> <span className="text-amber-600 text-xs font-semibold">{item.checked_by}</span>
+                            <span className="font-medium text-xs">By:</span> <span className="text-amber-600 text-xs font-semibold whitespace-pre-wrap">{item.checked_by}</span>
                           </p>
                         </div>
                       )}
@@ -481,7 +481,7 @@ function ItemDetails() {
                             <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.delivery_date)}
                           </p>
                           <p className="text-xs text-gray-600">
-                            <span className="font-medium">By:</span> <span className="text-green-600 text-xs font-semibold">{item.delivered_by}</span>
+                            <span className="font-medium">By:</span> <span className="text-green-600 text-xs font-semibold whitespace-pre-wrap">{item.delivered_by}</span>
                           </p>
                         </div>
                       )}
@@ -512,7 +512,7 @@ function ItemDetails() {
                             </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-semibold text-gray-800">Received</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.received_by}</span></p>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.received_by}</span></p>
                             </div>
                           </div>
                         )}
@@ -529,7 +529,7 @@ function ItemDetails() {
                             </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-semibold text-gray-800">Checked</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.checked_by}</span></p>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.checked_by}</span></p>
                             </div>
                           </div>
                         )}
@@ -543,7 +543,7 @@ function ItemDetails() {
                             </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-semibold text-gray-800">For Dispatch</h4>
-                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600 whitespace-pre-wrap">{item.delivered_by}</span></p>
                             </div>
                           </div>
                         )}
@@ -557,7 +557,7 @@ function ItemDetails() {
                             </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-semibold text-gray-800">Delivered</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.delivered_by}</span></p>
                             </div>
                           </div>
                         )}
