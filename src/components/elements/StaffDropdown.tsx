@@ -29,7 +29,6 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
     option.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Close dropdown if clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -62,7 +61,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
       setDropdownStyles({
         top: openUpward
           ? rect.top + window.scrollY - dropdownHeight
-          : rect.bottom + window.scrollY + 8,
+          : rect.bottom + window.scrollY + 10,
         left: rect.left + window.scrollX,
         width: rect.width,
         openUpward,
