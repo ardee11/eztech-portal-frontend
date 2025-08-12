@@ -149,15 +149,9 @@ export default function Inventory() {
       return acc;
     }, {} as Record<number, number[]>);
   }
-const [expandedYears, setExpandedYears] = useState<number[]>([]);
-const toggleYear = (year: number) => {
-  setExpandedYears(prev =>
-    prev.includes(year)
-      ? prev.filter(y => y !== year)
-      : [...prev, year]
-  );
-};
 
+  const [expandedYears, setExpandedYears] = useState<number[]>([]);
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -173,8 +167,16 @@ const toggleYear = (year: number) => {
     };
   }, []);
 
+  const getYearlyCount = (status?: string) => {
+    return allItems.filter(item => {
+      const sameYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
+      const statusMatch = status ? item.item_status === status : true;
+      return sameYear && statusMatch;
+    }).length;
+  };
+
   return (
-    <div className="w-full mx-auto px-4 py-6 relative bg-gray-50">
+    <div className="w-full mx-auto p-4 relative bg-gray-50 3xl:min-h-screen">
 
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
@@ -190,7 +192,8 @@ const toggleYear = (year: number) => {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p>
+                {/* <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p> */}
+                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount()}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items</p>
             </div>
@@ -208,7 +211,7 @@ const toggleYear = (year: number) => {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Delivered").length}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Delivered")}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered</p>
             </div>
@@ -226,7 +229,7 @@ const toggleYear = (year: number) => {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "For Delivery").length}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("For Delivery")}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery</p>
             </div>
@@ -244,7 +247,7 @@ const toggleYear = (year: number) => {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Pending").length}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Pending")}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing</p>
             </div>
@@ -286,7 +289,7 @@ const toggleYear = (year: number) => {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400hover:text-gray-800 hover:cursor-pointer transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-800 hover:cursor-pointer transition-colors"
                     type="button"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -455,7 +458,7 @@ const toggleYear = (year: number) => {
 
           {/* Enhanced Inventory Table */}
           {!loading && !error && (
-            <div className="w-full overflow-y-auto h-[calc(100vh-270px)]">
+            <div className="w-full overflow-y-auto h-[calc(100vh-270px)] pb-1">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
