@@ -32,7 +32,7 @@ const Login: React.FC = () => {
       setError(err.message || "Failed to log in.");
 
       if (passwordRef.current) {
-    passwordRef.current.value = "";
+       passwordRef.current.value = "";
       }
     } finally {
       setLoading(false);
@@ -49,18 +49,18 @@ const Login: React.FC = () => {
         />
 
         
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-5 ">
 
-            <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg">
+            <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg overflow-visible">
               <img
                 src={element2}
                 alt="Background Element"
-                className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 scale-100 md:scale-180"
+                className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 "
               />
               <img
                 src={logo}
                 alt="EZTech Logo"
-                className="w-sm md:w-[325px] mt-13 object-contain z-10"
+                className="w-sm md:w-[325px] object-contain z-10 mb-2"
               />
             </div>
 
@@ -73,8 +73,7 @@ const Login: React.FC = () => {
                   className="w-35 h-35 mx-auto rounded-full bg-no-repeat bg-cover drop-shadow-sm"
                   style={{ backgroundImage: `url(${userImg})` }}>
                 </div>
-                
-
+        
                 <h2 className="text-center text-xl font-medium text-black mb-3">
                  <span className="wave-hand text-3xl">👋</span> Hello,<span className="italic"> Welcome Back!</span>
                 </h2>
