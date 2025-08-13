@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false); // 👈 toggle state
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
