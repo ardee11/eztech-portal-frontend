@@ -83,7 +83,7 @@ body {
 .wave-hand {
   display: inline-block;
   animation: wave 2s infinite;
-  transform-origin: 70% 70%; /* pivot around wrist */
+  transform-origin: 70% 70%; 
 }
 
 @keyframes wave {
@@ -95,4 +95,9 @@ body {
   50% { transform: rotate(10deg); }
   60% { transform: rotate(0deg); }
   100% { transform: rotate(0deg); }
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }
