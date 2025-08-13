@@ -159,7 +159,7 @@ export default function AddItem() {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-bold text-gray-900">Return to Inventory</p>
+            <p className="text-sm font-bold text-gray-500">Return to Inventory</p>
           </div>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function AddItem() {
               
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {/* Date of Entry */}
-                <div className="group">
+                <div className="group relative">
                   <label htmlFor="entryDate" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                     Date of Entry
                   </label>
@@ -193,7 +193,7 @@ export default function AddItem() {
                       id="entryDate"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-default bg-gray-50"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-default bg-gray-50"
                       required
                       readOnly
                       placeholder="Select entry date"
@@ -225,7 +225,7 @@ export default function AddItem() {
                   </div>
 
                   {showPicker && (
-                    <div className="absolute top-full right-0 mt-2 z-50">
+                    <div className="absolute top-full right-0 mt-2 z-[9999] bg-white border border-gray-200 rounded-lg shadow-xl">
                       <DatePicker
                         onDateSelect={handleDateSelect}
                         selectedDate={selectedDate}
@@ -246,7 +246,7 @@ export default function AddItem() {
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     required
-                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-20"
+                    className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-20"
                     placeholder="Enter item name or description"
                   />
                 </div>
@@ -264,7 +264,7 @@ export default function AddItem() {
                       value={quantity}
                       onChange={(e) => setQuantity(e.target.value)}
                       disabled={serialVerified}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       required
                       placeholder="0"
                       min="1"
@@ -273,9 +273,9 @@ export default function AddItem() {
                   
                   <div className="group">
                     <label className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                      Serial Numbers
+                      <p>&nbsp;</p>
                     </label>
-                    <div className="flex items-center space-x-3 h-12 px-4 border border-gray-300 rounded-lg bg-gray-50">
+                    <div className="flex items-center space-x-3 h-9.5 px-4 ">
                       <input
                         type="checkbox"
                         id="hasSerial"
@@ -284,7 +284,7 @@ export default function AddItem() {
                         disabled={serialVerified}
                         className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
                       />
-                      <label htmlFor="hasSerial" className="text-sm text-gray-700 font-medium">Has Serial Numbers</label>
+                      <label htmlFor="hasSerial" className="text-xs text-gray-700 font-medium">Has Serial Numbers</label>
                     </div>
                   </div>
                 </div>
@@ -301,7 +301,7 @@ export default function AddItem() {
                       autoComplete="off"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       required
                       placeholder="Enter client name"
                     />
@@ -317,7 +317,7 @@ export default function AddItem() {
                       autoComplete="off"
                       value={distributor}
                       onChange={(e) => setDistributor(e.target.value)}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                       required
                       placeholder="Enter distributor name"
                     />
@@ -325,7 +325,7 @@ export default function AddItem() {
                 </div>
 
                 {/* Staff Selection */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 h-12 text-gray-500">
                   <div className="group">
                     <StaffDropdown
                       label="Received By"
@@ -355,7 +355,7 @@ export default function AddItem() {
                     autoComplete="off"
                     value={itemNote}
                     onChange={(e) => setitemNote(e.target.value)}
-                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
+                    className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
                     placeholder="Enter any additional notes or comments"
                   />
                 </div>
@@ -365,7 +365,7 @@ export default function AddItem() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg disabled:cursor-not-allowed"
+                    className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-xs font-semibold rounded-lg transition-all duration-200 hover:shadow-lg disabled:cursor-not-allowed"
                   >
                     {loading ? "Adding Item..." : "Add Item to Inventory"}
                   </button>
@@ -399,7 +399,7 @@ export default function AddItem() {
                       id="serialNumbers"
                       value={serialNumbers}
                       onChange={(e) => setSerialNumbers(e.target.value)}
-                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
+                      className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
                       required
                       placeholder="SN1234, SN5678, SN91011"
                     />
@@ -411,7 +411,7 @@ export default function AddItem() {
                   <button
                     type="button"
                     onClick={verifySerials}
-                    className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
+                    className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
                   >
                     Verify Serial Numbers
                   </button>
@@ -430,7 +430,7 @@ export default function AddItem() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                       </div>
-                      <h2 className="text-sm font-bold text-gray-900">Verified Serial Numbers</h2>
+                      <h2 className="text-xs font-bold text-gray-900">Verified Serial Numbers</h2>
                       <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                         {verifiedSerials.length} items
                       </span>
@@ -445,7 +445,7 @@ export default function AddItem() {
                         <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
                           {index + 1}
                         </div>
-                        <span className="text-sm font-medium text-gray-900">Serial #{index + 1}</span>
+                        <span className="text-xs font-medium text-gray-900">Serial #{index + 1}</span>
                       </div>
                       
                       <div className="space-y-3">
@@ -469,7 +469,7 @@ export default function AddItem() {
                               type="text"
                               value={item.serial}
                               onChange={(e) => updateSerialField(index, "serial", e.target.value)}
-                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                             />
                           </div>
 
