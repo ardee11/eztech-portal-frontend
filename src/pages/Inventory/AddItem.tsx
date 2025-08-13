@@ -130,19 +130,20 @@ export default function AddItem() {
   };
 
   return (
-    <>
-      <div className="mx-auto px-6 py-4 relative">
-        <div className="flex items-center mb-3">
+    <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
+      {/* Enhanced Header */}
+      <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 px-2 py-1">
+        <div className="flex items-center space-x-4">
           <div
             onClick={() => navigate(-1)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => (e.key === "Enter" ? navigate(-1) : null)}
-            className="cursor-pointer hover:bg-gray-100 rounded-full block mr-4"
+            className="cursor-pointer hover:bg-blue-50 hover:text-blue-600 rounded-xl p-2 transition-all duration-200 group"
             aria-label="Go back"
           >
             <svg
-              className="w-5 h-5 text-gray-800"
+              className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -152,52 +153,63 @@ export default function AddItem() {
                 stroke="currentColor"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="1"
+                strokeWidth="1.5"
                 d="M13 5H1m0 0 4 4M1 5l4-4"
               />
             </svg>
           </div>
-
-          <p className="text-md font-semibold text-gray-800">
-            Add New Item
-          </p>
+          <div>
+            <p className="text-sm font-bold text-gray-900">Return to Inventory</p>
+          </div>
         </div>
+      </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-row px-8 py-6 gap-x-10 bg-white border border-gray-200 rounded-lg shadow-md"
-        >
-          <div className="flex-1 flex flex-col gap-y-6">
-            <div className="border border-gray-300 rounded-lg h-[75vh] flex flex-col py-6">
-              <div className="flex-1 flex flex-col gap-y-2 overflow-y-auto px-6">
-                <div className="relative">
-                  <label htmlFor="entryDate" className="block text-xs mb-1">
+      <div className="w-full">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Left Column - Main Form */}
+          <div className="space-y-6">
+            {/* Enhanced Main Form Card */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center space-x-3">
+                  <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <h2 className="text-sm font-bold text-gray-900">Item Information</h2>
+                </div>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                {/* Date of Entry */}
+                <div className="group">
+                  <label htmlFor="entryDate" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                     Date of Entry
                   </label>
-
                   <div className="relative">
                     <input
                       type="text"
                       id="entryDate"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="p-2 pr-10 block w-full text-xs border border-gray-500 rounded-lg cursor-default"
+                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-default bg-gray-50"
                       required
                       readOnly
+                      placeholder="Select entry date"
                     />
-
                     <button
                       type="button"
                       onMouseDown={(e) => {
                         e.stopPropagation();
                         setShowPicker((prev) => !prev);
                       }}
-                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-800 hover:cursor-pointer"
+                      className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors duration-200"
                       aria-label="Open calendar"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-4"
+                        className="w-5 h-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -223,8 +235,9 @@ export default function AddItem() {
                   )}
                 </div>
 
-                <div>
-                  <label htmlFor="itemName" className="block text-xs mb-1">
+                {/* Item Name */}
+                <div className="group">
+                  <label htmlFor="itemName" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                     Item Name
                   </label>
                   <textarea
@@ -233,195 +246,243 @@ export default function AddItem() {
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     required
-                    className="p-2 w-full h-16 text-xs border border-gray-500 rounded-lg resize-none"
+                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-20"
+                    placeholder="Enter item name or description"
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="itemQty" className="block text-xs mb-1">
-                    Qty
-                  </label>
-
-                  <div className="flex gap-4">
-                    <div className="w-1/2">
-                      <input
-                        id="itemQty"
-                        type="number"
-                        autoComplete="off"
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
-                        disabled={serialVerified}
-                        className="p-2 w-full text-xs border border-gray-500 rounded-lg"
-                        required
-                      />
-                    </div>
-
-                    <div className="w-1/2 flex items-center gap-2">
+                {/* Quantity and Serial Number Toggle */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="group">
+                    <label htmlFor="itemQty" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Quantity
+                    </label>
+                    <input
+                      id="itemQty"
+                      type="number"
+                      autoComplete="off"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      disabled={serialVerified}
+                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      required
+                      placeholder="0"
+                      min="1"
+                    />
+                  </div>
+                  
+                  <div className="group">
+                    <label className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Serial Numbers
+                    </label>
+                    <div className="flex items-center space-x-3 h-12 px-4 border border-gray-300 rounded-lg bg-gray-50">
                       <input
                         type="checkbox"
                         id="hasSerial"
                         checked={hasSerial}
                         onChange={handleToggle}
                         disabled={serialVerified}
-                        className="shrink-0 border-gray-300 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500"
+                        className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
                       />
-                      <label htmlFor="hasSerial" className="text-xs">Has Serial Number</label>
+                      <label htmlFor="hasSerial" className="text-sm text-gray-700 font-medium">Has Serial Numbers</label>
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="clientName" className="block text-xs mb-1">
-                    Client Name / End User
-                  </label>
-                  <input
-                    type="text"
-                    id="clientName"
-                    autoComplete="off"
-                    value={clientName}
-                    onChange={(e) => setClientName(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    required
-                  />
+                {/* Client and Distributor */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="group">
+                    <label htmlFor="clientName" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Client Name
+                    </label>
+                    <input
+                      type="text"
+                      id="clientName"
+                      autoComplete="off"
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      required
+                      placeholder="Enter client name"
+                    />
+                  </div>
+
+                  <div className="group">
+                    <label htmlFor="distributor" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Distributor
+                    </label>
+                    <input
+                      type="text"
+                      id="distributor"
+                      autoComplete="off"
+                      value={distributor}
+                      onChange={(e) => setDistributor(e.target.value)}
+                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      required
+                      placeholder="Enter distributor name"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="distributor" className="block text-xs mb-1">
-                    Distributor / Supplier
-                  </label>
-                  <input
-                    type="text"
-                    id="distributor"
-                    autoComplete="off"
-                    value={distributor}
-                    onChange={(e) => setDistributor(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
-                    required
-                  />
+                {/* Staff Selection */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="group">
+                    <StaffDropdown
+                      label="Received By"
+                      value={receivedBy}
+                      onChange={setReceivedBy}
+                      options={admins}
+                    />
+                  </div>
+
+                  <div className="group">
+                    <StaffDropdown
+                      label="Checked By"
+                      value={checkedBy}
+                      onChange={setCheckedBy}
+                      options={admins}
+                    />
+                  </div>
                 </div>
 
-                <div className="relative hs-dropdown">
-                  <StaffDropdown
-                    label="Received By"
-                    value={receivedBy}
-                    onChange={setReceivedBy}
-                    options={admins}
-                  />
-                </div>
-
-                <div className="relative hs-dropdown">
-                  <StaffDropdown
-                    label="Checked By"
-                    value={checkedBy}
-                    onChange={setCheckedBy}
-                    options={admins}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="itemNotes" className="block text-xs mb-1">
-                    Notes
+                {/* Notes */}
+                <div className="group">
+                  <label htmlFor="itemNotes" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Additional Notes
                   </label>
                   <textarea
                     id="itemNotes"
                     autoComplete="off"
                     value={itemNote}
                     onChange={(e) => setitemNote(e.target.value)}
-                    className="p-2 w-full h-24 text-xs border border-gray-500 rounded-lg resize-none"
+                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
+                    placeholder="Enter any additional notes or comments"
                   />
                 </div>
 
-                <div>
+                {/* Submit Button */}
+                <div className="pt-4">
                   <button
                     type="submit"
-                    className="text-xs w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+                    disabled={loading}
+                    className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg disabled:cursor-not-allowed"
                   >
-                    Add Item
+                    {loading ? "Adding Item..." : "Add Item to Inventory"}
                   </button>
-                </div>   
-              </div>        
+                </div>
+              </form>
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col">
+          {/* Right Column - Serial Numbers */}
+          <div className="space-y-6">
+            {/* Serial Numbers Input Card */}
             {hasSerial && !serialVerified && (
-              <div className="border border-gray-300 p-6 rounded-lg">
-                <div>
-                  <label htmlFor="serialNumbers" className="block text-xs mb-1">
-                    Serial No. 
-                  </label>
-                  <textarea
-                    id="serialNumbers"
-                    value={serialNumbers}
-                    onChange={(e) => setSerialNumbers(e.target.value)}
-                    className="p-2 w-full h-20 text-xs border border-gray-500 rounded-lg resize-none"
-                    required
-                  />
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-100">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                      </svg>
+                    </div>
+                    <h2 className="text-sm font-bold text-gray-900">Serial Numbers</h2>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-600">Use commas to separate multiple serial numbers in the input field (e.g. SN1234, SN5678, SN91011).</p>
+                
+                <div className="p-6 space-y-4">
+                  <div className="group">
+                    <label htmlFor="serialNumbers" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Enter Serial Numbers
+                    </label>
+                    <textarea
+                      id="serialNumbers"
+                      value={serialNumbers}
+                      onChange={(e) => setSerialNumbers(e.target.value)}
+                      className="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
+                      required
+                      placeholder="SN1234, SN5678, SN91011"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Use commas to separate multiple serial numbers
+                    </p>
+                  </div>
 
-                <div>
                   <button
                     type="button"
                     onClick={verifySerials}
-                    className="mt-4 text-xs px-16 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+                    className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
                   >
-                    Enter Serial Numbers
+                    Verify Serial Numbers
                   </button>
                 </div>
               </div>
-              )}
-            {/* <div className="border border-dashed border-blue-600 p-8 rounded-xl flex justify-center items-center mx-8 hover:bg-blue-50 transition hover:cursor-pointer">
-              <button
-                type="button"
-                className="p-2 bg-blue-500 text-white rounded-full hover:cursor-pointer"
-                aria-label="Add item"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-4 h-4"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-            </div> */
-            }
+            )}
 
+            {/* Verified Serial Numbers Card */}
             {serialVerified && verifiedSerials.length > 0 && hasSerial && (
-              <div className="border border-gray-300 rounded-lg h-[75vh] py-6">
-                <div className="flex flex-col flex-grow overflow-y-auto h-full px-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </div>
+                      <h2 className="text-sm font-bold text-gray-900">Verified Serial Numbers</h2>
+                      <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                        {verifiedSerials.length} items
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
                   {verifiedSerials.map((item, index) => (
-                    <div key={index} className="flex flex-col gap-3 border border-gray-300 rounded-lg text-xs p-4 mb-4">
-                      <div className="flex gap-2 items-center">
-                        <input
-                          type="checkbox"
-                          checked={item.isGood}
-                          onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
-                        />
-                        <label>Item is in good condition</label>
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+                          {index + 1}
+                        </div>
+                        <span className="text-sm font-medium text-gray-900">Serial #{index + 1}</span>
                       </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            id={`good-${index}`}
+                            checked={item.isGood}
+                            onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
+                            className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2"
+                          />
+                          <label htmlFor={`good-${index}`} className="text-sm text-gray-700 font-medium">
+                            Item is in good condition
+                          </label>
+                        </div>
 
-                      <div className="flex gap-4 items-center">
-                        <label className="w-20 font-medium">Serial #{index + 1}:</label>
-                        <input
-                          type="text"
-                          value={item.serial}
-                          onChange={(e) => updateSerialField(index, "serial", e.target.value)}
-                          className="flex-1 p-1 border border-gray-500 rounded-lg text-xs"
-                        />
-                      </div>
+                        <div className="grid grid-cols-1 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Serial Number</label>
+                            <input
+                              type="text"
+                              value={item.serial}
+                              onChange={(e) => updateSerialField(index, "serial", e.target.value)}
+                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            />
+                          </div>
 
-                      <div className="flex gap-4 items-start">
-                        <label className="w-20 font-medium">Notes:</label>
-                        <textarea
-                          value={item.note}
-                          onChange={(e) => updateSerialField(index, "note", e.target.value)}
-                          className="flex-1 p-1 border border-gray-500 rounded-lg text-xs resize-none"
-                        />
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                            <textarea
+                              value={item.note}
+                              onChange={(e) => updateSerialField(index, "note", e.target.value)}
+                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-16"
+                              placeholder="Optional notes for this item"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -429,8 +490,8 @@ export default function AddItem() {
               </div>
             )}
           </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

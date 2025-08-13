@@ -27,5 +27,5 @@ npm install
 Write-Host "Starting dev server..." -ForegroundColor Green
 npm run dev
 
-Write-Host "✅ CSS cache cleared and dependencies reinstalled!" -ForegroundColor Green
+Write-Host "CSS cache cleared and dependencies reinstalled!" -ForegroundColor Green
 Write-Host "The text-2xs issue should now be resolved." -ForegroundColor Green
