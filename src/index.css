@@ -1,3 +1,10 @@
+/*
+ * EZTech Portal Frontend Styles
+ * 
+ * IMPORTANT: text-2xs utility has been fortified to prevent sizing issues
+ * when switching between git branches. The !important declarations ensure
+ * consistent 10px font sizing across all text-2xs elements.
+ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 @import "preline/variants.css";
@@ -7,9 +14,45 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-@layer utilities {
+/* Base layer for more robust custom utilities */
+@layer base {
   .text-2xs {
-    font-size: 0.625rem; /* 10px - smaller than text-xs which is 0.75rem (12px) */
+    font-size: 0.625rem !important; /* 10px - smaller than text-xs which is 0.75rem (12px) */
+    line-height: 0.875rem !important;
+  }
+  
+  /* Fallback for when text-2xs fails */
+  .text-2xs-fallback {
+    font-size: 0.625rem !important;
+    line-height: 0.875rem !important;
+  }
+  
+  /* Force reset for text-2xs elements to prevent branch switch issues */
+  [class*="text-2xs"] {
+    font-size: 0.625rem !important;
+    line-height: 0.875rem !important;
+  }
+  
+  /* Specific selectors for common text-2xs usage to prevent branch switch issues */
+  th.text-2xs,
+  .text-2xs.font-semibold,
+  .text-2xs.font-medium,
+  .text-2xs.font-bold {
+    font-size: 0.625rem !important;
+    line-height: 0.875rem !important;
+  }
+  
+  /* Ensure table headers maintain proper sizing */
+  table th.text-2xs {
+    font-size: 0.625rem !important;
+    line-height: 0.875rem !important;
+  }
+}
+
+@layer utilities {
+  /* Keep the original utility as backup */
+  .text-2xs-utility {
+    font-size: 0.625rem;
     line-height: 0.875rem;
   }
 
