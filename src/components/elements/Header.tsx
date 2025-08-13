@@ -53,7 +53,7 @@ export default function Header() {
                     <p className="text-sm font-medium text-gray-800">{ user?.email }</p>
                   </div>
                   <div className="p-1.5 space-y-0.5">
-                    <a onClick={handleSignOut} className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 hover:cursor-pointer">
+                    <a onClick={handleSignOut} className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-red-800 hover:bg-red-100 focus:outline-hidden focus:bg-gray-100 hover:cursor-pointer">
                       <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                       Sign Out
                     </a>

@@ -146,20 +146,20 @@ function ItemDetails() {
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Quantity</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
+                        <label className="text-2xs font-semibold text-gray-500 px-5 uppercase tracking-wide">Quantity</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 px-5 transition-colors whitespace-pre-wrap">
                           {item?.quantity ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Client Name</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
+                        <label className="text-2xs font-semibold text-gray-500 px-5uppercase tracking-wide">Client Name</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 px-5transition-colors whitespace-pre-wrap">
                           {item?.client_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Distributor</label>
-                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 transition-colors whitespace-pre-wrap">
+                        <label className="text-2xs font-semibold text-gray-500 px-5 uppercase tracking-wide">Distributor</label>
+                        <p className="text-xs font-medium text-gray-900 mt-1 group-hover:text-blue-600 px-5 transition-colors whitespace-pre-wrap">
                           {item?.distributor ?? "-"}
                         </p>
                       </div>
@@ -400,7 +400,7 @@ function ItemDetails() {
                         <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="text-xs font-bold text-gray-900">Pending</h4>
-                            <span className="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <span className="bg-gray-100 text-gray-800 text-2xs font-semibold px-2.5 py-0.5 rounded-full">
                               In Progress
                             </span>
                           </div>
