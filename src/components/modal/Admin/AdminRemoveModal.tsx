@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { removeAdmin } from "../../../hooks/useAdmin";
-//import { useAuth } from "../../contexts/authContext";
-import { ClipLoader } from "react-spinners";
 import { showToast } from "../../../utils/toastUtils";
 
 type AdminModalProps = {

@@ -9,7 +9,7 @@ import { showToast } from "../../utils/toastUtils";
 export default function AddItem() {
   const { admins } = useAdmin();
   const navigate = useNavigate();
-  const { addInventory, loading, error, success } = useAddInventory();
+  const { addInventory } = useAddInventory();
 
   const [showPicker, setShowPicker] = useState(false);
   const [entryDate, setEntryDate] = useState<Date | null>(null);
@@ -132,46 +132,49 @@ export default function AddItem() {
   return (
     <>
       <div className="mx-auto px-6 py-4 relative">
-        <div className="flex items-center mb-3">
-          <div
-            onClick={() => navigate(-1)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => (e.key === "Enter" ? navigate(-1) : null)}
-            className="cursor-pointer hover:bg-gray-100 rounded-full block mr-4"
-            aria-label="Go back"
-          >
-            <svg
-              className="w-5 h-5 text-gray-800"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 10"
+        <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3">
+          <div className="flex items-center space-x-4">
+            <div
+              onClick={() => navigate(-1)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" ? navigate(-1) : null)}
+              className="cursor-pointer hover:bg-blue-50 hover:text-blue-600 rounded-xl p-2 transition-all duration-200 group"
+              aria-label="Go back"
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1"
-                d="M13 5H1m0 0 4 4M1 5l4-4"
-              />
-            </svg>
+              <svg
+                className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13 5H1m0 0 4 4M1 5l4-4"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-md 3xl:text-lg font-bold text-gray-800">
+                Add New Item
+              </p>
+            </div>
           </div>
-
-          <p className="text-md font-semibold text-gray-800">
-            Add New Item
-          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-row px-8 py-6 gap-x-10 bg-white border border-gray-200 rounded-lg shadow-md"
+          className="flex flex-row px-8 py-6 gap-x-10 bg-white border border-gray-200 rounded-xl shadow-sm"
         >
           <div className="flex-1 flex flex-col gap-y-6">
-            <div className="border border-gray-300 rounded-lg h-[75vh] flex flex-col py-6">
+            <div className="border border-gray-400 rounded-lg h-[70vh] flex flex-col py-6">
               <div className="flex-1 flex flex-col gap-y-2 overflow-y-auto px-6">
                 <div className="relative">
-                  <label htmlFor="entryDate" className="block text-xs mb-1">
+                  <label htmlFor="entryDate" className="block text-xs 3xl:text-sm mb-1 mt-2">
                     Date of Entry
                   </label>
 
@@ -181,7 +184,7 @@ export default function AddItem() {
                       id="entryDate"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      className="p-2 pr-10 block w-full text-xs border border-gray-500 rounded-lg cursor-default"
+                      className="p-2 pr-10 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg cursor-default"
                       required
                       readOnly
                     />
@@ -224,7 +227,7 @@ export default function AddItem() {
                 </div>
 
                 <div>
-                  <label htmlFor="itemName" className="block text-xs mb-1">
+                  <label htmlFor="itemName" className="block text-xs 3xl:text-sm mb-1">
                     Item Name
                   </label>
                   <textarea
@@ -233,12 +236,12 @@ export default function AddItem() {
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     required
-                    className="p-2 w-full h-16 text-xs border border-gray-500 rounded-lg resize-none"
+                    className="p-2 w-full h-16 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="itemQty" className="block text-xs mb-1">
+                  <label htmlFor="itemQty" className="block text-xs 3xl:text-sm mb-1">
                     Qty
                   </label>
 
@@ -251,7 +254,7 @@ export default function AddItem() {
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         disabled={serialVerified}
-                        className="p-2 w-full text-xs border border-gray-500 rounded-lg"
+                        className="p-2 w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                         required
                       />
                     </div>
@@ -265,13 +268,13 @@ export default function AddItem() {
                         disabled={serialVerified}
                         className="shrink-0 border-gray-300 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500"
                       />
-                      <label htmlFor="hasSerial" className="text-xs">Has Serial Number</label>
+                      <label htmlFor="hasSerial" className="text-xs 3xl:text-sm">Has Serial Number</label>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="clientName" className="block text-xs mb-1">
+                  <label htmlFor="clientName" className="block text-xs 3xl:text-sm mb-1">
                     Client Name / End User
                   </label>
                   <input
@@ -280,13 +283,13 @@ export default function AddItem() {
                     autoComplete="off"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
+                    className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="distributor" className="block text-xs mb-1">
+                  <label htmlFor="distributor" className="block text-xs 3xl:text-sm mb-1">
                     Distributor / Supplier
                   </label>
                   <input
@@ -295,12 +298,12 @@ export default function AddItem() {
                     autoComplete="off"
                     value={distributor}
                     onChange={(e) => setDistributor(e.target.value)}
-                    className="p-2 block w-full text-xs border border-gray-500 rounded-lg"
+                    className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                     required
                   />
                 </div>
 
-                <div className="relative hs-dropdown">
+                <div className="relative">
                   <StaffDropdown
                     label="Received By"
                     value={receivedBy}
@@ -309,7 +312,7 @@ export default function AddItem() {
                   />
                 </div>
 
-                <div className="relative hs-dropdown">
+                <div className="relative">
                   <StaffDropdown
                     label="Checked By"
                     value={checkedBy}
@@ -319,7 +322,7 @@ export default function AddItem() {
                 </div>
 
                 <div>
-                  <label htmlFor="itemNotes" className="block text-xs mb-1">
+                  <label htmlFor="itemNotes" className="block text-xs 3xl:text-sm mb-1">
                     Notes
                   </label>
                   <textarea
@@ -327,14 +330,14 @@ export default function AddItem() {
                     autoComplete="off"
                     value={itemNote}
                     onChange={(e) => setitemNote(e.target.value)}
-                    className="p-2 w-full h-24 text-xs border border-gray-500 rounded-lg resize-none"
+                    className="p-2 w-full h-24 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
                   />
                 </div>
 
                 <div>
                   <button
                     type="submit"
-                    className="text-xs w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+                    className="text-xs 3xl:text-sm mb-4 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
                   >
                     Add Item
                   </button>
@@ -345,57 +348,38 @@ export default function AddItem() {
 
           <div className="flex-1 flex flex-col">
             {hasSerial && !serialVerified && (
-              <div className="border border-gray-300 p-6 rounded-lg">
+              <div className="border border-gray-400 p-6 rounded-lg">
                 <div>
-                  <label htmlFor="serialNumbers" className="block text-xs mb-1">
+                  <label htmlFor="serialNumbers" className="block text-xs 3xl:text-sm mb-1">
                     Serial No. 
                   </label>
                   <textarea
                     id="serialNumbers"
                     value={serialNumbers}
                     onChange={(e) => setSerialNumbers(e.target.value)}
-                    className="p-2 w-full h-20 text-xs border border-gray-500 rounded-lg resize-none"
+                    className="p-2 w-full h-20 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-600">Use commas to separate multiple serial numbers in the input field (e.g. SN1234, SN5678, SN91011).</p>
+                <p className="text-xs 3xl:text-sm text-gray-600">Use commas to separate multiple serial numbers in the input field (e.g. SN1234, SN5678, SN91011).</p>
 
                 <div>
                   <button
                     type="button"
                     onClick={verifySerials}
-                    className="mt-4 text-xs px-16 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+                    className="mt-4 text-xs 3xl:text-sm px-16 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
                   >
                     Enter Serial Numbers
                   </button>
                 </div>
               </div>
-              )}
-            {/* <div className="border border-dashed border-blue-600 p-8 rounded-xl flex justify-center items-center mx-8 hover:bg-blue-50 transition hover:cursor-pointer">
-              <button
-                type="button"
-                className="p-2 bg-blue-500 text-white rounded-full hover:cursor-pointer"
-                aria-label="Add item"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-4 h-4"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-            </div> */
-            }
+            )}
 
             {serialVerified && verifiedSerials.length > 0 && hasSerial && (
               <div className="border border-gray-300 rounded-lg h-[75vh] py-6">
                 <div className="flex flex-col flex-grow overflow-y-auto h-full px-6">
                   {verifiedSerials.map((item, index) => (
-                    <div key={index} className="flex flex-col gap-3 border border-gray-300 rounded-lg text-xs p-4 mb-4">
+                    <div key={index} className="flex flex-col gap-3 border border-gray-300 rounded-lg text-xs 3xl:text-sm p-4 mb-4">
                       <div className="flex gap-2 items-center">
                         <input
                           type="checkbox"

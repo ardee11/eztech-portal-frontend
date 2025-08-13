@@ -8,7 +8,7 @@ export function useInventoryFilterOptions() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/inventory/filter-options")
+    fetch("/api/inventory/filter-options")
       .then(res => res.json())
       .then(data => {
         setOptions(data);

@@ -13,7 +13,7 @@ export default function SalesDB() {
     <div className="max-w-full px-6 py-4 mx-auto">
       {!loading ? (
         <div className="flex flex-row gap-4 items-stretch">
-          <div className="flex-1 min-w-0 h-[85vh] border border-gray-400 rounded-xl overflow-hidden bg-white">
+          <div className="flex-1 min-w-0 h-[85vh] border border-gray-300 shadow-md rounded-xl overflow-hidden bg-white">
             <AccountsDB 
               selectedManagerFilter={selectedManagerFilter} 
               setSelectedManagerFilter={setSelectedManagerFilter}
@@ -21,11 +21,11 @@ export default function SalesDB() {
           </div>
 
           <div className="flex-1 min-w-0 h-[85vh] flex flex-col gap-4">
-            <div className="flex-1 border border-gray-400 bg-white rounded-xl overflow-hidden">
+            <div className="flex-1 bg-white border border-gray-300 shadow-md rounded-xl overflow-hidden">
               <DBSearch /> 
             </div>
 
-            <div className="flex-1 flex flex-col border border-gray-400 bg-white rounded-xl p-5 overflow-hidden">
+            <div className="flex-1 flex flex-col border border-gray-300 shadow-md bg-white rounded-xl p-5 overflow-hidden">
               <DBInfo
                 selectedManagerFilter={selectedManagerFilter}
                 setSelectedManagerFilter={setSelectedManagerFilter}

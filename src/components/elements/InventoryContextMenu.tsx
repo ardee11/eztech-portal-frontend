@@ -59,7 +59,7 @@ export default function InventoryContextMenu({
   return (
     <ul
       ref={menuRef}
-      className="fixed z-50 bg-white border border-gray-300 shadow-md rounded-sm text-xs min-w-30"
+      className="fixed z-50 bg-white border border-gray-300 shadow-md rounded-sm text-xs 3xl:text-sm min-w-30 3xl:min-w-40"
       style={{ top: safeTop, left: safeLeft }}
     >
       <li

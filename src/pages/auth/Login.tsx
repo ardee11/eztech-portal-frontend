@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import logo from "../../assets/ez-logo.png";
 import userImg from "../../assets/Users.png";
 import element1 from "../../assets/element3.png";
@@ -11,7 +11,11 @@ const Login: React.FC = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,3 +139,6 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
+
+      

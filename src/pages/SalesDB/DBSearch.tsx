@@ -34,7 +34,7 @@ const DBSearch: React.FC<Props> = () => {
       setSearchError(null);
   
       const res = await fetch(
-        `http://localhost:5000/api/search?query=${encodeURIComponent(searchInput)}`,
+        `/api/search?query=${encodeURIComponent(searchInput)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
