@@ -23,7 +23,12 @@ export const useAdmin = (trigger?: boolean) => {
         });
         if (!response.ok) throw new Error("Failed to fetch admins");
         const data = await response.json();
-        setAdmins(data);
+        const normalized = data.map((admin: any) => ({
+          ...admin,
+          role: Array.isArray(admin.role) ? admin.role : [admin.role],
+        }));
+        
+        setAdmins(normalized);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);

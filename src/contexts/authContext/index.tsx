@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             aid: decoded.aid,
             email: decoded.email,
             name: decoded.name,
-            role: [decoded.role],
+            role: Array.isArray(decoded.role) ? decoded.role : [decoded.role],
           });
           setLoading(false);
         }
