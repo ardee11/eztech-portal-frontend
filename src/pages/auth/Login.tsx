@@ -53,31 +53,29 @@ const Login: React.FC = () => {
       />
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-5 ">
- 
-             <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg overflow-visible">
-              <img
-                src={element2}
-                alt="Background Element"
-                className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 "
-              />
-              <img
-                src={logo}
-                alt="EZTech Logo"
-                className="w-sm md:w-[325px] object-contain z-10 mb-2"
-              />
-            </div>
+        <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg overflow-visible">
+          <img
+            src={element2}
+            alt="Background Element"
+            className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 "
+          />
+          <img
+            src={logo}
+            alt="EZTech Logo"
+            className="w-sm md:w-[325px] object-contain z-10 mb-2 p-8"
+          />
+        </div>
 
-   
         <div className="flex justify-center items-center p-4 z-20">
           <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-[inset_0_15px_30px_rgba(255,255,255,0.1),inset_0_-15px_30px_rgba(255,255,255,0.4)]
               rounded-2xl px-6 py-4 w-full max-w-sm">
             <div
-              className="w-35 h-35 mx-auto rounded-full bg-no-repeat bg-cover drop-shadow-sm"
+              className="w-24 h-24 3xl:w-32 3xl:h-32 mx-auto rounded-full bg-no-repeat bg-cover drop-shadow-sm"
               style={{ backgroundImage: `url(${userImg})` }}
             ></div>
 
-            <h2 className="text-center text-xl font-medium text-black mb-3">
-              <span className="wave-hand text-3xl">👋</span> Hello,
+            <h2 className="text-center text-lg 3xl:text-xl font-medium text-black mb-3">
+              <span className="wave-hand">👋</span> Hello,
               <span className="italic"> Welcome Back!</span>
             </h2>
 
@@ -91,45 +89,44 @@ const Login: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               
               <div>
-                <label className="block text-sm italic text-gray-800 ml-2">
+                <label className="block text-xs 3xl:text-sm italic text-gray-800 ml-2">
                   Email
                 </label>
                 <input
                   type="email"
                   ref={emailRef}
-                  className="w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="text-xs 3xl:text-sm mt-2 w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
 
-            
               <div>
-                <label className="block text-sm italic text-gray-800 ml-2">
+                <label className="block text-xs 3xl:text-sm italic text-gray-800 ml-2">
                   Password
                 </label>
-                <div className="relative">
+                <div className="relative mt-2">
                   <input
                     type={showPassword ? "text" : "password"}
                     ref={passwordRef}
-                    className="w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                    className="text-xs 3xl:text-sm w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-sm text-gray-600 hover:text-gray-900"
+                    className="absolute inset-y-0 right-3 flex items-center text-xs 3xl:text-sm text-gray-600 hover:text-gray-900"
                   >
-                    {showPassword ? "🔓" : "🔒"}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
               </div>
-
-              
+              <div className="mt-10 3xl:mt-8 flex justify-center">
               <button
                 type="submit"
                 disabled={loading}
-               className="w-[50%] bg-blue-700/90   drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-2 mb-2 hover:bg-[#6092f9] hover:cursor-pointer transition text-gray filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
+               className="w-[80%] text-xs 3xl:text-sm bg-blue-700/90 drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-1.5 3xl:py-2 mb-2 hover:bg-[#6092f9] hover:cursor-pointer transition text-gray-200 filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
               >
                 {loading ? "Signing in..." : "Sign in"}
               </button>
+              </div>
             </form>
           </div>
         </div>
