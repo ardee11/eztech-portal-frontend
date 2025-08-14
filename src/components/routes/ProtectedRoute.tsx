@@ -1,7 +1,7 @@
 // components/routes/ProtectedRoute.tsx
 import { useAuth } from "../../contexts/authContext";
 import { Navigate, Outlet } from "react-router-dom";
-import { hasAccess, PageAccess } from "../../utils/permissions";
+import { hasAnyAccess, PageAccess } from "../../utils/permissions";
 
 interface ProtectedRouteProps {
   page?: PageAccess;
@@ -16,7 +16,7 @@ export default function ProtectedRoute({ page }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  if (page && !hasAccess(userRole ?? "", page)) {
+  if (page && !hasAnyAccess(userRole ?? [], page)) {
     return <Navigate to="/" replace />;
   }
 

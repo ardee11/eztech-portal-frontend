@@ -3,7 +3,7 @@ import { useAuth } from "../../../contexts/authContext";
 import { useSalesAccounts, SalesAccount } from "../../../hooks/useSalesDB";
 import { useAccountManagers } from "../../../hooks/useAdmin";
 import { showToast } from "../../../utils/toastUtils";
-import StaffDropdown from "../../elements/StaffDropdown";
+import AccountManagersDropdown from "../../elements/AccountManagersDropdown";
 
 type Props = {
   isOpen: boolean;
@@ -18,8 +18,9 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
   const { data, loading, updateSalesAccount } = useSalesAccounts();
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<SalesAccount | null>(null);
-
-  const canEditAccountManager = ["Admin", "Sales Manager", "Super Admin"].includes(userRole || "");
+  const allowedRoles = ["Admin", "Sales Manager", "Super Admin"];
+  
+  const canEditAccountManager = userRole?.some(role => allowedRoles.includes(role)) ?? false;
 
   const [formData, setFormData] = useState({
     comp_name: "",
@@ -147,10 +148,10 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
 
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white animate-expand-card rounded-lg px-8 py-6 max-w-3xl max-h-124 flex flex-col">
+      <div className="bg-white animate-expand-card rounded-lg px-8 py-6 max-w-3xl 3xl:max-w-4xl max-h-116 3xl:max-h-130 flex flex-col">
         <div className="delay-show flex flex-col h-full">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Edit Company Details</h3>
+            <h3 className="text-lg 3xl:text-xl font-bold text-gray-900">Edit Company Details</h3>
             <button
               onClick={handleClose}
               className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
@@ -173,11 +174,11 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {canEditAccountManager && (
                   <div>
-                    <label htmlFor="acc_manager" className="block text-xs font-medium mb-2">
+                    <label htmlFor="acc_manager" className="block text-xs 3xl:text-sm font-medium mb-2">
                       Account Manager
                     </label>
                     <div className="relative">
-                      <StaffDropdown
+                      <AccountManagersDropdown
                         value={formData.acc_manager}
                         onChange={(val) => setFormData((prev) => ({ ...prev, acc_manager: val }))}
                         options={accountManagers}
@@ -187,7 +188,7 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                 )}
 
                 <div>
-                  <label htmlFor="comp_name" className="block text-xs font-medium mb-2">
+                  <label htmlFor="comp_name" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Company Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -195,14 +196,14 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                     id="comp_name"
                     value={formData.comp_name}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500"
+                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Company Name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="comp_address" className="block text-xs font-medium mb-2">
+                  <label htmlFor="comp_address" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Company Address <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -210,14 +211,14 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                     id="comp_address"
                     value={formData.comp_address}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500"
+                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Company Address"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="comp_person" className="block text-xs font-medium mb-2">
+                  <label htmlFor="comp_person" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Contact Person <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -225,14 +226,14 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                     id="comp_person"
                     value={formData.comp_person}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500"
+                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Contact Person"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="comp_number" className="block text-xs font-medium mb-2">
+                  <label htmlFor="comp_number" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Contact Number
                   </label>
                   <input
@@ -240,13 +241,13 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                     id="comp_number"
                     value={formData.comp_number}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500"
+                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Contact Number"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="comp_email" className="block text-xs font-medium mb-2">
+                  <label htmlFor="comp_email" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Email Address
                   </label>
                   <input
@@ -254,13 +255,13 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                     id="comp_email"
                     value={formData.comp_email}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500"
+                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Email Address"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="remarks" className="block text-xs font-medium mb-2">
+                  <label htmlFor="remarks" className="block text-xs 3xl:text-sm font-medium mb-2">
                     Remarks
                   </label>
                   <div className="relative">
@@ -268,7 +269,7 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                       id="remarks"
                       value={formData.remarks}
                       onChange={handleChange}
-                      className="py-2 px-3 pe-9 block w-full appearance-none border border-gray-500 rounded-md text-xs focus:border-blue-500 focus:ring-blue-500 hover:cursor-pointer"
+                      className="py-2 px-3 pe-9 block w-full appearance-none border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500 hover:cursor-pointer"
                     >
                       <option value="Open">Open</option>
                       <option value="Potential">Potential</option>
@@ -290,7 +291,7 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                 <button
                   type="submit"
                   disabled={loadingSubmit || !isFormValid() || isFormDataUnchanged()}
-                  className="px-12 py-2 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
+                  className="px-12 py-2 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
                   {loadingSubmit ? "Submitting..." : "Submit"}
                 </button>
@@ -298,7 +299,7 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                   type="button"
                   onClick={handleClose}
                   disabled={loadingSubmit}
-                  className="px-10 py-2 text-xs font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
+                  className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>

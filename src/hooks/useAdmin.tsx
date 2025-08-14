@@ -4,7 +4,7 @@ interface Admin {
   aid: number;
   name: string;
   position: string;
-  role: string;
+  role: string[];
   email: string;
 }
 
@@ -84,7 +84,7 @@ export const useAddAdmin = () => {
     name: string,
     email: string,
     position: string,
-    role: string
+    role: string[]
   ): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch(`/auth/register`, {

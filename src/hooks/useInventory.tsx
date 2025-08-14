@@ -7,11 +7,11 @@ export interface Item {
   distributor: string;
   client_name: string;
   entry_date: Date;
-  checked_by: string;
-  received_by: string;
+  checked_by: string[];
+  received_by: string[];
   delivered: boolean | null;
   delivery_date: Date | null;
-  delivered_by: string | null;
+  delivered_by: string[] | null;
   item_status: string;
   notes: string | null;
   created_at: Date;

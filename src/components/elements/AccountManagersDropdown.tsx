@@ -62,14 +62,14 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
 
   return (
     <div className="relative">
-      <label htmlFor={id} className="block text-xs mb-1">{label}</label>
+      <label htmlFor={id} className="block text-xs 3xl:text-sm mb-1">{label}</label>
 
       <button
         id={id}
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
+        className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs 3xl:text-sm rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -114,7 +114,7 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
                     onChange(option.name);
                     setIsOpen(false);
                   }}
-                  className={`block w-full text-left text-xs text-gray-700 px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
+                  className={`block w-full text-left text-xs 3xl:text-sm text-gray-700 px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
                     value === option.name ? "bg-teal-100 font-semibold" : ""
                   }`}
                 >

@@ -6,7 +6,7 @@ interface User {
   aid: number;
   email: string;
   name: string;
-  role: string;
+  role: string[];
 }
 
 interface AuthContextType {
@@ -16,7 +16,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   userLoggedIn: boolean;
-  userRole: string | null;
+  userRole: string[] | null;
   userName: string | null;
 }
 
@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     userLoggedIn: !!user,
     userName: user?.name ?? null,
-    userRole: user?.role ?? null,
+    userRole: user?.role ?? [],
   };
 
   return (

@@ -257,8 +257,8 @@ export default function Inventory() {
       </div>
 
       {/* Enhanced Table Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
-        <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-100">
+      <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden transition-all duration-300">
+        <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">

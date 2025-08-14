@@ -5,9 +5,11 @@ import { useAdmin } from "../../hooks/useAdmin";
 import StaffDropdown from "../../components/elements/StaffDropdown";
 import { useAddInventory } from "../../hooks/useInventory";
 import { showToast } from "../../utils/toastUtils";
+import { useAuth } from "../../contexts/authContext";
 
 export default function AddItem() {
   const { admins } = useAdmin();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { addInventory } = useAddInventory();
 
@@ -19,8 +21,8 @@ export default function AddItem() {
   const [hasSerial, setHasSerial] = useState(false);
   const [clientName, setClientName] = useState("");
   const [distributor, setDistributor] = useState("");
-  const [receivedBy, setReceivedBy] = useState("");
-  const [checkedBy, setCheckedBy] = useState("");
+  const [receivedBy, setReceivedBy] = useState<string[]>([]);
+  const [checkedBy, setCheckedBy] = useState<string[]>([]);
   const [itemNote, setitemNote] = useState("");
   const [serialNumbers, setSerialNumbers] = useState<string>("");
   const [serialVerified, setSerialVerified] = useState(false);
@@ -116,7 +118,7 @@ export default function AddItem() {
       item_status: "Pending",
       notes: itemNote.trim(),
       created_at: new Date(),
-      created_by: receivedBy,
+      created_by: user?.name || user?.email || "Unknown",
       serialnumbers,
     };
 

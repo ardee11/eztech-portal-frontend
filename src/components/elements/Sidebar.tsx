@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import logo from '../../assets/ez-logo.png';
 import { useAuth } from "../../contexts/authContext";
 import { useSignOut } from "../../hooks/useSignOut";
-import { hasAccess } from "../../utils/permissions";
+import { hasAnyAccess } from "../../utils/permissions";
 
 export default function Sidebar() {
   const { userRole } = useAuth();
@@ -24,7 +24,7 @@ export default function Sidebar() {
           <img src={logo} className="w-35 h-auto" alt="Logo" />
         </div>
 
-                 <div className="flex-1 overflow-y-auto mt-5">
+        <div className="flex-1 overflow-y-auto mt-5">
           <nav className="w-full flex flex-col">
             <ul className="flex flex-col space-y-1">
               <li>
@@ -63,7 +63,7 @@ export default function Sidebar() {
                  </NavLink>
               </li>
 
-              {userRole && hasAccess(userRole, "inventory") && (
+              {userRole && hasAnyAccess(userRole, "inventory") && (
                 <li>
                   <NavLink
                     to="/inventory"
@@ -100,7 +100,7 @@ export default function Sidebar() {
                 </li>
               )}
 
-              {userRole && hasAccess(userRole, "sales") && (
+              {userRole && hasAnyAccess(userRole, "sales") && (
                 <li>
                   <NavLink
                     to="/sales-database"
@@ -139,7 +139,7 @@ export default function Sidebar() {
               <li className="hs-accordion" id="account-accordion">
                 <button 
                   type="button" 
-                  className="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 3xl:py-4 px-4 text-sm text-slate-300 rounded-r-lg hover:bg-white/5 hover:text-white focus:outline-none focus:bg-white/5 transition-all duration-200 group" 
+                  className="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 3xl:py-4 px-4 text-sm text-slate-300 rounded-r-lg hover:bg-white/5 hover:text-white hover:cursor-pointer focus:outline-none focus:bg-white/5 transition-all duration-200 group" 
                   aria-expanded="true" 
                   aria-controls="account-accordion-child"
                 >
@@ -170,7 +170,7 @@ export default function Sidebar() {
 
                 <div id="account-accordion-child" className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="account-accordion">
                   <ul className="ps-6 pt-2 space-y-1">
-                    {userRole && hasAccess(userRole, "admin") && (
+                    {userRole && hasAnyAccess(userRole, "admin") && (
                       <li>
                         <NavLink
                           to="/admin"
