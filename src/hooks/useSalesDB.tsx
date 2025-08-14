@@ -75,7 +75,6 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     };
 
     fetchData();
-
     
     const socket = new WebSocket(`ws://${window.location.host}/ws/sales-accounts?token=${token}`);
     ws.current = socket;

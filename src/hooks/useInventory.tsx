@@ -118,33 +118,32 @@ export function useInventory(month?: number, year?: number) {
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        if (message.type === 'inventory_update' && Array.isArray(message.data)) {
+          const filtered = (message.data as Item[]).filter((item) => {
+            const entryDate = new Date(item.entry_date);
+            return (
+              (!month || entryDate.getMonth() + 1 === month) &&
+              (!year || entryDate.getFullYear() === year)
+            );
+          });
 
-    if (message.type === 'inventory_update' && Array.isArray(message.data)) {
-      const filtered = (message.data as Item[]).filter((item) => {
-        const entryDate = new Date(item.entry_date);
-        return (
-          (!month || entryDate.getMonth() + 1 === month) &&
-          (!year || entryDate.getFullYear() === year)
-        );
-      });
+          const parsed = filtered
+            .map((item) => ({
+              ...item,
+              entry_date: new Date(item.entry_date),
+              delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+              created_at: new Date(item.created_at),
+            }))
+            .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());
 
-      const parsed = filtered
-        .map((item) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }))
-        .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());
-
-      setItems(parsed);
-    } else {
-      console.warn("Unhandled WebSocket message:", message);
-    }
-  } catch (err) {
-    console.error("Failed to parse WS message:", err);
-  }
-};
+          setItems(parsed);
+        } else {
+          console.warn("Unhandled WebSocket message:", message);
+        }
+      } catch (err) {
+        console.error("Failed to parse WS message:", err);
+      }
+    };
     socket.onerror = (event) => {
       console.error("WebSocket error:", event);
     };

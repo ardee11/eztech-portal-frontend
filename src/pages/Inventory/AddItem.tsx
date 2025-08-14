@@ -13,6 +13,7 @@ export default function AddItem() {
   const navigate = useNavigate();
   const { addInventory } = useAddInventory();
 
+  const [loading, setLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [entryDate, setEntryDate] = useState<Date | null>(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -80,6 +81,7 @@ export default function AddItem() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!entryDate) {
       showToast("Please select an entry date", "warning");
@@ -128,6 +130,8 @@ export default function AddItem() {
       navigate(-1);
     } catch (err: any) {
       showToast("Failed to add item. Please try again.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -339,6 +343,7 @@ export default function AddItem() {
                 <div>
                   <button
                     type="submit"
+                    disabled={loading}
                     className="text-xs 3xl:text-sm mb-4 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
                   >
                     Add Item
