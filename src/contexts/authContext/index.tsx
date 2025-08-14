@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             aid: decoded.aid,
             email: decoded.email,
             name: decoded.name,
-            role: decoded.role,
+            role: [decoded.role],
           });
           setLoading(false);
         }
@@ -70,7 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { token, user } = await res.json();
 
       setToken(token); 
-      setUser(user);               
+      setUser({
+        ...user,
+        role: Array.isArray(user.role) ? user.role : [user.role],
+      });              
       localStorage.setItem("token", token);
       navigate("/");
       return user;
@@ -96,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     userLoggedIn: !!user,
     userName: user?.name ?? null,
-    userRole: user?.role ?? [],
+    userRole: Array.isArray(user?.role) ? user.role : [],
   };
 
   return (
