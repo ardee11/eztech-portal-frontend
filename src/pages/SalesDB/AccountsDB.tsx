@@ -25,7 +25,11 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
   const [editingCompanyId, setEditingCompanyId] = useState<number | null>(null);
 
   const { userRole, userName } = useAuth();
-  const canViewAllDataRoles = ["Admin", "Super Admin", "Sales Manager"];
+  const privilegedRoles = ["Admin", "Super Admin", "Sales Manager"];
+
+  const hasAccess = Array.isArray(userRole)
+    ? userRole.some(role => privilegedRoles.includes(role))
+    : privilegedRoles.includes(userRole || "");
 
   // Filtering and searching
   const filteredCompanyNames = data
@@ -52,14 +56,14 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
   const canEditSelectedCompany = () => {
     if (!selectedCompany || !userName) return false;
 
-    if (["Admin", "Super Admin", "Sales Manager"].includes(userRole || "")) {
+    if (hasAccess) {
       return true;
     }
     return selectedCompany.acc_manager === userName;
   };
 
   const canDeleteData = () => {
-    if (["Admin", "Super Admin", "Sales Manager"].includes(userRole || "")) {
+    if (hasAccess) {
       return true;
     }
   };
@@ -111,7 +115,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
             <div className="text-lg font-semibold items-center flex">
               {selectedCompany ? "Company Details" : 
               selectedManagerFilter ? `${selectedManagerFilter.trim().split(" ")[0]}'s Managed Accounts` :
-              canViewAllDataRoles.includes(userRole || "") ? "Managed Accounts" : "My Managed Accounts"}
+              hasAccess ? "Managed Accounts" : "My Managed Accounts"}
             </div>
             
             {/*remark filter */}

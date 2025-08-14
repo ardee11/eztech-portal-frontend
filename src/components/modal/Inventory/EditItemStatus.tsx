@@ -19,15 +19,17 @@ const ItemStatusModal = ({ isStatusModalOpen, onClose, item, onUpdate }: Props) 
   const [receivedBy, setReceivedBy] = useState<string[]>([]);
   const [checkedBy, setCheckedBy] = useState<string[]>([]);
   const [deliveredBy, setDeliveredBy] = useState<string[]>([]);
+  const arraysAreEqual = (a: string[], b: string[]) =>
+    a.length === b.length && a.every((v, i) => v === b[i]);
 
   const isFormValid =
     receivedBy.length > 0 &&
     checkedBy.length > 0 &&
     item !== null &&
     (
-      receivedBy.join(", ") !== (item.received_by || "") ||
-      checkedBy.join(", ") !== (item.checked_by || "") ||
-      deliveredBy.join(", ") !== (item.delivered_by || "")
+      !arraysAreEqual(receivedBy, item.received_by ?? []) ||
+      !arraysAreEqual(checkedBy, item.checked_by ?? []) ||
+      !arraysAreEqual(deliveredBy, item.delivered_by ?? [])
     );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,15 +39,15 @@ const ItemStatusModal = ({ isStatusModalOpen, onClose, item, onUpdate }: Props) 
 
     try {
       await updateInventory(item.item_id, {
-        received_by: receivedBy.join(", "),
-        checked_by: checkedBy.join(", "),
-        delivered_by: deliveredBy.join(", "),
+        received_by: receivedBy,
+        checked_by: checkedBy,
+        delivered_by: deliveredBy,
       });
 
       onUpdate({
-        received_by: receivedBy.join(", "),
-        checked_by: checkedBy.join(", "),
-        delivered_by: deliveredBy.join(", "),
+        received_by: receivedBy,
+        checked_by: checkedBy,
+        delivered_by: deliveredBy,
       });
 
       resetFormField();
@@ -64,9 +66,9 @@ const ItemStatusModal = ({ isStatusModalOpen, onClose, item, onUpdate }: Props) 
 
   useEffect(() => {
     if (item && isStatusModalOpen) {
-      setReceivedBy(item.received_by ? item.received_by.split(",").map(s => s.trim()) : []);
-      setCheckedBy(item.checked_by ? item.checked_by.split(",").map(s => s.trim()) : []);
-      setDeliveredBy(item.delivered_by ? item.delivered_by.split(",").map(s => s.trim()) : []);
+      setReceivedBy(item.received_by ?? []);
+      setCheckedBy(item.checked_by ?? []);
+      setDeliveredBy(item.delivered_by ?? []);
     }
   }, [item, isStatusModalOpen]);
 

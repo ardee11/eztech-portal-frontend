@@ -80,7 +80,7 @@ const Login: React.FC = () => {
             </h2>
 
             {error && (
-              <div className="flex items-center justify-center text-red-700 text-base rounded-xl px-4 py-1 mb-4 bg-red-500/10 backdrop-blur-sm">
+              <div className="flex items-center justify-center text-red-700 text-xs 3xl:text-base rounded-xl px-4 py-1 mb-4 bg-red-500/10 backdrop-blur-sm">
                 <span className="mr-2">⚠️</span>
                 <span>{error}</span>
               </div>

@@ -16,7 +16,10 @@ const DBInfo: React.FC<DBInfoProps> = ({
   const companyListRef = useRef<HTMLDivElement>(null);
 
   const canViewAllDataRoles = ["Admin", "Super Admin", "Sales Manager"];
-  const isPrivilegedUser = canViewAllDataRoles.includes(user?.role || "");
+
+  const isPrivilegedUser = Array.isArray(user?.role)
+    ? user.role.some(role => canViewAllDataRoles.includes(role))
+    : canViewAllDataRoles.includes(user?.role || "");
 
   const sortedManagers = useMemo(() => {
     const counts: Record<string, number> = {};

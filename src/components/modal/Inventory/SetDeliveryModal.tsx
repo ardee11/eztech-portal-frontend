@@ -36,7 +36,7 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
       const updatedFields = {
         delivered,
         delivery_date: deliveryDate,
-        delivered_by: deliveredBy.join(", "),
+        delivered_by: deliveredBy,
       };
 
       await updateInventory(itemId, updatedFields);
