@@ -3,7 +3,6 @@ import { useAuth } from "../../../contexts/authContext";
 import { useSalesAccounts, SalesAccount } from "../../../hooks/useSalesDB";
 import { useAccountManagers } from "../../../hooks/useAdmin";
 import { showToast } from "../../../utils/toastUtils";
-import AccountManagersDropdown from "../../elements/AccountManagersDropdown";
 import InputDropdown from "../../elements/InputDropdown";
 
 type Props = {
@@ -148,7 +147,7 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center">
       <div className="bg-white animate-expand-card rounded-lg px-8 py-6 max-w-3xl 3xl:max-w-4xl max-h-116 3xl:max-h-130 flex flex-col">
         <div className="delay-show flex flex-col h-full">
           <div className="flex items-center justify-between mb-6">
