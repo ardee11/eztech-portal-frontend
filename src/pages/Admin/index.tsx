@@ -88,7 +88,10 @@ export default function Admin() {
                         </div>
                         <div className="px-6 py-2 w-[25%]">{admin.email}</div>
                         <div className="px-6 py-2 w-[20%]">{admin.position}</div>
-                        <div className="px-6 py-2 w-[20%] truncate">{admin.role.join(", ")}</div>
+                        <div className="px-6 py-2 w-[20%] truncate">{admin.role && admin.role.length > 0
+                            ? admin.role.join(", ")
+                            : "Not specified"}
+                        </div>
                         <div className="px-6 py-2 ml-auto text-xs">
                           <button 
                             className="text-neutral-600 hover:cursor-pointer hover:bg-gray-200 hover:text-red-400 p-2 rounded-full transition duration-200"

@@ -13,6 +13,7 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const measuredDropdownRef = useRef<HTMLDivElement>(null);
 
   const [dropdownStyles, setDropdownStyles] = useState<{
     top: number;
@@ -60,6 +61,32 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
     }
   }, [isOpen, options.length]);
 
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      let dropdownHeight = 0;
+      if (measuredDropdownRef.current) {
+        dropdownHeight = measuredDropdownRef.current.offsetHeight;
+      }
+
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      const openUpward = spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight;
+
+      setDropdownStyles({
+        top: openUpward
+          ? rect.top + window.scrollY - dropdownHeight
+          : rect.bottom + window.scrollY + 2,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        openUpward,
+      });
+    }
+  }, [isOpen, options.length]);
+
   return (
     <div className="relative">
       <label htmlFor={id} className="block text-xs 3xl:text-sm mb-1">{label}</label>
@@ -93,7 +120,10 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
       {isOpen &&
         createPortal(
           <div
-            ref={dropdownRef}
+            ref={(el) => {
+              dropdownRef.current = el;
+              measuredDropdownRef.current = el;
+            }}
             role="listbox"
             tabIndex={-1}
             className="bg-white mt-2 shadow-md border border-gray-400 rounded-lg max-h-36 overflow-y-auto"

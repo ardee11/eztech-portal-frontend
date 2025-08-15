@@ -177,7 +177,7 @@ export default function Inventory() {
   };
 
   return (
-    <div className="w-full mx-auto p-4 relative bg-gray-50 3xl:min-h-screen">
+    <div className="w-full mx-auto p-4 relative bg-gray-50">
 
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">

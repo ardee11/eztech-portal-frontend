@@ -170,7 +170,6 @@ export default function Sidebar() {
 
                 <div id="account-accordion-child" className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="account-accordion">
                   <ul className="ps-6 pt-2 space-y-1">
-                    {userRole && hasAnyAccess(userRole, "admin") && (
                       <li>
                         <NavLink
                           to="/admin"
@@ -191,7 +190,6 @@ export default function Sidebar() {
                           )}
                         </NavLink>
                       </li>
-                    )}
 
                     {/*
                     <li>

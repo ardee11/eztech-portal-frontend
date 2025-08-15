@@ -393,7 +393,12 @@ function ItemDetails() {
                             <span className="font-medium">Entry Date:</span> {formatTimestampToFullDate(item.entry_date)}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Received By:</span> <span className="text-blue-600 font-semibold">{item.received_by || "Not specified"}</span>
+                            <span className="font-medium">Received By:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.received_by && item.received_by.length > 0
+                                ? item.received_by.join(", ")
+                                : "Not specified"}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -410,8 +415,13 @@ function ItemDetails() {
                             <span className="font-medium">Delivery Date:</span> {item.delivery_date ? formatTimestampToFullDate(item.delivery_date) : "Not set"}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Assigned To:</span> <span className="text-blue-600 font-semibold">{item.delivered_by || "Not assigned"}</span>
-                          </p>
+                            <span className="font-medium">Assigned To:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.delivered_by && item.delivered_by.length > 0
+                                ? item.delivered_by.join(", ")
+                                : "Not specified"}
+                            </span>
+                          </p> 
                         </div>
                       )}
 
@@ -427,7 +437,12 @@ function ItemDetails() {
                             <span className="font-medium">Delivery Date:</span> {formatTimestampToFullDate(item.delivery_date)}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Delivered By:</span> <span className="text-blue-600 font-semibold">{item.delivered_by}</span>
+                            <span className="font-medium">Delivered By:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.delivered_by && item.delivered_by.length > 0
+                                ? item.delivered_by.join(", ")
+                                : "Not specified"}
+                            </span>
                           </p>
                         </div>
                       )}

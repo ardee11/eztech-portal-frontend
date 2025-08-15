@@ -49,7 +49,7 @@ const Login: React.FC = () => {
       <img
         src={element1}
         alt="Background Element"
-        className="block md:hidden absolute inset-0 w-full h-full object-cover z-0 overflow-hidden"
+        className="block absolute inset-0 w-full h-full object-cover z-0 overflow-hidden"
       />
 
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-5 ">
@@ -75,8 +75,7 @@ const Login: React.FC = () => {
             ></div>
 
             <h2 className="text-center text-lg 3xl:text-xl font-medium text-black mb-3">
-              <span className="wave-hand">👋</span> Hello,
-              <span className="italic"> Welcome Back!</span>
+              Welcome to EZTech Portal
             </h2>
 
             {error && (
@@ -119,13 +118,13 @@ const Login: React.FC = () => {
                 </div>
               </div>
               <div className="mt-10 3xl:mt-8 flex justify-center">
-              <button
-                type="submit"
-                disabled={loading}
-               className="w-[80%] text-xs 3xl:text-sm bg-blue-700/90 drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-1.5 3xl:py-2 mb-2 hover:bg-[#6092f9] hover:cursor-pointer transition text-gray-200 filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
-              >
-                {loading ? "Signing in..." : "Sign in"}
-              </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                className="w-[80%] text-xs 3xl:text-sm bg-blue-700/90 drop-shadow-xl/50 text-gray-200 tracking-wide italic rounded-3xl py-1.5 3xl:py-2 mb-2 hover:bg-blue-600 hover:cursor-pointer filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
+                >
+                  {loading ? "Signing in..." : "Sign in"}
+                </button>
               </div>
             </form>
           </div>

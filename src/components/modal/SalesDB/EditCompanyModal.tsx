@@ -4,6 +4,7 @@ import { useSalesAccounts, SalesAccount } from "../../../hooks/useSalesDB";
 import { useAccountManagers } from "../../../hooks/useAdmin";
 import { showToast } from "../../../utils/toastUtils";
 import AccountManagersDropdown from "../../elements/AccountManagersDropdown";
+import InputDropdown from "../../elements/InputDropdown";
 
 type Props = {
   isOpen: boolean;
@@ -178,9 +179,9 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
                       Account Manager
                     </label>
                     <div className="relative">
-                      <AccountManagersDropdown
+                      <InputDropdown
                         value={formData.acc_manager}
-                        onChange={(val) => setFormData((prev) => ({ ...prev, acc_manager: val }))}
+                        onChange={(val) => setFormData((prev) => ({ ...prev, acc_manager: val ?? "" }))}
                         options={accountManagers}
                       />
                     </div>

@@ -14,6 +14,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
   const initialButtonRect = useRef<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
+  const measuredDropdownRef = useRef<HTMLDivElement>(null);
 
   const id = useId();
   const labelId = `staff-dropdown-label-${id}`;
@@ -62,6 +63,32 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
         top: openUpward
           ? rect.top + window.scrollY - dropdownHeight
           : rect.bottom + window.scrollY + 10,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        openUpward,
+      });
+    }
+  }, [isOpen, filteredOptions.length]);
+
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      let dropdownHeight = 0;
+      if (measuredDropdownRef.current) {
+        dropdownHeight = measuredDropdownRef.current.offsetHeight;
+      }
+
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      const openUpward = spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight;
+
+      setDropdownStyles({
+        top: openUpward
+          ? rect.top + window.scrollY - dropdownHeight
+          : rect.bottom + window.scrollY + 2,
         left: rect.left + window.scrollX,
         width: rect.width,
         openUpward,
@@ -149,10 +176,13 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
       {isOpen &&
         createPortal(
           <div
-            ref={dropdownRef}
+            ref={(el) => {
+              dropdownRef.current = el;
+              measuredDropdownRef.current = el;
+            }}
             role="listbox"
             aria-labelledby={labelId}
-            className="bg-white shadow-lg border border-gray-400 rounded-lg max-h-60 overflow-y-auto"
+            className="bg-white shadow-lg border border-gray-400 rounded-lg max-h-70 overflow-y-auto"
             style={{
               position: "absolute",
               top: dropdownStyles.top,

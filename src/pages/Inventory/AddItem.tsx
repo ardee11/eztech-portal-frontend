@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "../../components/elements/DatePicker";
 import { useAdmin } from "../../hooks/useAdmin";
 import StaffDropdown from "../../components/elements/StaffDropdown";
-import { useAddInventory } from "../../hooks/useInventory";
+import { useAddInventory, useSuppliers } from "../../hooks/useInventory";
 import { showToast } from "../../utils/toastUtils";
 import { useAuth } from "../../contexts/authContext";
+import InputDropdown from "../../components/elements/InputDropdown";
 
 export default function AddItem() {
   const { admins } = useAdmin();
+  const { suppliers } = useSuppliers();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { addInventory } = useAddInventory();
@@ -298,14 +300,13 @@ export default function AddItem() {
                   <label htmlFor="distributor" className="block text-xs 3xl:text-sm mb-1">
                     Distributor / Supplier
                   </label>
-                  <input
-                    type="text"
-                    id="distributor"
-                    autoComplete="off"
+                  <InputDropdown
                     value={distributor}
-                    onChange={(e) => setDistributor(e.target.value)}
-                    className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
-                    required
+                    onChange={(value) => setDistributor(value ?? "")}
+                    options={suppliers.map(supplier => ({
+                      name: supplier.name,
+                      aid: supplier.id
+                    }))}
                   />
                 </div>
 

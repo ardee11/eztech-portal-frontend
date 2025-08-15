@@ -26,6 +26,11 @@ interface SerialNumber {
   notes: string | null;
 }
 
+export interface Supplier {
+  id: number;
+  name: string;
+}
+
 export function useInventory(month?: number, year?: number) {
   const [items, setItems] = useState<Item[]>([]);
   const [allItems, setAllItems] = useState<Item[]>([]);
@@ -333,4 +338,47 @@ export function useDeleteInventory() {
   };
 
   return { deleteInventory, loading, error, success };
+}
+
+export function useSuppliers() {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found");
+      setLoading(false);
+      return;
+    }
+
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch("/api/suppliers", {
+          headers: {
+            method: "GET",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to fetch suppliers");
+        }
+
+        const data = await response.json();
+        setSuppliers(data);
+      } catch (err: any) {
+        console.error("Error fetching suppliers:", err);
+        setError(err.message || "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSuppliers();
+  }, []);
+
+  return { suppliers, loading, error };
 }
