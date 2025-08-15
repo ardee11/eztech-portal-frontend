@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import logo from "../../assets/ez-logo.png";
 import bgImg from "../../assets/testbg.png";
 import { useAuth } from "../../contexts/authContext";
@@ -76,7 +76,8 @@ const Login: React.FC = () => {
                   type="email"
                   id="email"
                   name="email"
-                  className="p-2 mb-4 w-full bg-white/30 rounded-lg text-xs text-white border-none outline-none focus:ring-1 focus:ring-white"
+                  className="p-2 w-full border border-black/50 rounded-lg text-xs focus:border-blue-500 focus:ring-blue-500"
+                  required
                 />
 
                 <label className="block text-xs font-semibold mb-2 text-white">
@@ -133,3 +134,6 @@ const Login: React.FC = () => {
 };
 
 export default Login;
+
+
+      
