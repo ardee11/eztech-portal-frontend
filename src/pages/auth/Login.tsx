@@ -1,8 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import logo from "../../assets/ez-logo.png";
-import userImg from "../../assets/Users.png";
-import element1 from "../../assets/element3.png";
-import element2 from "../../assets/element4.png";
+import bgImg from "../../assets/testbg.png";
 import { useAuth } from "../../contexts/authContext";
 
 const Login: React.FC = () => {
@@ -12,10 +10,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    emailRef.current?.focus();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,108 +28,108 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
     } catch (err: any) {
-      setError(err.message || "Failed to log in.");
-      if (passwordRef.current) {
-        passwordRef.current.value = "";
-      }
+      setError("Invalid email or password, please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-[#99DEEF] to-[#799EFF] px-4">
-     
-      <img
-        src={element1}
-        alt="Background Element"
-        className="block md:hidden absolute inset-0 w-full h-full object-cover z-0 overflow-hidden"
-      />
+  const closeModal = () => {
+    const modal = document.getElementById("errorModal");
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  };
 
-      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-5 ">
-        <div className="relative flex justify-center items-center p-4 z-20 drop-shadow-lg overflow-visible">
+  return (
+    <>
+      <div className="relative flex items-center justify-center min-h-screen bg-cover bg-center">
+        <div className="absolute inset-0">
           <img
-            src={element2}
-            alt="Background Element"
-            className="hidden md:block absolute inset-0 w-full h-full object-cover z-0 "
-          />
-          <img
-            src={logo}
-            alt="EZTech Logo"
-            className="w-sm md:w-[325px] object-contain z-10 mb-2 p-8"
+            src={bgImg}
+            alt="Background"
+            className="w-full h-full object-cover"
+            style={{ filter: "blur(2px)" }}
           />
         </div>
 
-        <div className="flex justify-center items-center p-4 z-20">
-          <div className="backdrop-blur-lg bg-white/20 border border-white/30 shadow-[inset_0_15px_30px_rgba(255,255,255,0.1),inset_0_-15px_30px_rgba(255,255,255,0.4)]
-              rounded-2xl px-6 py-4 w-full max-w-sm">
-            <div
-              className="w-24 h-24 3xl:w-32 3xl:h-32 mx-auto rounded-full bg-no-repeat bg-cover drop-shadow-sm"
-              style={{ backgroundImage: `url(${userImg})` }}
-            ></div>
+        <div className="relative w-[700px] rounded-xl overflow-hidden bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-2xl border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_8px_32px_rgba(0,0,0,0.37)]">
+          <div className="grid grid-cols-2">
+            <div className="flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-xl">
+              <img
+                src={logo}
+                alt="Logo"
+                className="w-32"
+              />
+              <p className="mt-5 text-md text-white/80 text-center font-bold">
+                Welcome to EZTech Portal
+              </p>
+            </div>
 
-            <h2 className="text-center text-lg 3xl:text-xl font-medium text-black mb-3">
-              <span className="wave-hand">👋</span> Hello,
-              <span className="italic"> Welcome Back!</span>
-            </h2>
-
-            {error && (
-              <div className="flex items-center justify-center text-red-700 text-xs 3xl:text-base rounded-xl px-4 py-1 mb-4 bg-red-500/10 backdrop-blur-sm">
-                <span className="mr-2">⚠️</span>
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
-              <div>
-                <label className="block text-xs 3xl:text-sm italic text-gray-800 ml-2">
-                  Email
+            <div className="p-6">
+              <form onSubmit={handleSubmit}>
+                <label className="block text-xs font-semibold mb-2 text-white">
+                  Email Address:
                 </label>
                 <input
-                  type="email"
                   ref={emailRef}
-                  className="text-xs 3xl:text-sm mt-2 w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="p-2 mb-4 w-full bg-white/30 rounded-lg text-xs text-white border-none outline-none focus:ring-1 focus:ring-white"
                 />
-              </div>
 
-              <div>
-                <label className="block text-xs 3xl:text-sm italic text-gray-800 ml-2">
-                  Password
+                <label className="block text-xs font-semibold mb-2 text-white">
+                  Password:
                 </label>
-                <div className="relative mt-2">
+                <input
+                  ref={passwordRef}
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  className="p-2 mb-2 w-full bg-white/30 rounded-lg text-xs text-white border-none outline-none focus:ring-1 focus:ring-white"
+                />
+
+                <div className="flex items-center mb-4">
                   <input
-                    type={showPassword ? "text" : "password"}
-                    ref={passwordRef}
-                    className="text-xs 3xl:text-sm w-full rounded-xl bg-white/30 shadow-inner shadow-gray-100/90 p-2 focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                    type="checkbox"
+                    id="showPassword"
+                    checked={showPassword}
+                    onChange={(e) => setShowPassword(e.target.checked)}
+                    className="mr-2"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-3 flex items-center text-xs 3xl:text-sm text-gray-600 hover:text-gray-900"
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
+                  <label htmlFor="showPassword" className="text-xs text-white">
+                    Show password
+                  </label>
                 </div>
-              </div>
-              <div className="mt-10 3xl:mt-8 flex justify-center">
-              <button
-                type="submit"
-                disabled={loading}
-               className="w-[80%] text-xs 3xl:text-sm bg-blue-700/90 drop-shadow-xl/50 text-black tracking-wide italic rounded-3xl py-1.5 3xl:py-2 mb-2 hover:bg-[#6092f9] hover:cursor-pointer transition text-gray-200 filter drop-shadow-lg  opacity-90 transition shadow-inner shadow-gray-100/90"
-              >
-                {loading ? "Signing in..." : "Sign in"}
-              </button>
-              </div>
-            </form>
+
+                <button
+                  type="submit"
+                  className="mt-6 w-full py-2 text-xs font-medium rounded-lg text-white bg-blue-500 disabled:opacity-50 
+                  hover:text-white hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-600 hover:cursor-pointer transition-colors duration-500 ease-in-out"
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : "Login"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <div id="errorModal" className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-opacity duration-300 ${error ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+        <div className={`bg-white rounded-lg shadow-lg max-w-sm w-full p-6 text-center transform transition-all duration-300 ${error ? "scale-100" : "scale-95"}`}>
+            <h2 className="mt-5 text-lg font-semibold text-red-600">Login Failed</h2>
+              <p className="text-sm text-gray-600 mt-2">
+                {error}
+              </p>
+              <button onClick={closeModal} className="mt-10 px-3 py-2 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600 hover:cursor-pointer transition-colors duration-300">
+                Return to Login
+              </button>
+        </div>
+      </div>
+    </>
   );
 };
 
 export default Login;
-
-
-      
