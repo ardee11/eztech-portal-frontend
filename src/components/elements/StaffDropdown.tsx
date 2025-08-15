@@ -2,27 +2,32 @@ import { useEffect, useRef, useState, useId } from "react";
 import { createPortal } from "react-dom";
 
 type StaffDropdownProps = {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
+  label?: string;
+  value: string[];
+  onChange: (value: string[]) => void;
   options: { name: string; aid: string | number }[];
 };
 
 export default function StaffDropdown({ label, value, onChange, options }: StaffDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const initialButtonRect = useRef<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
-  const id = useId(); // unique ID for accessibility
-  const buttonId = `staff-dropdown-button-${id}`;
+  const id = useId();
   const labelId = `staff-dropdown-label-${id}`;
 
-  const [dropdownStyles, setDropdownStyles] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    openUpward: boolean;
-  }>({ top: 0, left: 0, width: 0, openUpward: false });
+  const [dropdownStyles, setDropdownStyles] = useState({
+    top: 0,
+    left: 0,
+    width: 0,
+    openUpward: false,
+  });
+
+  const filteredOptions = options.filter(option =>
+    option.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -43,43 +48,90 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      initialButtonRect.current = rect;
 
-      const dropdownHeight = Math.min(options.length, 9) * 32;
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      const dropdownHeight = Math.min(filteredOptions.length, 9) * 43 + 50;
+
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
 
-      let openUpward = false;
-      if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
-        openUpward = true;
-      }
+      const openUpward = spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight;
 
       setDropdownStyles({
-        top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
+        top: openUpward
+          ? rect.top + window.scrollY - dropdownHeight
+          : rect.bottom + window.scrollY + 10,
         left: rect.left + window.scrollX,
         width: rect.width,
         openUpward,
       });
     }
-  }, [isOpen, options.length]);
+  }, [isOpen, filteredOptions.length]);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (isOpen && buttonRef.current && initialButtonRect.current) {
+        const currentRect = buttonRef.current.getBoundingClientRect();
+        const prevRect = initialButtonRect.current;
+
+        const positionChanged =
+          Math.abs(currentRect.top - prevRect.top) > 1 ||
+          Math.abs(currentRect.left - prevRect.left) > 1;
+
+        if (positionChanged) {
+          setIsOpen(false);
+        }
+      }
+    }
+
+    if (isOpen) {
+      window.addEventListener("scroll", handleScroll, true);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [isOpen]);
+
+  const handleToggle = (name: string) => {
+    if (value.includes(name)) {
+      onChange(value.filter((v) => v !== name));
+    } else {
+      onChange([...value, name]);
+    }
+  };
 
   return (
     <div className="relative">
-      <label id={labelId} htmlFor={buttonId} className="block text-xs mb-1">
-        {label}
-      </label>
+      {label && (
+        <label id={labelId} className="block text-xs 3xl:text-sm mb-1">
+          {label}
+        </label>
+      )}
 
-      <button
-        id={buttonId}
+      <div
         ref={buttonRef}
-        type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
+        className="w-full py-2 px-3 text-left inline-flex items-center justify-between gap-x-1 text-xs 3xl:text-sm rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-labelledby={labelId}
       >
-        {value || "-- Select staff --"}
+        <div className="flex flex-wrap gap-1 max-w-full truncate">
+          {value.length > 0 ? (
+            value.map((name) => (
+              <span
+                key={name}
+                className="bg-teal-600 text-white text-xs 3xl:text-sm px-2 py-0.5 rounded-md"
+              >
+                {name}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-600">-- Select staff --</span>
+          )}
+        </div>
         <svg
           className={`w-4 h-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
@@ -89,12 +141,10 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          aria-hidden="true"
-          focusable="false"
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
-      </button>
+      </div>
 
       {isOpen &&
         createPortal(
@@ -102,7 +152,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
             ref={dropdownRef}
             role="listbox"
             aria-labelledby={labelId}
-            className="bg-white mt-2 shadow-md border border-gray-400 rounded-lg max-h-36 overflow-y-auto"
+            className="bg-white shadow-lg border border-gray-400 rounded-lg max-h-60 overflow-y-auto"
             style={{
               position: "absolute",
               top: dropdownStyles.top,
@@ -111,23 +161,34 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
               zIndex: 9999,
             }}
           >
+            <div className="px-3 pt-3 sticky top-0 bg-white z-10">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search staff..."
+                className="w-full px-2 py-1.5 text-xs 3xl:text-sm border border-gray-400 rounded focus:outline-none focus:ring-1 focus:ring-teal-400"
+              />
+            </div>
+
             <div className="p-1 py-2">
-              {options.map((option) => (
-                <button
-                  key={option.aid}
-                  role="option"
-                  aria-selected={value === option.name}
-                  onClick={() => {
-                    onChange(option.name);
-                    setIsOpen(false);
-                  }}
-                  className={`block w-full text-left text-xs text-gray-700 px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
-                    value === option.name ? "bg-teal-100 font-semibold" : ""
-                  }`}
-                >
-                  {option.name}
-                </button>
-              ))}
+              {filteredOptions.length === 0 ? (
+                <div className="text-xs 3xl:text-sm text-gray-500 px-4 py-2">No staff found</div>
+              ) : (
+                filteredOptions.map((option) => (
+                  <label
+                    key={option.aid}
+                    className="flex items-center gap-2 px-4 py-2 text-xs 3xl:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={value.includes(option.name)}
+                      onChange={() => handleToggle(option.name)}
+                    />
+                    {option.name}
+                  </label>
+                ))
+              )}
             </div>
           </div>,
           document.body

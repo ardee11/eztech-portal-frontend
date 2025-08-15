@@ -8,7 +8,7 @@ const defaultOptions: ToastOptions = {
   pauseOnHover: true,
   draggable: false,
   theme: "custom",
-  className: "text-xs rounded-md border border-gray-300 bg-white shadow-md text-gray-600",
+  className: "text-sm 3xl:text-base rounded-md border border-gray-300 bg-white shadow-md text-gray-700",
 };
 
 export function showToast(

@@ -2,13 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
-
 interface User {
   aid: number;
   email: string;
   name: string;
-  role: string;
+  role: string[];
 }
 
 interface AuthContextType {
@@ -18,7 +16,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   userLoggedIn: boolean;
-  userRole: string | null;
+  userRole: string[] | null;
   userName: string | null;
 }
 
@@ -58,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      const res = await fetch(`/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -98,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     userLoggedIn: !!user,
     userName: user?.name ?? null,
-    userRole: user?.role ?? null,
+    userRole: user?.role ?? [],
   };
 
   return (

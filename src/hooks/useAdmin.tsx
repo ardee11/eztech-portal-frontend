@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
-
-if (!API_BASE_URL) {
-  throw new Error("Missing API_BASE_URL");
-}
-
 interface Admin {
   aid: number;
   name: string;
   position: string;
-  role: string;
+  role: string[];
   email: string;
 }
 
@@ -23,7 +17,7 @@ export const useAdmin = (trigger?: boolean) => {
     const fetchAdmins = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/admins`, {
+        const response = await fetch(`/admins`, {
           method: "GET",
           headers: { "Content-Type": "application/json" }
         });
@@ -59,7 +53,7 @@ export const useAdminDetails = (email: string | null) => {
       setLoadingDetails(true);
       setErrorDetails(null);
       try {
-        const res = await fetch(`${API_BASE_URL}/admins/${email}`, {
+        const res = await fetch(`/admins/${email}`, {
           method: "GET",
           headers: { "Content-Type": "application/json" }
         });
@@ -90,10 +84,10 @@ export const useAddAdmin = () => {
     name: string,
     email: string,
     position: string,
-    role: string
+    role: string[]
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +113,7 @@ export const removeAdmin = async (
   aid: number
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/admins/${aid}`, {
+    const response = await fetch(`/admins/${aid}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" }
     });
@@ -150,7 +144,7 @@ export function useAccountManagers() {
 
     async function fetchAccountManagers() {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/account-managers`, {
+        const res = await fetch(`/api/account-managers`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

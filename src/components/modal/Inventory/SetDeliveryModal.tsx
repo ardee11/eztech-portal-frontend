@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ClipLoader } from "react-spinners";
 import { useUpdateInventory } from "../../../hooks/useInventory";
 import { useAdmin } from "../../../hooks/useAdmin";
@@ -17,10 +17,11 @@ type Props = {
 const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
   const { admins } = useAdmin();
   const { updateInventory, loading } = useUpdateInventory();
+
   const [delivered, setDelivered] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
-  const [deliveredBy, setDeliveredBy] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [deliveredBy, setDeliveredBy] = useState<string[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [pickerPos, setPickerPos] = useState<{ x: number; y: number } | null>(null);
 
@@ -28,18 +29,19 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (!itemId) return;
 
+    if (!itemId || !deliveryDate || deliveredBy.length === 0) return;
+
+    try {
       const updatedFields = {
-        delivered: delivered,
+        delivered,
         delivery_date: deliveryDate,
-        delivered_by: deliveredBy,
+        delivered_by: deliveredBy.join(", "),
       };
 
       await updateInventory(itemId, updatedFields);
       onResetForm();
-      
+
       if (onUpdate) {
         onUpdate(updatedFields);
       }
@@ -65,20 +67,27 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
   const onResetForm = () => {
     setDelivered(false);
     setDeliveryDate(null);
-    setDeliveredBy("");
     setSelectedDate("");
+    setDeliveredBy([]);
     onClose();
-  }
+  };
+
+  // Optional: auto-reset on close
+  useEffect(() => {
+    if (!isOpen) {
+      onResetForm();
+    }
+  }, [isOpen]);
 
   return (
     <>
       {isOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60">
-          <div className="bg-white animate-expand-card rounded-xl shadow-2xl w-full max-w-2xl max-h-80 overflow-visible">
+          <div className="bg-white animate-expand-card rounded-xl shadow-2xl w-full max-w-2xl 3xl:max-w-3xl max-h-80 3xl:max-h-90 overflow-visible">
             <div className="delay-show">
-              <div className="px-8 py-4 border-b border-gray-200">
+              <div className="px-8 py-4 3xl:py-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900">Edit Delivery Details</h3>
+                  <h3 className="text-lg 3xl:text-xl font-bold text-gray-900">Edit Delivery Details</h3>
 
                   <button
                     onClick={onClose}
@@ -94,7 +103,7 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
               <div className="px-12 py-6 flex-grow">
                 <form id="editDetails" onSubmit={handleSubmit} className="space-y-6 text-sm">
                   <div className="relative">
-                    <label htmlFor="entryDate" className="block text-xs mb-1">
+                    <label htmlFor="entryDate" className="block text-xs 3xl:text-sm mb-1">
                       Date of Delivery:
                     </label>
 
@@ -106,7 +115,7 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
                           id="entryDate"
                           value={selectedDate}
                           onChange={(e) => setSelectedDate(e.target.value)}
-                          className="p-2 pr-10 block w-full text-xs border border-gray-500 rounded-lg cursor-default"
+                          className="p-2 pr-10 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg cursor-default"
                           required
                           readOnly
                         />
@@ -133,7 +142,7 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
                         </button>
                       </div>
 
-                      <label htmlFor="isDelivered" className="flex-1/3 items-center text-xs space-x-2 select-none">
+                      <label htmlFor="isDelivered" className="flex-1/3 items-center text-xs 3xl:text-sm space-x-2 select-none">
                         <input
                           type="checkbox"
                           id="isDelivered"
@@ -170,19 +179,16 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
                 <button
                   type="submit"
                   form="editDetails"
-                  disabled={loading || !deliveryDate || !deliveredBy}
-                  className="px-12 py-2.5 text-xs font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
+                  disabled={loading || !deliveryDate || deliveredBy.length === 0}
+                  className="px-12 py-2.5 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
                 >
                   {loading ? <ClipLoader size={18} color="#fff" /> : "Submit"}
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    onClose();
-                    onResetForm();
-                  }}
-                  className="px-6 py-2.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors hover:cursor-pointer"
+                  onClick={onResetForm}
+                  className="px-6 py-2.5 text-xs 3xl:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors hover:cursor-pointer"
                 >
                   Cancel
                 </button>
