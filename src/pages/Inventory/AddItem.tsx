@@ -466,7 +466,7 @@ export default function AddItem() {
                        </div>
                        <h2 className="text-xs font-bold text-gray-900">Verified Serial Numbers</h2>
                        <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                         {verifiedSerials.length} items
+                         {verifiedSerials.length} {verifiedSerials.length === 1 ? "item" : "items"}
                        </span>
                      </div>
                    </div>
@@ -476,7 +476,7 @@ export default function AddItem() {
                    {verifiedSerials.map((item, index) => (
                      <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
                        <div className="flex items-center space-x-3 mb-3">
-                         <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+                         <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
                            {index + 1}
                          </div>
                          <span className="text-xs font-medium text-gray-900">Serial #{index + 1}</span>
