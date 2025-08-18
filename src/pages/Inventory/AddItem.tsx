@@ -374,122 +374,156 @@ export default function AddItem() {
             </div>
           </div>
 
-          {/* Right Column - Serial Numbers */}
-          <div className="space-y-6">
-            {/* Serial Numbers Input Card */}
-            {hasSerial && !serialVerified && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
-                      </svg>
-                    </div>
-                    <h2 className="text-sm font-bold text-gray-900">Serial Numbers</h2>
-                  </div>
-                </div>
-                
-                <div className="p-6 space-y-4">
-                  <div className="group">
-                    <label htmlFor="serialNumbers" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                      Enter Serial Numbers
-                    </label>
-                    <textarea
-                      id="serialNumbers"
-                      value={serialNumbers}
-                      onChange={(e) => setSerialNumbers(e.target.value)}
-                      className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
-                      required
-                      placeholder="SN1234, SN5678, SN91011"
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      Use commas to separate multiple serial numbers
-                    </p>
-                  </div>
+                     {/* Right Column - Serial Numbers */}
+           <div className="space-y-6">
+             {/* Serial Numbers Input Card - Always Visible */}
+             <div className={`bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ${
+               hasSerial ? 'hover:shadow-xl' : 'opacity-60'
+             }`}>
+               <div className={`px-6 py-4 border-b border-gray-100 ${
+                 hasSerial 
+                   ? 'bg-gradient-to-r from-green-50 to-emerald-50' 
+                   : 'bg-gradient-to-r from-gray-50 to-gray-100'
+               }`}>
+                 <div className="flex items-center space-x-3">
+                   <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                     hasSerial ? 'bg-green-100' : 'bg-gray-200'
+                   }`}>
+                     <svg className={`w-4 h-4 ${
+                       hasSerial ? 'text-green-600' : 'text-gray-400'
+                     }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                     </svg>
+                   </div>
+                   <h2 className={`text-sm font-bold ${
+                     hasSerial ? 'text-gray-900' : 'text-gray-500'
+                   }`}>
+                     Serial Numbers
+                   </h2>
+                   {!hasSerial && (
+                     <span className="bg-gray-200 text-gray-600 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                       Disabled
+                     </span>
+                   )}
+                 </div>
+               </div>
+               
+               <div className="p-6 space-y-4">
+                 <div className="group">
+                   <label htmlFor="serialNumbers" className={`block text-2xs font-semibold uppercase tracking-wide mb-2 ${
+                     hasSerial ? 'text-gray-500' : 'text-gray-400'
+                   }`}>
+                     Enter Serial Numbers
+                   </label>
+                   <textarea
+                     id="serialNumbers"
+                     value={serialNumbers}
+                     onChange={(e) => setSerialNumbers(e.target.value)}
+                     disabled={!hasSerial}
+                     className={`w-full px-4 py-3 text-xs border rounded-lg resize-none h-24 transition-all duration-200 ${
+                       hasSerial 
+                         ? 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500' 
+                         : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                     }`}
+                     required={hasSerial}
+                     placeholder={hasSerial ? "SN1234, SN5678, SN91011" : "Enable serial numbers to enter data"}
+                   />
+                   <p className={`text-xs mt-2 ${
+                     hasSerial ? 'text-gray-500' : 'text-gray-400'
+                   }`}>
+                     {hasSerial 
+                       ? "Use commas to separate multiple serial numbers" 
+                       : "Check the 'Has Serial Numbers' checkbox to enable this section"
+                     }
+                   </p>
+                 </div>
 
-                  <button
-                    type="button"
-                    onClick={verifySerials}
-                    className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-all duration-200 hover:shadow-lg"
-                  >
-                    Verify Serial Numbers
-                  </button>
-                </div>
-              </div>
-            )}
+                 <button
+                   type="button"
+                   onClick={verifySerials}
+                   disabled={!hasSerial}
+                   className={`w-full py-3 px-6 text-white text-xs font-semibold rounded-lg transition-all duration-200 ${
+                     hasSerial 
+                       ? 'bg-green-600 hover:bg-green-700 hover:shadow-lg' 
+                       : 'bg-gray-400 cursor-not-allowed'
+                   }`}
+                 >
+                   {hasSerial ? "Verify Serial Numbers" : "Serial Numbers Disabled"}
+                 </button>
+               </div>
+             </div>
 
-            {/* Verified Serial Numbers Card */}
-            {serialVerified && verifiedSerials.length > 0 && hasSerial && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      </div>
-                      <h2 className="text-xs font-bold text-gray-900">Verified Serial Numbers</h2>
-                      <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                        {verifiedSerials.length} items
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
-                  {verifiedSerials.map((item, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
-                          {index + 1}
-                        </div>
-                        <span className="text-xs font-medium text-gray-900">Serial #{index + 1}</span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <input
-                            type="checkbox"
-                            id={`good-${index}`}
-                            checked={item.isGood}
-                            onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
-                            className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2"
-                          />
-                          <label htmlFor={`good-${index}`} className="text-sm text-gray-700 font-medium">
-                            Item is in good condition
-                          </label>
-                        </div>
+             {/* Verified Serial Numbers Card - Only show when verified */}
+             {serialVerified && verifiedSerials.length > 0 && hasSerial && (
+               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center space-x-3">
+                       <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                         <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                         </svg>
+                       </div>
+                       <h2 className="text-xs font-bold text-gray-900">Verified Serial Numbers</h2>
+                       <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                         {verifiedSerials.length} items
+                       </span>
+                     </div>
+                   </div>
+                 </div>
+                 
+                 <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+                   {verifiedSerials.map((item, index) => (
+                     <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                       <div className="flex items-center space-x-3 mb-3">
+                         <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
+                           {index + 1}
+                         </div>
+                         <span className="text-xs font-medium text-gray-900">Serial #{index + 1}</span>
+                       </div>
+                       
+                       <div className="space-y-3">
+                         <div className="flex items-center space-x-3">
+                           <input
+                             type="checkbox"
+                             id={`good-${index}`}
+                             checked={item.isGood}
+                             onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
+                             className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2"
+                           />
+                           <label htmlFor={`good-${index}`} className="text-sm text-gray-700 font-medium">
+                             Item is in good condition
+                           </label>
+                         </div>
 
-                        <div className="grid grid-cols-1 gap-3">
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Serial Number</label>
-                            <input
-                              type="text"
-                              value={item.serial}
-                              onChange={(e) => updateSerialField(index, "serial", e.target.value)}
-                              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                            />
-                          </div>
+                         <div className="grid grid-cols-1 gap-3">
+                           <div>
+                             <label className="block text-xs font-medium text-gray-600 mb-1">Serial Number</label>
+                             <input
+                               type="text"
+                               value={item.serial}
+                               onChange={(e) => updateSerialField(index, "serial", e.target.value)}
+                               className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                             />
+                           </div>
 
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
-                            <textarea
-                              value={item.note}
-                              onChange={(e) => updateSerialField(index, "note", e.target.value)}
-                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-16"
-                              placeholder="Optional notes for this item"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+                           <div>
+                             <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                             <textarea
+                               value={item.note}
+                               onChange={(e) => updateSerialField(index, "note", e.target.value)}
+                               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-16"
+                               placeholder="Optional notes for this item"
+                             />
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             )}
+           </div>
         </div>
       </div>
     </div>
