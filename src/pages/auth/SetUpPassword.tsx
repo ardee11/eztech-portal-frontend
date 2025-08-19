@@ -3,8 +3,6 @@ import logo from "../../assets/ez-logo.png";
 import bgImg from "../../assets/Thumb.png";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
-
 function SetUpPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ function SetUpPassword() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/admins/set-password`, {
+      const res = await fetch("/admins/set-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
