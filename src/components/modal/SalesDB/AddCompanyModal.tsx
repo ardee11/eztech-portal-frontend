@@ -101,126 +101,126 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
             </button>
           </div>
 
-            <form id="addCompany" onSubmit={handleSubmit} className="px-6 flex flex-col h-full">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                  <label htmlFor="companyName" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Company Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="companyName"
-                    value={formData.companyName}
+          <form id="addCompany" onSubmit={handleSubmit} className="px-6 flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label htmlFor="companyName" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Company Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Company Name"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="companyAddress" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Company Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="companyAddress"
+                  value={formData.companyAddress}
+                  onChange={handleChange}
+                  className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Company Address"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="contactPerson" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Contact Person <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="contactPerson"
+                  value={formData.contactPerson}
+                  onChange={handleChange}
+                  className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Contact Person"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="contactNumber" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  id="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleChange}
+                  className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Contact Number"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="emailAddress" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="emailAddress"
+                  value={formData.emailAddress}
+                  onChange={handleChange}
+                  className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="Email Address"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="remarks" className="block text-xs 3xl:text-sm font-medium mb-2">
+                  Remarks
+                </label>
+                <div className="relative">
+                  <select
+                    id="remarks"
+                    value={formData.remarks}
                     onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Company Name"
-                    required
-                  />
-                </div>
+                    className="py-2 px-3 pe-9 block w-full appearance-none border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500 hover:cursor-pointer"
+                  >
+                    <option value="Potential">Potential</option>
+                    <option value="Active">Active</option>
+                    <option value="Open">Open</option>
+                    <option value="Government">Government</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
 
-                <div>
-                  <label htmlFor="companyAddress" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Company Address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="companyAddress"
-                    value={formData.companyAddress}
-                    onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Company Address"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="contactPerson" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Contact Person <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="contactPerson"
-                    value={formData.contactPerson}
-                    onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Contact Person"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="contactNumber" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Contact Number
-                  </label>
-                  <input
-                    type="text"
-                    id="contactNumber"
-                    value={formData.contactNumber}
-                    onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Contact Number"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="emailAddress" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="emailAddress"
-                    value={formData.emailAddress}
-                    onChange={handleChange}
-                    className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Email Address"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="remarks" className="block text-xs 3xl:text-sm font-medium mb-2">
-                    Remarks
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="remarks"
-                      value={formData.remarks}
-                      onChange={handleChange}
-                      className="py-2 px-3 pe-9 block w-full appearance-none border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500 hover:cursor-pointer"
-                    >
-                      <option value="Potential">Potential</option>
-                      <option value="Active">Active</option>
-                      <option value="Open">Open</option>
-                      <option value="Government">Government</option>
-                      <option value="Inactive">Inactive</option>
-                    </select>
-
-                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-center space-x-14 mt-auto">
-                <button
-                  type="submit"
-                  disabled={loadingSubmit || !isFormValid()}
-                  className="px-12 py-2 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
-                >
-                  {loadingSubmit ? "Submitting..." : "Submit"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  disabled={loadingSubmit}
-                  className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-700 border border-gray-400 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+            <div className="flex justify-between mt-auto">
+              <button
+                type="submit"
+                disabled={loadingSubmit || !isFormValid()}
+                className="px-12 py-2 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 hover:cursor-pointer"
+              >
+                {loadingSubmit ? "Submitting..." : "Submit"}
+              </button>
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={loadingSubmit}
+                className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-700 border border-gray-500 bg-white rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
