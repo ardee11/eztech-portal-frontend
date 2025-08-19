@@ -156,13 +156,37 @@ export default function Inventory() {
     };
   }, []);
 
-  const getYearlyCount = (status?: string) => {
-    return allItems.filter(item => {
-      const sameYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
-      const statusMatch = status ? item.item_status === status : true;
-      return sameYear && statusMatch;
-    }).length;
-  };
+  const [monthlyCount, setMonthlyCount] = useState(0);
+  const [yearlyCount, setYearlyCount] = useState({
+    total: 0,
+    delivered: 0,
+    forDelivery: 0,
+    pending: 0,
+  });
+  
+  useEffect(() => {
+    if (selectedMonthYear?.year) {
+      const yearItems = allItems.filter(item => item.entry_date.getFullYear() === selectedMonthYear.year);
+      
+      const deliveredCount = yearItems.filter(item => item.item_status === "Delivered").length;
+      const forDeliveryCount = yearItems.filter(item => item.item_status === "For Delivery").length;
+      const pendingCount = yearItems.filter(item => item.item_status === "Pending").length;
+      
+      setYearlyCount({
+        total: yearItems.length,
+        delivered: deliveredCount,
+        forDelivery: forDeliveryCount,
+        pending: pendingCount,
+      });
+
+      if (selectedMonthYear.month) {
+        const monthItems = yearItems.filter(item => item.entry_date.getMonth() + 1 === selectedMonthYear.month);
+        setMonthlyCount(monthItems.length);
+      } else {
+        setMonthlyCount(0);
+      }
+    }
+  }, [allItems, selectedMonthYear]);
 
   return (
     <div className="w-full mx-auto p-4 relative bg-gray-50">
@@ -182,7 +206,7 @@ export default function Inventory() {
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
                 {/* <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p> */}
-                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount()}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.total}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -200,7 +224,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Delivered")}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.delivered}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -218,7 +242,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("For Delivery")}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.forDelivery}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -236,7 +260,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{getYearlyCount("Pending")}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.pending}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -255,6 +279,11 @@ export default function Inventory() {
                 </svg>
               </div>
               <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
+              {!isSearching && (
+                <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                  {selectedMonthYear?.month ? `${monthlyCount}` : `${yearlyCount.total}`} items
+                </span>
+              )}
             </div>
             
             {/* Search and Filter Controls */}
@@ -461,7 +490,7 @@ export default function Inventory() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
                       Date of Entry
                     </th>
                     <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
@@ -470,16 +499,16 @@ export default function Inventory() {
                     <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/18">
                       Qty
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Distributor
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Client
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/8">
+                    <th className="text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Delivery Date
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -493,12 +522,9 @@ export default function Inventory() {
                         ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
-                      <td className="px-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-6 h-6 text-xs bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
-                            {index + 1}
-                          </div>
-                          <span className="font-medium text-sm text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
+                      <td className="px-6">
+                        <div className="flex items-center space-x-1.5">
+                          <p className="text-xs 3xl:text-sm">{index + 1}. <span className="font-medium text-blue-800">{formatTimestampToFullDate(item.entry_date)}</span></p>
                         </div>
                       </td>
                       <td className="px-3 py-4">
@@ -518,7 +544,7 @@ export default function Inventory() {
                       <td className="px-3 py-4 text-sm text-gray-800 break-words">
                         {item.client_name}
                       </td>
-                      <td className="px-3 py-4">
+                      <td className="text-center items-center">
                         <button 
                           onClick={(e) => {
                             if(item.item_status === "For Delivery" || item.delivered) return; 
@@ -528,7 +554,7 @@ export default function Inventory() {
                           className={`text-xs 3xl:text-sm font-medium ${
                             !item.delivered && item.item_status !== "For Delivery" 
                               ? "italic text-blue-500 hover:underline hover:cursor-pointer" 
-                              : "text-gray-600"
+                              : "text-gray-900"
                           }`}
                         >
                           {item.delivered || item.item_status === "For Delivery" 
@@ -539,7 +565,7 @@ export default function Inventory() {
                           }
                         </button>
                       </td>
-                      <td className="px-3 py-4">
+                      <td className="text-center items-center">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold 
                           ${getStatusStyles(item.item_status).badge}`}
                         >
