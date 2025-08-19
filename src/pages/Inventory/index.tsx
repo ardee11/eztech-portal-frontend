@@ -28,8 +28,8 @@ const STATUS_STYLES: Record<Status, { row: string; badge: string }> = {
     badge: "bg-blue-100 text-blue-800",
   },
   Pending: {
-    row: "bg-amber-100/30 hover:bg-amber-100/60",
-    badge: "bg-amber-100 text-amber-800",
+    row: "bg-red-100/30 hover:bg-red-100/60",
+    badge: "bg-red-100 text-red-800",
   },
   Default: {
     row: "bg-gray-100/30 hover:bg-gray-100/60",
@@ -59,6 +59,11 @@ export default function Inventory() {
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'year' | 'month'>('year');
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [availableMonths, setAvailableMonths] = useState<number[]>([]);
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Delivered' | 'Pending'>('All');
+  const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
 
   const openDeliveryModal = (itemId: string | null) => {
     setModalItemId(itemId || "");
@@ -109,6 +114,12 @@ export default function Inventory() {
 
       return serialMatch || clientMatch;
     })
+    .filter(item => {
+      if (statusFilter === 'All') return true;
+      if (statusFilter === 'Delivered') return item.item_status === 'Delivered';
+      if (statusFilter === 'Pending') return item.item_status === 'Pending';
+      return true;
+    })
     .sort((a, b) => {
       const dateDiff = b.entry_date.getTime() - a.entry_date.getTime();
       if (dateDiff !== 0) return dateDiff;
@@ -148,6 +159,7 @@ export default function Inventory() {
       const target = event.target as Element;
       if (!target.closest('.dropdown-container')) {
         setIsDropdownOpen(false);
+        setIsStatusDropdownOpen(false);
       }
     };
 
@@ -156,6 +168,41 @@ export default function Inventory() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleYearSelect = (year: number) => {
+    setSelectedYear(year);
+    
+    // Get available months for selected year
+    const monthsForYear = monthYearOptions
+      .filter(option => option.year === year)
+      .map(option => option.month);
+    
+    setAvailableMonths(monthsForYear);
+    setCurrentStep('month');
+  };
+
+  const handleMonthSelect = (month: number) => {
+    if (selectedYear) {
+      setSelectedMonthYear({ month, year: selectedYear });
+      setIsDropdownOpen(false);
+      setCurrentStep('year'); // Reset for next time
+      setSelectedYear(null);
+      setAvailableMonths([]);
+    }
+  };
+
+  const handleBackToYear = () => {
+    setCurrentStep('year');
+    setSelectedYear(null);
+    setAvailableMonths([]);
+  };
+
+  const getYearRange = () => {
+    const years = [...new Set(monthYearOptions.map(option => option.year))];
+    return years.sort((a, b) => b - a); // Sort descending
+  };
+  
+  // Removed year navigation arrows
 
   return (
     <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
@@ -291,14 +338,89 @@ export default function Inventory() {
                 )}
               </div>
               
+              {/* Status Filter */}
+              <div className="relative dropdown-container">
+                <button
+                  type="button"
+                  onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
+                  className="py-1 px-1.5 inline-flex items-center gap-x-2 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
+                  aria-haspopup="menu"
+                  aria-expanded={isStatusDropdownOpen}
+                  aria-label="Status Dropdown"
+                >
+                  <div className="flex items-center gap-x-1">
+                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" />
+                    </svg>
+                    {statusFilter === 'All' ? 'All Statuses' : statusFilter}
+                  </div>
+                  <svg
+                    className={`size-4 transition-transform duration-200 ${isStatusDropdownOpen ? 'rotate-180' : ''}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                {isStatusDropdownOpen && (
+                  <div
+                    className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 transform opacity-100 scale-100 transition-all duration-200"
+                    role="menu"
+                    aria-orientation="vertical"
+                  >
+                    <div className="p-2">
+                      <div className="space-y-1">
+                        {(['All','Delivered','Pending'] as const).map((option) => {
+                          const isSelected = (option === 'All' ? statusFilter === 'All' : statusFilter === option);
+                          return (
+                            <button
+                              key={option}
+                              onClick={() => {
+                                setStatusFilter(option);
+                                setIsStatusDropdownOpen(false);
+                              }}
+                              className={`block w-full text-left text-2xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
+                                isSelected ? 'bg-blue-100 text-blue-800 font-semibold' : ''
+                              }`}
+                              role="menuitem"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span>{option === 'All' ? 'All Statuses' : option}</span>
+                                {isSelected && (
+                                  <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
               {/* Filter Dropdown */}
               <div className="relative dropdown-container">
                 <button
                   id="monthYearSelect"
                   type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => {
+                    if (!isDropdownOpen) {
+                      setCurrentStep('year');
+                      setSelectedYear(null);
+                      setAvailableMonths([]);
+                    }
+                    setIsDropdownOpen(!isDropdownOpen);
+                  }}
                   className="py-1 px-1.5 inline-flex items-center gap-x-2 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
-                  aria-haspopup="menu"
+                  aria-haspopup="menu"  
                   aria-expanded={isDropdownOpen}
                   aria-label="Dropdown"
                 >
@@ -310,7 +432,9 @@ export default function Inventory() {
                       ? "By Search"
                       : selectedMonthYear
                         ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                        : "Select Month Year"}
+                        : currentStep === 'month' 
+                          ? `Select Month for ${selectedYear}`
+                          : "Select Year"}
                   </div>
                   {selectedMonthYear && !isSearching && (
                     <span className="inline-flex items-center justify-center"></span>
@@ -336,37 +460,68 @@ export default function Inventory() {
                     aria-labelledby="hs-dropdown-default"
                   >
                     <div className="p-2">
-                      {/* Filter Options */}
-                      <div className="space-y-1">
-                        {monthYearOptions.map(({ month, year }) => {
-                          const isSelected =
-                            selectedMonthYear?.month === month &&
-                            selectedMonthYear?.year === year;
-
-                          return (
+                      {currentStep === 'year' ? (
+                        // Year Selection Step
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-center">
+                            <h3 className="text-sm font-semibold text-gray-900">Select a Year</h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-2">
+                            {getYearRange().map((year) => (
+                              <button
+                                key={year}
+                                onClick={() => handleYearSelect(year)}
+                                className={`w-full inline-flex items-center justify-center text-xs 
+                                   rounded-md transition-colors text-center py-2.5 hover:cursor-pointer ${
+                                  selectedYear === year 
+                                    ? 'bg-green-100 text-green-800 font-semibold' 
+                                    : 'text-gray-700 hover:bg-gray-100 py-2.5 hover:cursor-pointer'
+                                }`}
+                              >
+                                {year}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        // Month Selection Step
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-semibold text-gray-900">Select a Month</h3>
                             <button
-                              key={`${year}-${month}`}
-                              onClick={() => {
-                                setSelectedMonthYear({ month, year });
-                                setIsDropdownOpen(false);
-                              }}
-                              className={`block w-full text-left text-2xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
-                                isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
-                              }`}
-                              role="menuitem"
+                              onClick={handleBackToYear}
+                              className="p-1 hover:bg-gray-100 rounded transition-colors"
                             >
-                              <div className="flex items-center justify-between">
-                                <span>{monthYearToLabel(month, year)}</span>
-                                {isSelected && (
-                                  <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                )}
-                              </div>
+                              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                          
                             </button>
-                          );
-                        })}
-                      </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-2">
+                            {availableMonths.map((month) => {
+                              const monthName = new Date(2000, month - 1).toLocaleString('default', { month: 'short' });
+                              const isSelected = selectedMonthYear?.month === month && selectedMonthYear?.year === selectedYear;
+                              
+                              return (
+                                <button
+                                  key={month}
+                                  onClick={() => handleMonthSelect(month)}
+                                  className={`text-xs px-3 py-2 rounded-md transition-colors text-center ${
+                                    isSelected 
+                                      ? 'bg-green-100 text-green-800 font-semibold' 
+                                      : 'text-gray-700 hover:bg-gray-100'
+                                  }`}
+                                >
+                                  {monthName}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
