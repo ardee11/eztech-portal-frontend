@@ -8,67 +8,43 @@ import InventoryContextMenu from "../../components/elements/InventoryContextMenu
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
+import { getStatusStyles } from "../../utils/getStatusStyles";
 
-type MonthYear = { month: number; year: number };
+type MonthYear = { month: number | null; year: number };
 
 function monthYearToLabel(month: number, year: number): string {
   const date = new Date(year, month - 1); 
   return date.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
-type Status = "Delivered" | "For Delivery" | "Pending" | "Default";
-
-const STATUS_STYLES: Record<Status, { row: string; badge: string }> = {
-  Delivered: {
-    row: "bg-teal-100/30 hover:bg-teal-100/60",
-    badge: "bg-teal-100 text-teal-800",
-  },
-  "For Delivery": {
-    row: "bg-blue-100/30 hover:bg-blue-100/70",
-    badge: "bg-blue-100 text-blue-800",
-  },
-  Pending: {
-    row: "bg-amber-100/30 hover:bg-amber-100/60",
-    badge: "bg-amber-100 text-amber-800",
-  },
-  Default: {
-    row: "bg-gray-100/30 hover:bg-gray-100/60",
-    badge: "bg-gray-100 text-gray-800",
-  },
-};
-
-function getStatusStyles(status: string) {
-  return STATUS_STYLES[status as Status] || STATUS_STYLES.Default;
-}
-
 export default function Inventory() {
   const navigate = useNavigate();
-  const { options: monthYearOptions } = useInventoryFilterOptions();
+  const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
   const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
 
-  const openMarkDeliveredModal = (itemId: string | null) => {
-    setMarkDeliveredItemId(itemId);
-    setIsMarkDeliveredModalOpen(true);
-    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
-  };
-
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const openDeliveryModal = (itemId: string | null) => {
-    setModalItemId(itemId || "");
-    setIsDeliveryModalOpen(true);
-    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
-  };
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
+
+  const openMarkDeliveredModal = (itemId: string | null) => {
+    setMarkDeliveredItemId(itemId);
+    setIsMarkDeliveredModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false }));
+  };
+
+  const openDeliveryModal = (itemId: string | null) => {
+    setModalItemId(itemId || "");
+    setIsDeliveryModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false }));
+  };
 
   const openDeleteModal = (itemId: string | null) => {
     if (itemId) {
@@ -81,38 +57,49 @@ export default function Inventory() {
   };
  
   useEffect(() => {
-    if (monthYearOptions.length > 0) {
-      setSelectedMonthYear(monthYearOptions[0]);
+    if (yearOptions.length > 0) {
+      setSelectedMonthYear({ month: null, year: yearOptions[0] }); 
     }
-  }, [monthYearOptions]);
+  }, [yearOptions]);
   
-  const { allItems, items, loading, error } = useInventory(
-    selectedMonthYear?.month,
+  const { allItems, loading, error } = useInventory(
+    selectedMonthYear?.month ?? undefined, 
     selectedMonthYear?.year
   );
 
   const isSearching = searchQuery.trim().length > 0;
-  const baseItems = isSearching ? allItems : items;
+  //const baseItems = isSearching ? allItems : items;
 
   const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
 
-  const filteredItems = baseItems
-    .filter(item => {
-      if (searchQuery.trim() === "") return true;
+  const filteredItems = allItems
+    .filter((item) => {
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
+        const serialMatch =
+          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ??
+          false;
+        const clientMatch =
+          item.client_name?.toLowerCase().includes(query) ?? false;
+        return idMatch || serialMatch || clientMatch;
+      }
 
-      const query = searchQuery.toLowerCase();
-      const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
-      const serialMatch = item.serialnumbers?.some(sn =>
-        sn.id.toLowerCase().includes(query)
-      ) ?? false;
-      const clientMatch = item.client_name?.toLowerCase().includes(query) ?? false;
+      const matchYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
+      const matchMonth =
+        selectedMonthYear?.month === null
+          ? true
+          : item.entry_date.getMonth() + 1 === selectedMonthYear?.month;
 
-      return idMatch || serialMatch || clientMatch;
+      if (!matchYear) return false;
+      if (selectedMonthYear?.month) {
+        return matchMonth;
+      }
+      return true;
     })
-    .sort((a, b) => {
+    .sort((b, a) => {
       const dateDiff = b.entry_date.getTime() - a.entry_date.getTime();
       if (dateDiff !== 0) return dateDiff;
-
       return extractNum(b.item_id || "") - extractNum(a.item_id || "");
     });
     
@@ -144,6 +131,7 @@ export default function Inventory() {
 
   const groupByYear = (options: MonthYear[]) => {
     return options.reduce((acc, { month, year }) => {
+      if (month === null) return acc;
       if (!acc[year]) acc[year] = [];
       acc[year].push(month);
       acc[year].sort((a, b) => a - b);
@@ -318,7 +306,9 @@ export default function Inventory() {
                     {isSearching
                       ? "By Search"
                       : selectedMonthYear
-                        ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
+                        ? selectedMonthYear.month === null
+                          ? `${selectedMonthYear.year}`
+                          : monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
                         : "Select Month Year"}
                   </div>
                   <svg
@@ -353,13 +343,21 @@ export default function Inventory() {
                           columns.push(years.slice(i, i + 6));
                         }
                         return columns.map((colYears, colIdx) => (
-                          <div key={colIdx} className="flex flex-col gap-2">
+                          <div key={colIdx} className="flex flex-col">
                             {colYears.map(year => (
                               <div key={year}>
                                 <button
                                   type="button"
-                                  onClick={() => setExpandedYears([year])}
-                                  className="font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer"
+                                    onClick={() => {
+                                    if(expandedYears.includes(year)) {
+                                      setExpandedYears([]);
+                                      setSelectedMonthYear({ month: null, year }); 
+                                    } else {
+                                      setExpandedYears([year]);
+                                      setSelectedMonthYear({ month: null, year }); 
+                                    }
+                                  }}
+                                  className={`py-1 px-2 rounded-lg font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer ${year === selectedMonthYear?.year ? "bg-blue-100/70" : ""}`}
                                 >
                                   {year}
                                   <svg
@@ -463,25 +461,25 @@ export default function Inventory() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Date of Entry
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/18">
                       Qty
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
                       Distributor
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
                       Client
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/8">
                       Delivery Date
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -491,11 +489,11 @@ export default function Inventory() {
                     <tr
                       key={item.item_id}
                       onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
-                      className={`hover:bg-blue-50/50 transition-all duration-200 cursor-pointer 
+                      className={`transition-all duration-200 cursor-pointer
                         ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
-                      <td className="px-4">
+                      <td className="px-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-6 h-6 text-xs bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
                             {index + 1}
@@ -503,24 +501,24 @@ export default function Inventory() {
                           <span className="font-medium text-sm text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <div className="flex flex-col">
                           <span className="font-semibold text-sm text-gray-900 mb-1">{item.item_id}</span>
                           <span className="text-sm text-gray-800 whitespace-pre-wrap">{item.item_name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           {item.quantity}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
+                      <td className="px-3 py-4 text-sm text-gray-800 break-words">
                         {item.distributor}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
+                      <td className="px-3 py-4 text-sm text-gray-800 break-words">
                         {item.client_name}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <button 
                           onClick={(e) => {
                             if(item.item_status === "For Delivery" || item.delivered) return; 
@@ -529,7 +527,7 @@ export default function Inventory() {
                           }}
                           className={`text-xs 3xl:text-sm font-medium ${
                             !item.delivered && item.item_status !== "For Delivery" 
-                              ? "text-blue-600 hover:underline hover:cursor-pointer" 
+                              ? "italic text-blue-500 hover:underline hover:cursor-pointer" 
                               : "text-gray-600"
                           }`}
                         >
@@ -541,7 +539,7 @@ export default function Inventory() {
                           }
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold 
                           ${getStatusStyles(item.item_status).badge}`}
                         >

@@ -228,19 +228,19 @@ function ItemDetails() {
                                         </svg>
                                         Checked
                                       </span>
-                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-blue-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Passed
                                       </span>
-                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-green-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                         </svg>
                                         Good
                                       </span>
-                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                      <span className="inline-flex items-center px-2 py-1 3xl:px-3 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-purple-200">
                                         <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                                           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                                         </svg>
@@ -463,7 +463,12 @@ function ItemDetails() {
                             <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
                           </p>
                           <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Checked By:</span> <span className="text-blue-600 font-semibold">{item.checked_by}</span>
+                            <span className="font-medium">Checked By:{" "}</span> 
+                            <span className="text-blue-600 font-semibold">
+                              {item.checked_by && item.checked_by.length > 0
+                                ? item.checked_by.join(", ")
+                                : "Not Specified"}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -498,7 +503,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.entry_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.received_by}</span></p>
+                              <p className="text-xs text-gray-600">By{" "} 
+                                <span className="text-blue-600">
+                                  {item.received_by && item.received_by.length > 0
+                                    ? item.received_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -519,7 +530,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.entry_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.checked_by}</span></p>
+                              <p className="text-xs text-gray-600">By{" "}
+                                <span className="text-blue-600">
+                                  {item.checked_by && item.checked_by.length > 0
+                                    ? item.checked_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -537,7 +554,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.delivery_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">c/o{" "}
+                                <span className="text-blue-600">
+                                  {item.delivered_by && item.delivered_by.length > 0
+                                    ? item.delivered_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -555,7 +578,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.delivery_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">By{" "}
+                                <span className="text-blue-600">
+                                  {item.delivered_by && item.delivered_by.length > 0
+                                    ? item.delivered_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
