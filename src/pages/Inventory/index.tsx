@@ -522,7 +522,7 @@ export default function Inventory() {
                         ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
-                      <td className="px-6">
+                      <td className="px-4">
                         <div className="flex items-center space-x-1.5">
                           <p className="text-xs 3xl:text-sm">{index + 1}. <span className="font-medium text-blue-800">{formatTimestampToFullDate(item.entry_date)}</span></p>
                         </div>
