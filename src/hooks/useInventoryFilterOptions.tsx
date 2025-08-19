@@ -3,15 +3,22 @@ import { useEffect, useState } from "react";
 type MonthYear = { month: number; year: number };
 
 export function useInventoryFilterOptions() {
-  const [options, setOptions] = useState<MonthYear[]>([]);
+  const [monthYearOptions, setMonthYearOptions] = useState<MonthYear[]>([]);
+  const [yearOptions, setYearOptions] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/inventory/filter-options")
       .then(res => res.json())
-      .then(data => {
-        setOptions(data);
+      .then((data: MonthYear[]) => {
+        setMonthYearOptions(data);
+
+        const uniqueYears = Array.from(
+          new Set(data.map(item => item.year))
+        ).sort((a, b) => b - a);
+        setYearOptions(uniqueYears);
+
         setLoading(false);
       })
       .catch(err => {
@@ -21,5 +28,5 @@ export function useInventoryFilterOptions() {
       });
   }, []);
 
-  return { options, loading, error };
+  return { monthYearOptions, yearOptions, loading, error };
 }
