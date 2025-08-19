@@ -31,13 +31,40 @@ export interface Supplier {
   name: string;
 }
 
-export function useInventory(month?: number, year?: number) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [allItems, setAllItems] = useState<Item[]>([]);
+export function useInventory() {
+  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
+
+  const fetchAllItems = async (isMounted: boolean, token: string) => {
+    try {
+      const response = await fetch(`/api/inventory/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const parsed = data.map((item: any) => ({
+        ...item,
+        entry_date: new Date(item.entry_date),
+        delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+        created_at: new Date(item.created_at),
+      }));
+
+      if (isMounted) {
+        setInventoryItems(parsed); // Update the single state variable
+        setLoading(false);
+        setError(null);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch inventory:", err);
+      if (isMounted) {
+        setError("Failed to load inventory.");
+        setLoading(false);
+      }
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -48,65 +75,7 @@ export function useInventory(month?: number, year?: number) {
     }
 
     let isMounted = true;
-
-    const fetchItems = async () => {
-      try {
-        //const url = new URL(`/api/inventory`);
-        const url = new URL(`/api/inventory`, window.location.origin);
-        if (month && year) {
-          url.searchParams.append("month", month.toString());
-          url.searchParams.append("year", year.toString());
-        }
-
-        const response = await fetch(url.toString(), {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await response.json();
-
-        const parsed = data.map((item: any) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }));
-
-        if (isMounted) {
-          setItems(parsed);
-          setError(null);
-        }
-      } catch (err) {
-        console.error("Failed to fetch inventory:", err);
-        if (isMounted) setError("Failed to load inventory.");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    const fetchAllItems = async () => {
-      try {
-        const response = await fetch(`/api/inventory/all`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await response.json();
-
-        const parsed = data.map((item: any) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }));
-
-        if (isMounted) {
-          setAllItems(parsed);
-        }
-      } catch (err) {
-        console.error("Failed to fetch all inventory items:", err);
-      }
-    };
-
-    fetchAllItems();
-    fetchItems();
+    fetchAllItems(isMounted, token);
 
     const socket = new WebSocket(`ws://${window.location.host}/ws/inventory?token=${token}`);
     ws.current = socket;
@@ -116,7 +85,7 @@ export function useInventory(month?: number, year?: number) {
         socket.close();
         return;
       }
-      //console.log("Inventory WebSocket connected");
+        //console.log("Inventory WebSocket connected");
       setConnected(true);
     };
 
@@ -124,24 +93,13 @@ export function useInventory(month?: number, year?: number) {
       try {
         const message = JSON.parse(event.data);
         if (message.type === 'inventory_update' && Array.isArray(message.data)) {
-          const filtered = (message.data as Item[]).filter((item) => {
-            const entryDate = new Date(item.entry_date);
-            return (
-              (!month || entryDate.getMonth() + 1 === month) &&
-              (!year || entryDate.getFullYear() === year)
-            );
-          });
-
-          const parsed = filtered
-            .map((item) => ({
-              ...item,
-              entry_date: new Date(item.entry_date),
-              delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-              created_at: new Date(item.created_at),
-            }))
-            .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());
-
-          setItems(parsed);
+          const parsed = message.data.map((item: any) => ({
+          ...item,
+          entry_date: new Date(item.entry_date),
+          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+          created_at: new Date(item.created_at),
+        }));
+          setInventoryItems(parsed); // Update the single source of truth
         } else {
           console.warn("Unhandled WebSocket message:", message);
         }
@@ -149,24 +107,24 @@ export function useInventory(month?: number, year?: number) {
         console.error("Failed to parse WS message:", err);
       }
     };
+
     socket.onerror = (event) => {
       console.error("WebSocket error:", event);
     };
 
     socket.onclose = () => {
-      //console.log(`Inventory WebSocket closed: code=${event.code}, reason=${event.reason}`);
       setConnected(false);
     };
 
     return () => {
       isMounted = false;
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.close();
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close();
       }
     };
-  }, [month, year]);
+  }, []); 
 
-  return { allItems, items, loading, error, connected };
+  return { inventoryItems, loading, error, connected };
 }
 
 export function useAddInventory() {

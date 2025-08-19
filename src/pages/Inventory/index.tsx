@@ -62,17 +62,14 @@ export default function Inventory() {
     }
   }, [yearOptions]);
   
-  const { allItems, loading, error } = useInventory(
-    selectedMonthYear?.month ?? undefined, 
-    selectedMonthYear?.year
-  );
+  const { inventoryItems, loading, error } = useInventory();
 
   const isSearching = searchQuery.trim().length > 0;
   //const baseItems = isSearching ? allItems : items;
 
   const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
 
-  const filteredItems = allItems
+  const filteredItems = inventoryItems
     .filter((item) => {
       if (searchQuery.trim() !== "") {
         const query = searchQuery.toLowerCase();
@@ -166,7 +163,7 @@ export default function Inventory() {
   
   useEffect(() => {
     if (selectedMonthYear?.year) {
-      const yearItems = allItems.filter(item => item.entry_date.getFullYear() === selectedMonthYear.year);
+      const yearItems = inventoryItems.filter(item => item.entry_date.getFullYear() === selectedMonthYear.year);
       
       const deliveredCount = yearItems.filter(item => item.item_status === "Delivered").length;
       const forDeliveryCount = yearItems.filter(item => item.item_status === "For Delivery").length;
@@ -186,7 +183,7 @@ export default function Inventory() {
         setMonthlyCount(0);
       }
     }
-  }, [allItems, selectedMonthYear]);
+  }, [inventoryItems, selectedMonthYear]);
 
   return (
     <div className="w-full mx-auto p-4 relative bg-gray-50">
