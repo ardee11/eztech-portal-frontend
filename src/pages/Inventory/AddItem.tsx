@@ -187,7 +187,7 @@ export default function AddItem() {
                     id="entryDate"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full px-2 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 hover:cursor-pointer transition-all duration-200 bg-gray-50"
+                    className="w-full px-2 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400 hover:cursor-pointer transition-all duration-200 bg-white"
                     required
                     readOnly
                     placeholder="Select entry date"
@@ -233,7 +233,7 @@ export default function AddItem() {
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                   required
-                  className="w-full px-4 py-3 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-20 bg-gray-50"
+                  className="w-full px-4 py-3 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200 resize-none h-20 bg-white"
                   placeholder="Enter item name or description"
                 />
               </div>
@@ -251,7 +251,7 @@ export default function AddItem() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     disabled={serialVerified}
-                    className="w-full p-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50"
+                    className="w-full p-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200 bg-white"
                     required
                     placeholder="0"
                     min="1"
@@ -269,7 +269,7 @@ export default function AddItem() {
                       checked={hasSerial}
                       onChange={handleToggle}
                       disabled={serialVerified}
-                      className="w-4 h-4 border-gray-300 rounded text-blue-600 disabled:opacity-50"
+                      className="w-4 h-4 border-gray-300 rounded focus:outline-none focus:ring-0 disabled:opacity-50"
                     />
                     <label htmlFor="hasSerial" className="text-xs text-gray-700 font-medium">Has Serial Numbers</label>
                   </div>
@@ -286,7 +286,7 @@ export default function AddItem() {
                   autoComplete="off"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  className="w-full px-2 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50"
+                  className="w-full px-2 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200 bg-white"
                   required
                   placeholder="Enter client name"
                 />
@@ -338,7 +338,7 @@ export default function AddItem() {
                   autoComplete="off"
                   value={itemNote}
                   onChange={(e) => setitemNote(e.target.value)}
-                  className="w-full px-4 py-3 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24 bg-gray-50"
+                  className="w-full px-4 py-3 text-xs 3xl:text-sm border border-gray-500 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200 resize-none h-24 bg-white"
                   placeholder="Enter any additional notes or comments"
                 />
               </div>
@@ -404,7 +404,7 @@ export default function AddItem() {
                     disabled={!hasSerial}
                     className={`w-full px-4 py-3 text-xs 3xl:text-sm border rounded-md resize-none h-24 transition-all duration-200 ${
                       hasSerial 
-                        ? 'border-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50' 
+                        ? 'border-gray-500 focus:outline-none focus:ring-1 focus:ring-teal-400 bg-gray-50' 
                         : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                     required={hasSerial}
@@ -472,7 +472,7 @@ export default function AddItem() {
                           id={`good-${index}`}
                           checked={item.isGood}
                           onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
-                          className="w-4 h-4 border-gray-300 rounded text-blue-600 bg-white focus:ring-blue-500 focus:ring-2"
+                          className="w-4 h-4 border-gray-300 rounded text-blue-600 bg-white focus:ring-0"
                         />
                         <label htmlFor={`good-${index}`} className="text-xs 3xl:text-sm text-gray-800 font-medium">
                           Item is in good condition
@@ -485,7 +485,7 @@ export default function AddItem() {
                             type="text"
                             value={item.serial}
                             onChange={(e) => updateSerialField(index, "serial", e.target.value)}
-                            className="w-full px-3 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                            className="w-full px-3 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200"
                           />
                         </div>
 
@@ -494,7 +494,7 @@ export default function AddItem() {
                           <textarea
                             value={item.note}
                             onChange={(e) => updateSerialField(index, "note", e.target.value)}
-                            className="w-full px-3 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-16"
+                            className="w-full px-3 py-2 text-xs 3xl:text-sm border border-gray-500 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-400 transition-all duration-200 resize-none h-16"
                             placeholder="Optional notes for this item"
                           />
                         </div>

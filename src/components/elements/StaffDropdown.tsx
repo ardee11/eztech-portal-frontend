@@ -140,7 +140,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
       <div
         ref={buttonRef}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full py-2 px-3 text-left inline-flex items-center justify-between gap-x-1 text-xs 3xl:text-sm rounded-md border border-gray-500 bg-gray-50 text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
+        className="w-full py-2 px-3 text-left inline-flex items-center justify-between gap-x-1 text-xs 3xl:text-sm rounded-md border border-gray-500 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer focus:outline-none focus:ring-1 focus:ring-teal-400"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-labelledby={labelId}

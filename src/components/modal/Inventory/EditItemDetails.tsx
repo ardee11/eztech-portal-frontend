@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { Item, useUpdateInventory } from "../../../hooks/useInventory";
 import { showToast } from "../../../utils/toastUtils";
+import InputDropdown from "../../elements/InputDropdown";
+import { useSuppliers } from "../../../hooks/useInventory";
 
 type Props = {
   isItemModalOpen: boolean;
@@ -12,6 +14,7 @@ type Props = {
 
 const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) => {
   const { updateInventory, loading } = useUpdateInventory();
+  const { suppliers } = useSuppliers();
   const [itemName, setItemName] = useState("");
   const [clientName, setClientName] = useState("");
   const [itemDistributor, setItemDistributor] = useState("");
@@ -117,12 +120,13 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
                 <label htmlFor="itemDistributor" className="block text-xs 3xl:text-sm mb-1">
                   Distributor
                 </label>
-                <input 
-                  id="itemDistributor"
-                  value={itemDistributor} 
-                  onChange={(e) => setItemDistributor(e.target.value)} 
-                  className="w-full border p-2 text-xs 3xl:text-sm border-gray-500 rounded-lg"
-                  placeholder="Distributor" 
+                <InputDropdown
+                  value={itemDistributor}
+                  onChange={(value) => setItemDistributor(value ?? "")}
+                  options={suppliers.map(supplier => ({
+                    name: supplier.name,
+                    aid: supplier.id
+                  }))}
                 />
               </form>
             </div>
