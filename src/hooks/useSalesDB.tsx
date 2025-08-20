@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL!;
-
 export interface SalesAccount {
   comp_id: number;
   acc_manager: string;
@@ -30,7 +28,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     }
 
     setLoading(true);
-    fetch(`${API_BASE_URL}/api/sales-accounts`, {
+    fetch(`/api/sales-accounts`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
@@ -61,7 +59,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     let isMounted = true;
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/sales-accounts", {
+        const res = await fetch("/api/sales-accounts", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Failed to fetch");
@@ -78,7 +76,8 @@ export function useSalesAccounts(reloadFlag?: boolean) {
 
     fetchData();
 
-    const socket = new WebSocket(`ws://localhost:5000/ws/sales-accounts?token=${token}`);
+    
+    const socket = new WebSocket(`ws://${window.location.host}/ws/sales-accounts?token=${token}`);
     ws.current = socket;
 
     socket.onopen = () => {
@@ -86,7 +85,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
         socket.close();
         return;
       }
-      console.log("WebSocket connected");
+      //console.log("WebSocket connected");
       setConnected(true);
     };
 
@@ -122,7 +121,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authorization token missing.");
 
-    const res = await fetch(`${API_BASE_URL}/api/sales-accounts/${comp_id}`, {
+    const res = await fetch(`/api/sales-accounts/${comp_id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -146,7 +145,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authorization token missing.");
 
-    const response = await fetch(`${API_BASE_URL}/api/sales-accounts`, {
+    const response = await fetch(`/api/sales-accounts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -168,7 +167,7 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Authorization token missing.");
 
-    const response = await fetch(`${API_BASE_URL}/api/sales-accounts/${companyId}`, {
+    const response = await fetch(`/api/sales-accounts/${companyId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -106,13 +106,13 @@ export default function Inventory() {
       if (searchQuery.trim() === "") return true;
 
       const query = searchQuery.toLowerCase();
+      const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
       const serialMatch = item.serialnumbers?.some(sn =>
         sn.id.toLowerCase().includes(query)
       ) ?? false;
-
       const clientMatch = item.client_name?.toLowerCase().includes(query) ?? false;
 
-      return serialMatch || clientMatch;
+      return idMatch || serialMatch || clientMatch;
     })
     .filter(item => {
       if (statusFilter === 'All') return true;
@@ -152,6 +152,22 @@ export default function Inventory() {
       itemDelivered,
     });
   };
+
+  const groupByYear = (options: MonthYear[]) => {
+    return options.reduce((acc, { month, year }) => {
+      if (!acc[year]) acc[year] = [];
+      acc[year].push(month);
+      return acc;
+    }, {} as Record<number, number[]>);
+  }
+const [expandedYears, setExpandedYears] = useState<number[]>([]);
+const toggleYear = (year: number) => {
+  setExpandedYears(prev =>
+    prev.includes(year)
+      ? prev.filter(y => y !== year)
+      : [...prev, year]
+  );
+};
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -205,6 +221,7 @@ export default function Inventory() {
   // Removed year navigation arrows
 
   return (
+<<<<<<< HEAD
     <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -279,21 +296,105 @@ export default function Inventory() {
               {allItems.filter(item => item.item_status === "Pending").length}
             </p>
             <p className="text-xs text-gray-600 mt-1">Awaiting processing</p>
+=======
+    <div className="w-full mx-auto px-4 py-6 relative bg-gray-50">
+
+      {/* Enhanced Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+
+        {/* Total Items Card */}
+        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div className="flex flex-col justify-start">
+              <div className="flex items-baseline space-x-2">
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p>
+              </div>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivered Items Card */}
+        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col justify-start">
+              <div className="flex items-baseline space-x-2">
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Delivered").length}</p>
+              </div>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered</p>
+            </div>
+          </div>
+        </div>
+
+        {/* For Delivery Items Card */}
+        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col justify-start">
+              <div className="flex items-baseline space-x-2">
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "For Delivery").length}</p>
+              </div>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Pending Items Card */}
+        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="flex flex-col justify-start">
+              <div className="flex items-baseline space-x-2">
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Pending").length}</p>
+              </div>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing</p>
+            </div>
+>>>>>>> ez-ArdieDelaCruz
           </div>
         </div>
       </div>
 
       {/* Enhanced Table Card */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
+        <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
+<<<<<<< HEAD
               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+=======
+              <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+>>>>>>> ez-ArdieDelaCruz
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                 </svg>
               </div>
+<<<<<<< HEAD
               <h2 className="text-md font-bold text-gray-900">Inventory Items</h2>
+=======
+              <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
+>>>>>>> ez-ArdieDelaCruz
             </div>
             
             {/* Search and Filter Controls */}
@@ -319,19 +420,23 @@ export default function Inventory() {
                 <input
                   type="text"
                   id="searchInput"
-                  placeholder="Search by serial number"
+                  placeholder="Search by serial number or company name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoComplete="off"
+<<<<<<< HEAD
                   className="w-64 pl-10 pr-10 py-1 border border-gray-400 rounded-lg bg-white text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+=======
+                  className="text-xs 3xl:text-sm w-86 pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+>>>>>>> ez-ArdieDelaCruz
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400hover:text-gray-800 hover:cursor-pointer transition-colors"
                     type="button"
                   >
-                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -342,8 +447,13 @@ export default function Inventory() {
               <div className="relative dropdown-container">
                 <button
                   type="button"
+<<<<<<< HEAD
                   onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
                   className="py-1 px-1.5 inline-flex items-center gap-x-2 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
+=======
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="py-2 px-3 text-xs 3xl:text-sm inline-flex items-center gap-x-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
+>>>>>>> ez-ArdieDelaCruz
                   aria-haspopup="menu"
                   aria-expanded={isStatusDropdownOpen}
                   aria-label="Status Dropdown"
@@ -369,6 +479,7 @@ export default function Inventory() {
                 </button>
                 {isStatusDropdownOpen && (
                   <div
+<<<<<<< HEAD
                     className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 transform opacity-100 scale-100 transition-all duration-200"
                     role="menu"
                     aria-orientation="vertical"
@@ -394,17 +505,85 @@ export default function Inventory() {
                                 {isSelected && (
                                   <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+=======
+                    className="absolute z-[100] min-w-96 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-4"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="hs-dropdown-default"
+                    style={{ right: 0, left: "auto" }}
+                  >
+                    {/* Mega Menu Years - 6 per column */}
+                    <div className="grid grid-cols-1 gap-8">
+                      {(() => {
+                        // Group years into arrays of 6 for columns
+                        const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
+                        const columns: number[][] = [];
+                        for (let i = 0; i < years.length; i += 6) {
+                          columns.push(years.slice(i, i + 6));
+                        }
+                        return columns.map((colYears, colIdx) => (
+                          <div key={colIdx} className="flex flex-col gap-2">
+                            {colYears.map(year => (
+                              <div key={year}>
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedYears([year])}
+                                  className="font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer"
+                                >
+                                  {year}
+                                  <svg
+                                    className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+>>>>>>> ez-ArdieDelaCruz
                                   </svg>
-                                )}
+                                </button>
+                                {/* Months grid: only show if this year is expanded */}
+                                {expandedYears.includes(year) && (() => {
+                                  const months = groupByYear(monthYearOptions)[year];
+                                  const monthCount = months.length;
+                                  const isGrid = monthCount >= 4;
+                                  return (
+                                    <div
+                                      className={`${isGrid ? "grid grid-cols-2" : "flex flex-col"} gap-1 mb-2`}
+                                    >
+                                      {months.map((month) => {
+                                        const isSelected =
+                                          selectedMonthYear?.month === month &&
+                                          selectedMonthYear?.year === year;
+
+                                        return (
+                                          <button
+                                            key={`${year}-${month}`}
+                                            onClick={() => {
+                                              setSelectedMonthYear({ month, year });
+                                              setIsDropdownOpen(false);
+                                            }}
+                                            className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
+                                              isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
+                                            }`}
+                                            role="menuitem"
+                                          >
+                                            {monthYearToLabel(month, year)}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                            </button>
-                          );
-                        })}
-                      </div>
+                            ))}
+                          </div>
+                        ));
+                      })()}
                     </div>
                   </div>
                 )}
               </div>
+<<<<<<< HEAD
               
               {/* Filter Dropdown */}
               <div className="relative dropdown-container">
@@ -526,6 +705,21 @@ export default function Inventory() {
                   </div>
                 )}
               </div>
+=======
+
+              <div>
+                <button
+                  onClick={() => navigate("/inventory/add")}
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200 text-xs 3xl:text-sm flex items-center hover:cursor-pointer"
+                >
+                  <svg className="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d  ="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Item
+                </button>
+              </div>
+
+>>>>>>> ez-ArdieDelaCruz
             </div>
           </div>
         </div>
@@ -559,7 +753,7 @@ export default function Inventory() {
 
           {/* Enhanced Inventory Table */}
           {!loading && !error && (
-            <div className="w-full overflow-y-auto h-[calc(100vh-400px)]">
+            <div className="w-full overflow-y-auto h-[calc(100vh-270px)]">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
@@ -595,18 +789,30 @@ export default function Inventory() {
                         ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-4">
                         <div className="flex items-center space-x-3">
+<<<<<<< HEAD
                           <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-2xs font-bold text-blue-600">
                             {index + 1}
                           </div>
                           <span className="font-medium text-xs text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
+=======
+                          <div className="w-6 h-6 text-xs bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
+                            {index + 1}
+                          </div>
+                          <span className="font-medium text-sm text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
+>>>>>>> ez-ArdieDelaCruz
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
+<<<<<<< HEAD
                           <span className="text-xs font-semibold text-gray-900 mb-1">{item.item_id}</span>
                           <span className="text-xs text-gray-600 whitespace-pre-wrap">{item.item_name}</span>
+=======
+                          <span className="font-semibold text-sm text-gray-900 mb-1">{item.item_id}</span>
+                          <span className="text-sm text-gray-800 whitespace-pre-wrap">{item.item_name}</span>
+>>>>>>> ez-ArdieDelaCruz
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -614,10 +820,17 @@ export default function Inventory() {
                           {item.quantity}
                         </span>
                       </td>
+<<<<<<< HEAD
                       <td className="px-6 py-4 text-xs text-gray-700 break-words">
                         {item.distributor}
                       </td>
                       <td className="px-6 py-4 text-xs text-gray-700 break-words">
+=======
+                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
+                        {item.distributor}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
+>>>>>>> ez-ArdieDelaCruz
                         {item.client_name}
                       </td>
                       <td className="px-6 py-4">
@@ -627,9 +840,13 @@ export default function Inventory() {
                             e.stopPropagation();  
                             openDeliveryModal(item.item_id);
                           }}
+<<<<<<< HEAD
                           className={`text-xs ${
+=======
+                          className={`text-xs 3xl:text-sm font-medium ${
+>>>>>>> ez-ArdieDelaCruz
                             !item.delivered && item.item_status !== "For Delivery" 
-                              ? "text-blue-600 hover:text-blue-700 hover:underline" 
+                              ? "text-blue-600 hover:underline hover:cursor-pointer" 
                               : "text-gray-600"
                           }`}
                         >
@@ -642,7 +859,11 @@ export default function Inventory() {
                         </button>
                       </td>
                       <td className="px-6 py-4">
+<<<<<<< HEAD
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold 
+=======
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold 
+>>>>>>> ez-ArdieDelaCruz
                           ${getStatusStyles(item.item_status).badge}`}
                         >
                           {item.item_status}

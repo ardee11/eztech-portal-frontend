@@ -42,7 +42,7 @@ export default function Sidebar() {
                       {isActive && <div className="w-1 h-6 bg-blue-400 rounded-r"></div>}
                     <div className="p-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-md group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-200">
                       <svg
-                        className="shrink-0 size-4"
+                        className="shrink-0 size-3.5 3xl:size-4"
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
@@ -102,20 +102,20 @@ export default function Sidebar() {
 
               {userRole && hasAccess(userRole, "sales") && (
                 <li>
-                                     <NavLink
-                     to="/sales-database"
-                     className={({ isActive }) =>
-                       isActive 
-                         ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 shadow-lg" 
-                         : "text-slate-300 hover:text-white"
-                     }
-                   >
+                  <NavLink
+                    to="/sales-database"
+                    className={({ isActive }) =>
+                      isActive 
+                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-300 shadow-lg" 
+                        : "text-slate-300 hover:text-white"
+                    }
+                  >
                      {({ isActive }) => (
                        <div className="flex items-center gap-x-3 py-3 px-4 text-xs rounded-r-lg hover:bg-white/5 transition-all duration-200 group">
                          {isActive && <div className="w-1 h-6 bg-blue-400 rounded-r"></div>}
                       <div className="p-1.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-md group-hover:from-orange-500/30 group-hover:to-red-500/30 transition-all duration-200">
                         <svg
-                          className="shrink-0 size-4"
+                          className="shrink-0 size-3.5 3xl:size-4"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ export default function Sidebar() {
                           <path d="M3 12a9 3 0 0 0 18 0" />
                         </svg>
                       </div>
-                                             <span className="font-medium">Sales Database</span>
+                        <span className="font-medium">Sales Database</span>
                      </div>
                      )}
                    </NavLink>
@@ -145,7 +145,7 @@ export default function Sidebar() {
                  >
                   <div className="p-1.5 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-md group-hover:from-purple-500/30 group-hover:to-pink-500/30 transition-all duration-200">
                     <svg 
-                      className="shrink-0 size-4" 
+                      className="shrink-0 size-3.5 3xl:size-4" 
                       xmlns="http://www.w3.org/2000/svg" 
                       width="24" 
                       height="24" 
@@ -208,14 +208,14 @@ export default function Sidebar() {
         </div>
 
         {/* Sign Out Section */}
-        <div className="flex-shrink-0 border-t border-slate-700/50 p-4">
+        <div className="flex-shrink-0 border-t border-slate-700/50 p-1">
           <button
             className="w-full text-left text-xs text-slate-400 hover:text-red-400 hover:cursor-pointer flex items-center gap-x-3 py-3 px-4 rounded-lg hover:bg-red-500/10 transition-all duration-200 group"
             onClick={handleSignOut}
           >
-            <div className="p-1.5 bg-gradient-to-r from-red-500/20 to-pink-500/20 rounded-md group-hover:from-red-500/30 group-hover:to-pink-500/30 transition-all duration-200">
+            <div className="p-1.5 bg-gradient-to-r from-red-500/30 to-red-700/30 rounded-md group-hover:from-red-500/30 group-hover:to-pink-500/30 transition-all duration-200">
               <svg
-                className="shrink-0 size-4"
+                className="shrink-0 size-3.5 3xl:size-4"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"

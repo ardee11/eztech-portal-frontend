@@ -44,9 +44,9 @@ function ItemDetails() {
   }, [item]);
   
   return (
-    <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
+    <div className="w-full mx-auto p-4 relative bg-gray-50 min-h-screen">
       {/* Enhanced Header */}
-      <div className="flex items-center justify-between mb-6 bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+      <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3">
         <div className="flex items-center space-x-4">
           <div
             onClick={() => navigate(-1)}
@@ -72,13 +72,25 @@ function ItemDetails() {
               />
             </svg>
           </div>
-          <div>
-            <p className="text-xs text-gray-500 font-medium">Item Details</p>
-            <p className="text-sm font-bold text-gray-900">
-              ITEM ID: <span className="text-blue-600 whitespace-pre-wrap">{item?.item_id}</span>
-            </p>
+          <div className="flex items-center space-x-16">
+            <div>
+              <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Item Details</p>
+              <p className="text-md 3xl:text-lg font-bold text-gray-900">
+                ITEM ID: <span className="text-blue-600">{item?.item_id}</span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Purchase Order No. | Work Order No.</p>
+              <p className="text-md 3xl:text-lg font-bold text-gray-900">
+                TEST
+              </p>
+            </div>
           </div>
         </div>
+        {/* <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <span className="text-sm text-gray-500">Live</span>
+        </div> */}
       </div>
 
       <div className="relative flex-grow">
@@ -105,12 +117,12 @@ function ItemDetails() {
           </div>
         ) : (
           <div className="w-full">
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 3xl:gap-6">
               {/* Left Column - Main Content */}
               <div className="xl:col-span-3 space-y-6">
                 {/* Enhanced Item Details Card */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                  <div className="bg-blue-100 px-5 py-4 3xl:px-6 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
@@ -137,7 +149,7 @@ function ItemDetails() {
                       </button>
                     </div>
                   </div>
-                  <div className="p-6">
+                  <div className="px-6 py-4 3xl:py-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="group">
                         <label className="text-2xs font-semibold text-gray-500 uppercase tracking-wide">Model Name</label>
@@ -283,8 +295,8 @@ function ItemDetails() {
               {/* Right Column - Notes and Status */}
               <div className="xl:col-span-1 space-y-6">
                 {/* Enhanced Notes Card */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                  <div className="bg-blue-100 p-4 3xl:p-5 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
@@ -311,7 +323,7 @@ function ItemDetails() {
                       </button>
                     </div>
                   </div>
-                  <div className="p-6">
+                  <div className="px-6 py-4 3xl:py-5">
                     <div className="prose prose-sm max-w-none">
                       <p className="text-gray-700 text-xs leading-relaxed whitespace-pre-wrap min-h-[120px]">
                         {item?.notes || (
@@ -323,8 +335,8 @@ function ItemDetails() {
                 </div>
 
                 {/* Enhanced Status Card */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                  <div className="bg-blue-100 px-4 py-4 border-b border-gray-100">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
@@ -336,7 +348,7 @@ function ItemDetails() {
                       </div>
                       
                       {/* Action Buttons */}
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 3xl:space-x-3">
                         {!item?.delivered && item?.item_status === "For Delivery" && (
                           <button 
                             onClick={() => setIsMarkDeliveredModalOpen(true)}
@@ -379,9 +391,9 @@ function ItemDetails() {
                     </div>
                   </div>
                   
-                  <div className="p-6">
+                  <div className="px-6 py-4 3xl:py-5">
                     {/* Current Status Display */}
-                    <div className="mb-6">
+                    <div className="mb-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-xs font-semibold text-gray-700">Current Status:</h3>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
@@ -449,9 +461,9 @@ function ItemDetails() {
                     </div>
 
                     {/* Status Summary */}
-                    <div className="space-y-4 mb-6">
+                    <div className="space-y-4 mb-4">
                       {/* Checked Stage */}
-                      {item?.checked_by && (
+                      {item?.checked_by && item?.received_by && (
                         <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
                           <div className="flex items-center justify-between mb-2">
                             <h3 className="text-sm font-bold text-gray-900">Checked</h3>
@@ -493,7 +505,7 @@ function ItemDetails() {
                         <h3 className="text-xs font-semibold text-gray-700">Status Timeline</h3>
                         <button 
                           onClick={() => setIsStatusModalOpen(true)}
-                          className="text-xs text-blue-600 hover:text-blue-700 hover:font-semibold transition-colors"
+                          className="text-xs rounded-full border px-4 py-1 text-blue-600 hover:bg-blue-100/50 hover:cursor-pointer transition-colors"
                         >
                           Edit
                         </button>
@@ -542,8 +554,12 @@ function ItemDetails() {
                               </div>
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-xs font-semibold text-gray-800">For Dispatch</h4>
-                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600 whitespace-pre-wrap">{item.delivered_by}</span></p>
+                              <h4 className="text-sm font-semibold text-gray-800">For Dispatch
+                                <span className="ml-1.5 text-gray-600 font-normal text-xs 3xl:text-sm">
+                                  ({formatTimestampToFullDate(item.delivery_date)})
+                                </span>
+                              </h4>
+                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
                         )}
@@ -556,8 +572,12 @@ function ItemDetails() {
                               </div>
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-xs font-semibold text-gray-800">Delivered</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.delivered_by}</span></p>
+                              <h4 className="text-sm font-semibold text-gray-800">Delivered
+                                <span className="ml-1.5 text-gray-600 font-normal text-xs 3xl:text-sm">
+                                  ({formatTimestampToFullDate(item.delivery_date)})
+                                </span>
+                              </h4>
+                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
                             </div>
                           </div>
                         )}

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useId } from "react";
 import { createPortal } from "react-dom";
 
 type StaffDropdownProps = {
-  label: string;
+  label?: string;
   value: string;
   onChange: (value: string) => void;
   options: { name: string; aid: string | number }[];
@@ -10,10 +10,11 @@ type StaffDropdownProps = {
 
 export default function StaffDropdown({ label, value, onChange, options }: StaffDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const initialButtonRect = useRef<DOMRect | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const id = useId(); // unique ID for accessibility
+  const id = useId();
   const buttonId = `staff-dropdown-button-${id}`;
   const labelId = `staff-dropdown-label-${id}`;
 
@@ -36,16 +37,35 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
       }
     }
 
+    function handleScroll() {
+      if (isOpen && buttonRef.current && initialButtonRect.current) {
+        const currentRect = buttonRef.current.getBoundingClientRect();
+        const positionChanged =
+          Math.abs(currentRect.top - initialButtonRect.current.top) > 1 ||
+          Math.abs(currentRect.left - initialButtonRect.current.left) > 1;
+
+        if (positionChanged) {
+          setIsOpen(false);
+        }
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    window.addEventListener("scroll", handleScroll, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
+      initialButtonRect.current = rect;
       const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-      const dropdownHeight = Math.min(options.length, 9) * 32;
+      const dropdownHeight = Math.min(options.length, 9) * 43;
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
 
@@ -55,7 +75,9 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
       }
 
       setDropdownStyles({
-        top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
+        top: openUpward
+          ? rect.top + window.scrollY - dropdownHeight
+          : rect.bottom + window.scrollY,
         left: rect.left + window.scrollX,
         width: rect.width,
         openUpward,
@@ -65,7 +87,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
 
   return (
     <div className="relative">
-      <label id={labelId} htmlFor={buttonId} className="block text-xs mb-1">
+      <label id={labelId} htmlFor={buttonId} className="block text-xs 3xl:text-sm mb-1">
         {label}
       </label>
 
@@ -74,7 +96,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
+        className="w-full py-2 px-3 inline-flex items-center justify-between gap-x-1 text-xs 3xl:text-sm rounded-lg border border-gray-400 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 hover:cursor-pointer"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-labelledby={labelId}
@@ -102,7 +124,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
             ref={dropdownRef}
             role="listbox"
             aria-labelledby={labelId}
-            className="bg-white mt-2 shadow-md border border-gray-400 rounded-lg max-h-36 overflow-y-auto"
+            className={`bg-white mt-2 shadow-md border border-gray-400 rounded-lg max-h-36 overflow-y-auto`}
             style={{
               position: "absolute",
               top: dropdownStyles.top,
@@ -121,7 +143,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
                     onChange(option.name);
                     setIsOpen(false);
                   }}
-                  className={`block w-full text-left text-xs text-gray-700 px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
+                  className={`block w-full text-left text-xs 3xl:text-sm text-gray-700 px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none ${
                     value === option.name ? "bg-teal-100 font-semibold" : ""
                   }`}
                 >

@@ -36,29 +36,29 @@ export default function AccountManagersDropdown({ id, label, value, onChange, op
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-useEffect(() => {
-  if (isOpen && buttonRef.current) {
-    const rect = buttonRef.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    const dropdownHeight = Math.min(options.length, 9) * 32; 
-    const spaceBelow = viewportHeight - rect.bottom;
-    const spaceAbove = rect.top;
+      const dropdownHeight = Math.min(options.length, 9) * 32; 
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
 
-    let openUpward = false;
+      let openUpward = false;
 
-    if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
-      openUpward = true;
+      if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
+        openUpward = true;
+      }
+
+      setDropdownStyles({
+        top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        openUpward,
+      });
     }
-
-    setDropdownStyles({
-      top: openUpward ? rect.top + window.scrollY - dropdownHeight : rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-      width: rect.width,
-      openUpward,
-    });
-  }
-}, [isOpen, options.length]);
+  }, [isOpen, options.length]);
 
   return (
     <div className="relative">

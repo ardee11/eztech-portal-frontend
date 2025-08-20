@@ -11,7 +11,7 @@ type Props = {
 };
 
 const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) => {
-  const { updateInventory, loading, success, error } = useUpdateInventory();
+  const { updateInventory, loading } = useUpdateInventory();
   const [itemName, setItemName] = useState("");
   const [clientName, setClientName] = useState("");
   const [itemDistributor, setItemDistributor] = useState("");

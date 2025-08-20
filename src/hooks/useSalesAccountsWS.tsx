@@ -19,13 +19,13 @@ export function useSalesAccountsWS(token: string | null) {
 
   useEffect(() => {
     if (!token) return;
-  
-    const wsUrl = `ws://localhost:5000/ws/sales-accounts?token=${encodeURIComponent(token)}`;
+
+    const wsUrl = `ws://${window.location.host}/ws/sales-accounts?token=${encodeURIComponent(token)}`;
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
   
     socket.onopen = () => {
-      console.log("WebSocket connected");
+      //console.log("WebSocket connected");
       setConnected(true);
     };
   
@@ -44,8 +44,8 @@ export function useSalesAccountsWS(token: string | null) {
       // setError(event);
     };
   
-    socket.onclose = (event) => {
-      console.log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
+    socket.onclose = () => {
+      //console.log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
       setConnected(false);
     };
   

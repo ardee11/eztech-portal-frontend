@@ -9,7 +9,7 @@ import { showToast } from "../../utils/toastUtils";
 export default function AddItem() {
   const { admins } = useAdmin();
   const navigate = useNavigate();
-  const { addInventory, loading, error, success } = useAddInventory();
+  const { addInventory } = useAddInventory();
 
   const [showPicker, setShowPicker] = useState(false);
   const [entryDate, setEntryDate] = useState<Date | null>(null);
@@ -130,6 +130,7 @@ export default function AddItem() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="w-full mx-auto px-4 py-6 relative bg-gray-50 min-h-screen">
       {/* Enhanced Header */}
       <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 px-2 py-1">
@@ -161,9 +162,46 @@ export default function AddItem() {
           <div>
             <p className="text-sm font-bold text-gray-500">Return to Inventory</p>
           </div>
+=======
+    <>
+      <div className="mx-auto px-6 py-4 relative">
+        <div className="flex items-center justify-between mb-4 bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3">
+          <div className="flex items-center space-x-4">
+            <div
+              onClick={() => navigate(-1)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" ? navigate(-1) : null)}
+              className="cursor-pointer hover:bg-blue-50 hover:text-blue-600 rounded-xl p-2 transition-all duration-200 group"
+              aria-label="Go back"
+            >
+              <svg
+                className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13 5H1m0 0 4 4M1 5l4-4"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-md 3xl:text-lg font-bold text-gray-800">
+                Add New Item
+              </p>
+            </div>
+          </div>
+>>>>>>> ez-ArdieDelaCruz
         </div>
       </div>
 
+<<<<<<< HEAD
       <div className="w-full">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Left Column - Main Form */}
@@ -185,6 +223,17 @@ export default function AddItem() {
                 {/* Date of Entry */}
                 <div className="group relative">
                   <label htmlFor="entryDate" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+=======
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-row px-8 py-6 gap-x-10 bg-white border border-gray-200 rounded-xl shadow-sm"
+        >
+          <div className="flex-1 flex flex-col gap-y-6">
+            <div className="border border-gray-400 rounded-lg h-[70vh] flex flex-col py-6">
+              <div className="flex-1 flex flex-col gap-y-2 overflow-y-auto px-6">
+                <div className="relative">
+                  <label htmlFor="entryDate" className="block text-xs 3xl:text-sm mb-1 mt-2">
+>>>>>>> ez-ArdieDelaCruz
                     Date of Entry
                   </label>
                   <div className="relative">
@@ -193,7 +242,11 @@ export default function AddItem() {
                       id="entryDate"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
+<<<<<<< HEAD
                       className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-default bg-gray-50"
+=======
+                      className="p-2 pr-10 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg cursor-default"
+>>>>>>> ez-ArdieDelaCruz
                       required
                       readOnly
                       placeholder="Select entry date"
@@ -235,9 +288,14 @@ export default function AddItem() {
                   )}
                 </div>
 
+<<<<<<< HEAD
                 {/* Item Name */}
                 <div className="group">
                   <label htmlFor="itemName" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+=======
+                <div>
+                  <label htmlFor="itemName" className="block text-xs 3xl:text-sm mb-1">
+>>>>>>> ez-ArdieDelaCruz
                     Item Name
                   </label>
                   <textarea
@@ -246,6 +304,7 @@ export default function AddItem() {
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     required
+<<<<<<< HEAD
                     className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-20"
                     placeholder="Enter item name or description"
                   />
@@ -276,6 +335,32 @@ export default function AddItem() {
                       <p>&nbsp;</p>
                     </label>
                     <div className="flex items-center space-x-3 h-9.5 px-4 ">
+=======
+                    className="p-2 w-full h-16 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="itemQty" className="block text-xs 3xl:text-sm mb-1">
+                    Qty
+                  </label>
+
+                  <div className="flex gap-4">
+                    <div className="w-1/2">
+                      <input
+                        id="itemQty"
+                        type="number"
+                        autoComplete="off"
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        disabled={serialVerified}
+                        className="p-2 w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
+                        required
+                      />
+                    </div>
+
+                    <div className="w-1/2 flex items-center gap-2">
+>>>>>>> ez-ArdieDelaCruz
                       <input
                         type="checkbox"
                         id="hasSerial"
@@ -284,11 +369,16 @@ export default function AddItem() {
                         disabled={serialVerified}
                         className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500 focus:ring-2 disabled:opacity-50"
                       />
+<<<<<<< HEAD
                       <label htmlFor="hasSerial" className="text-xs text-gray-700 font-medium">Has Serial Numbers</label>
+=======
+                      <label htmlFor="hasSerial" className="text-xs 3xl:text-sm">Has Serial Number</label>
+>>>>>>> ez-ArdieDelaCruz
                     </div>
                   </div>
                 </div>
 
+<<<<<<< HEAD
                 {/* Client and Distributor */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="group">
@@ -349,14 +439,71 @@ export default function AddItem() {
                 <div className="group">
                   <label htmlFor="itemNotes" className="block text-2xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                     Additional Notes
+=======
+                <div>
+                  <label htmlFor="clientName" className="block text-xs 3xl:text-sm mb-1">
+                    Client Name / End User
+                  </label>
+                  <input
+                    type="text"
+                    id="clientName"
+                    autoComplete="off"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="distributor" className="block text-xs 3xl:text-sm mb-1">
+                    Distributor / Supplier
+                  </label>
+                  <input
+                    type="text"
+                    id="distributor"
+                    autoComplete="off"
+                    value={distributor}
+                    onChange={(e) => setDistributor(e.target.value)}
+                    className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
+                    required
+                  />
+                </div>
+
+                <div className="relative">
+                  <StaffDropdown
+                    label="Received By"
+                    value={receivedBy}
+                    onChange={setReceivedBy}
+                    options={admins}
+                  />
+                </div>
+
+                <div className="relative">
+                  <StaffDropdown
+                    label="Checked By"
+                    value={checkedBy}
+                    onChange={setCheckedBy}
+                    options={admins}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="itemNotes" className="block text-xs 3xl:text-sm mb-1">
+                    Notes
+>>>>>>> ez-ArdieDelaCruz
                   </label>
                   <textarea
                     id="itemNotes"
                     autoComplete="off"
                     value={itemNote}
                     onChange={(e) => setitemNote(e.target.value)}
+<<<<<<< HEAD
                     className="w-full px-4 py-3 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none h-24"
                     placeholder="Enter any additional notes or comments"
+=======
+                    className="p-2 w-full h-24 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
+>>>>>>> ez-ArdieDelaCruz
                   />
                 </div>
 
@@ -364,8 +511,12 @@ export default function AddItem() {
                 <div className="pt-4">
                   <button
                     type="submit"
+<<<<<<< HEAD
                     disabled={loading}
                     className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-xs font-semibold rounded-lg transition-all duration-200 hover:shadow-lg disabled:cursor-not-allowed"
+=======
+                    className="text-xs 3xl:text-sm mb-4 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+>>>>>>> ez-ArdieDelaCruz
                   >
                     {loading ? "Adding Item..." : "Add Item to Inventory"}
                   </button>
@@ -374,6 +525,7 @@ export default function AddItem() {
             </div>
           </div>
 
+<<<<<<< HEAD
                      {/* Right Column - Serial Numbers */}
            <div className="space-y-6">
              {/* Serial Numbers Input Card - Always Visible */}
@@ -495,6 +647,50 @@ export default function AddItem() {
                              Item is in good condition
                            </label>
                          </div>
+=======
+          <div className="flex-1 flex flex-col">
+            {hasSerial && !serialVerified && (
+              <div className="border border-gray-400 p-6 rounded-lg">
+                <div>
+                  <label htmlFor="serialNumbers" className="block text-xs 3xl:text-sm mb-1">
+                    Serial No. 
+                  </label>
+                  <textarea
+                    id="serialNumbers"
+                    value={serialNumbers}
+                    onChange={(e) => setSerialNumbers(e.target.value)}
+                    className="p-2 w-full h-20 text-xs 3xl:text-sm border border-gray-500 rounded-lg resize-none"
+                    required
+                  />
+                </div>
+                <p className="text-xs 3xl:text-sm text-gray-600">Use commas to separate multiple serial numbers in the input field (e.g. SN1234, SN5678, SN91011).</p>
+
+                <div>
+                  <button
+                    type="button"
+                    onClick={verifySerials}
+                    className="mt-4 text-xs 3xl:text-sm px-16 w-full py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 hover:cursor-pointer transition"
+                  >
+                    Enter Serial Numbers
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {serialVerified && verifiedSerials.length > 0 && hasSerial && (
+              <div className="border border-gray-300 rounded-lg h-[75vh] py-6">
+                <div className="flex flex-col flex-grow overflow-y-auto h-full px-6">
+                  {verifiedSerials.map((item, index) => (
+                    <div key={index} className="flex flex-col gap-3 border border-gray-300 rounded-lg text-xs 3xl:text-sm p-4 mb-4">
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="checkbox"
+                          checked={item.isGood}
+                          onChange={(e) => updateSerialField(index, "isGood", e.target.checked)}
+                        />
+                        <label>Item is in good condition</label>
+                      </div>
+>>>>>>> ez-ArdieDelaCruz
 
                          <div className="grid grid-cols-1 gap-3">
                            <div>
