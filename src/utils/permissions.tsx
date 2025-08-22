@@ -21,8 +21,18 @@ export const AccessControl: Record<Role, PageAccess[]> = {
 };
 
 export const hasAccess = (role: string, page: PageAccess): boolean => {
+  if (!Object.values(Roles).includes(role as Role)) {
+    return false;
+  }
+
   const allowed = AccessControl[role as Role];
-  return allowed?.includes(page) ?? false;
+  return allowed.includes(page);
 };
+
+export const hasAnyAccess = (roles: string[], page: PageAccess) => {
+  return roles.some(role => hasAccess(role, page));
+};
+
+
 
 

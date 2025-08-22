@@ -270,12 +270,12 @@ function ItemDetails() {
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <button 
-                                  className="p-2 hover:bg-blue-100 rounded-lg transition-colors duration-200 group"
+                                  className="p-2 hover:bg-blue-100 rounded-lg transition-colors duration-200 group hover:cursor-pointer"
                                   //onClick={}
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4 text-gray-400 group-hover:text-blue-600"
+                                    className="h-4 w-4 text-gray-700 group-hover:text-blue-600"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                   >
@@ -419,8 +419,13 @@ function ItemDetails() {
                           <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium">Entry Date:</span> {formatTimestampToFullDate(item.entry_date)}
                           </p>
-                          <p className="text-xs text-gray-600">
-                            <span className="font-medium">Received By:</span> <span className="text-blue-600 font-semibold">{item.received_by || "Not specified"}</span>
+                          <p className="text-xs 3xl:text-sm text-gray-600">
+                            <span className="font-medium">Received By:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.received_by && item.received_by.length > 0
+                                ? item.received_by.join(", ")
+                                : "Not specified"}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -433,12 +438,17 @@ function ItemDetails() {
                               Ready
                             </span>
                           </div>
-                          <p className="text-xs text-gray-600 mb-1">
+                          <p className="text-xs 3xl:text-sm text-gray-600 mb-1">
                             <span className="font-medium">Delivery Date:</span> {item.delivery_date ? formatTimestampToFullDate(item.delivery_date) : "Not set"}
                           </p>
-                          <p className="text-xs text-gray-600">
-                            <span className="font-medium">Assigned To:</span> <span className="text-blue-600 font-semibold">{item.delivered_by || "Not assigned"}</span>
-                          </p>
+                          <p className="text-xs 3xl:text-sm text-gray-600">
+                            <span className="font-medium">Assigned To:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.delivered_by && item.delivered_by.length > 0
+                                ? item.delivered_by.join(", ")
+                                : "Not specified"}
+                            </span>
+                          </p> 
                         </div>
                       )}
 
@@ -453,8 +463,13 @@ function ItemDetails() {
                           <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium text-xs">Delivery Date:</span> <span className="text-green-600 text-xs font-semibold">{formatTimestampToFullDate(item.delivery_date)}</span>
                           </p>
-                          <p className="text-xs text-gray-600">
-                            <span className="font-medium text-xs">Delivered By:</span> <span className="text-green-600 text-2xs font-semibold">{item.delivered_by}</span>
+                          <p className="text-xs 3xl:text-sm text-gray-600">
+                            <span className="font-medium">Delivered By:</span>{" "}
+                            <span className="text-blue-600 font-semibold">
+                              {item.delivered_by && item.delivered_by.length > 0
+                                ? item.delivered_by.join(", ")
+                                : "Not specified"}
+                            </span>
                           </p>
                         </div>
                       )}
@@ -474,26 +489,13 @@ function ItemDetails() {
                           <p className="text-xs text-gray-600 mb-1">
                             <span className="font-medium text-xs">Date:</span> <span className="text-amber-600 text-xs font-semibold">{formatTimestampToFullDate(item.entry_date)}</span>
                           </p>
-                          <p className="text-xs text-gray-600">
-                            <span className="font-medium text-xs">By:</span> <span className="text-amber-600 text-xs font-semibold whitespace-pre-wrap">{item.checked_by}</span>
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Delivered Stage */}
-                      {item?.delivered && item?.delivered_by && item?.delivery_date && (
-                        <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xs font-bold text-gray-900">Delivered</h3>
-                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                              ✓ Complete
+                          <p className="text-xs 3xl:text-sm text-gray-600">
+                            <span className="font-medium">Checked By:{" "}</span> 
+                            <span className="text-blue-600 font-semibold">
+                              {item.checked_by && item.checked_by.length > 0
+                                ? item.checked_by.join(", ")
+                                : "Not Specified"}
                             </span>
-                          </div>
-                          <p className="text-xs text-gray-600 mb-1">
-                            <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.delivery_date)}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            <span className="font-medium">By:</span> <span className="text-green-600 text-xs font-semibold whitespace-pre-wrap">{item.delivered_by}</span>
                           </p>
                         </div>
                       )}
@@ -523,8 +525,18 @@ function ItemDetails() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-xs font-semibold text-gray-800">Received</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.received_by}</span></p>
+                              <h4 className="text-sm font-semibold text-gray-800">Received 
+                                <span className="ml-1.5 text-gray-600 font-normal text-xs 3xl:text-sm">
+                                  ({formatTimestampToFullDate(item.entry_date)})
+                                </span>
+                              </h4>
+                              <p className="text-xs text-gray-600">By{" "} 
+                                <span className="text-blue-600">
+                                  {item.received_by && item.received_by.length > 0
+                                    ? item.received_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -540,8 +552,18 @@ function ItemDetails() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-xs font-semibold text-gray-800">Checked</h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600 whitespace-pre-wrap">{item.checked_by}</span></p>
+                              <h4 className="text-sm font-semibold text-gray-800">Checked
+                                <span className="ml-1.5 text-gray-600 font-normal text-xs 3xl:text-sm">
+                                  ({formatTimestampToFullDate(item.entry_date)})
+                                </span>
+                              </h4>
+                              <p className="text-xs text-gray-600">By{" "}
+                                <span className="text-blue-600">
+                                  {item.checked_by && item.checked_by.length > 0
+                                    ? item.checked_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -559,7 +581,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.delivery_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">c/o <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">c/o{" "}
+                                <span className="text-blue-600">
+                                  {item.delivered_by && item.delivered_by.length > 0
+                                    ? item.delivered_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}
@@ -577,7 +605,13 @@ function ItemDetails() {
                                   ({formatTimestampToFullDate(item.delivery_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">By <span className="text-blue-600">{item.delivered_by}</span></p>
+                              <p className="text-xs text-gray-600">By{" "}
+                                <span className="text-blue-600">
+                                  {item.delivered_by && item.delivered_by.length > 0
+                                    ? item.delivered_by.join(", ")
+                                    : "NULL"}
+                                </span>
+                              </p>
                             </div>
                           </div>
                         )}

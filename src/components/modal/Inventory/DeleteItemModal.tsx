@@ -31,8 +31,9 @@ export default function DeleteItemModal({ isOpen, onClose, itemId }: Props) {
 
   return (
     <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white animate-expand-card rounded-lg p-6 max-w-xl w-full mx-4 max-h-60">
-        <div className="delay-show">
+      <div className="bg-white animate-expand-card rounded-lg max-h-60 3xl:max-h-68 max-w-xl 3xl:max-w-2xl flex flex-col">
+
+        <div className="delay-show flex-1 px-8 py-5">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,35 +45,35 @@ export default function DeleteItemModal({ isOpen, onClose, itemId }: Props) {
             </div>
           </div>
         
-          <div className="text-center mt-8">
-            <p className="text-sm text-gray-800">
+          <div className="text-center mt-8 3xl:mt-10">
+            <p className="text-sm 3xl:text-base text-gray-800">
               Are you sure you want to delete this inventory item?
             </p>
-            <p className="text-xs text-red-600 mt-4 italic">
+            <p className="text-xs 3xl:text-sm text-red-600 mt-4 italic">
               This action cannot be undone. All associated serial numbers will also be deleted.
             </p>
           </div>
+        </div>
 
-          <div className="flex justify-between mx-20 mt-8">
-            <button
-               type="button"
-               onClick={() => {
-                 onClose();
-               }}
-               disabled={loading}
-               className="px-6 py-2 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50"
-             >
-               Cancel
-             </button>
-            <button
+        <div className="delay-show px-16 3xl:px-20 py-4 bg-gray-50 flex justify-between border-t border-gray-200">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading}
+            className="px-10 py-2 text-xs 3xl:text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 hover:cursor-pointer disabled:opacity-50"
+          >
+            {loading ? "Deleting..." : "Delete"}
+          </button>
+          <button
               type="button"
-              onClick={handleDelete}
+              onClick={() => {
+                onClose();
+              }}
               disabled={loading}
-              className="px-6 py-2 text-xs font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 hover:cursor-pointer disabled:opacity-50"
+              className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-700 bg-white border border-gray-500 rounded-md hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50"
             >
-              {loading ? "Deleting..." : "Delete"}
-            </button>
-          </div>
+              Cancel
+          </button>
         </div>
       </div>
     </div>

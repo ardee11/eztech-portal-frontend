@@ -8,59 +8,30 @@ import InventoryContextMenu from "../../components/elements/InventoryContextMenu
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
+import { getStatusStyles } from "../../utils/getStatusStyles";
 
-type MonthYear = { month: number; year: number };
+type MonthYear = { month: number | null; year: number };
 
-function monthYearToLabel(month: number, year: number): string {
-  const date = new Date(year, month - 1); 
+function monthYearToLabel(month: number | null, year: number): string {
+  if (month === null) return String(year);
+  const date = new Date(year, month - 1);
   return date.toLocaleString("default", { month: "long", year: "numeric" });
-}
-
-type Status = "Delivered" | "For Delivery" | "Pending" | "Default";
-
-const STATUS_STYLES: Record<Status, { row: string; badge: string }> = {
-  Delivered: {
-    row: "bg-teal-100/30 hover:bg-teal-100/60",
-    badge: "bg-teal-100 text-teal-800",
-  },
-  "For Delivery": {
-    row: "bg-blue-100/30 hover:bg-blue-100/70",
-    badge: "bg-blue-100 text-blue-800",
-  },
-  Pending: {
-    row: "bg-red-100/30 hover:bg-red-100/60",
-    badge: "bg-red-100 text-red-800",
-  },
-  Default: {
-    row: "bg-gray-100/30 hover:bg-gray-100/60",
-    badge: "bg-gray-100 text-gray-800",
-  },
-};
-
-function getStatusStyles(status: string) {
-  return STATUS_STYLES[status as Status] || STATUS_STYLES.Default;
 }
 
 export default function Inventory() {
   const navigate = useNavigate();
-  const { options: monthYearOptions } = useInventoryFilterOptions();
+  const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
   const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
 
-  const openMarkDeliveredModal = (itemId: string | null) => {
-    setMarkDeliveredItemId(itemId);
-    setIsMarkDeliveredModalOpen(true);
-    setContextMenu(prev => ({ ...prev, visible: false })); // close context menu
-  };
-
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Delivered' | 'Pending'>('All');
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
 
   const openDeliveryModal = (itemId: string | null) => {
     setModalItemId(itemId || "");
@@ -71,6 +42,14 @@ export default function Inventory() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
+
+  const openMarkDeliveredModal = (itemId: string | null) => {
+    setMarkDeliveredItemId(itemId);
+    setIsMarkDeliveredModalOpen(true);
+    setContextMenu(prev => ({ ...prev, visible: false }));
+  };
+
+  
 
   const openDeleteModal = (itemId: string | null) => {
     if (itemId) {
@@ -83,46 +62,59 @@ export default function Inventory() {
   };
  
   useEffect(() => {
-    if (monthYearOptions.length > 0) {
-      setSelectedMonthYear(monthYearOptions[0]);
+    if (yearOptions.length > 0) {
+      setSelectedMonthYear({ month: null, year: yearOptions[0] }); 
     }
-  }, [monthYearOptions]);
+  }, [yearOptions]);
   
-  const { allItems, items, loading, error } = useInventory(
-    selectedMonthYear?.month,
-    selectedMonthYear?.year
-  );
+  const { inventoryItems, loading, error } = useInventory();
 
   const isSearching = searchQuery.trim().length > 0;
-  const baseItems = isSearching ? allItems : items;
+  //const baseItems = isSearching ? allItems : items;
 
   const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
 
-  const filteredItems = baseItems
-    .filter(item => {
-      if (searchQuery.trim() === "") return true;
+  const filteredItems = inventoryItems
+    .filter((item) => {
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
+        const serialMatch =
+          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ??
+          false;
+        const clientMatch =
+          item.client_name?.toLowerCase().includes(query) ?? false;
+        const matchesSearch = idMatch || serialMatch || clientMatch;
+        if (statusFilter !== "All") {
+          return matchesSearch && item.item_status === statusFilter;
+        }
+        return matchesSearch;
+      }
 
-      const query = searchQuery.toLowerCase();
-      const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
-      const serialMatch = item.serialnumbers?.some(sn =>
-        sn.id.toLowerCase().includes(query)
-      ) ?? false;
-      const clientMatch = item.client_name?.toLowerCase().includes(query) ?? false;
+      const matchYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
+      const matchMonth =
+        selectedMonthYear?.month === null
+          ? true
+          : item.entry_date.getMonth() + 1 === selectedMonthYear?.month;
 
-      return idMatch || serialMatch || clientMatch;
-    })
-    .filter(item => {
-      if (statusFilter === 'All') return true;
-      if (statusFilter === 'Delivered') return item.item_status === 'Delivered';
-      if (statusFilter === 'Pending') return item.item_status === 'Pending';
+      if (!matchYear) return false;
+      if (statusFilter !== "All" && item.item_status !== statusFilter) return false;
+      if (selectedMonthYear?.month) {
+        return matchMonth;
+      }
       return true;
     })
     .sort((a, b) => {
       const dateDiff = b.entry_date.getTime() - a.entry_date.getTime();
       if (dateDiff !== 0) return dateDiff;
-
       return extractNum(b.item_id || "") - extractNum(a.item_id || "");
     });
+
+  // Counts for status cards should remain constant regardless of any filters.
+  const totalItemsCount = inventoryItems.length;
+  const deliveredCount = inventoryItems.filter((i) => i.item_status === "Delivered").length;
+  const forDeliveryCount = inventoryItems.filter((i) => i.item_status === "For Delivery").length;
+  const pendingCount = inventoryItems.filter((i) => i.item_status === "Pending").length;
     
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -152,11 +144,13 @@ export default function Inventory() {
 
   const groupByYear = (options: MonthYear[]) => {
     return options.reduce((acc, { month, year }) => {
+      if (month === null) return acc;
       if (!acc[year]) acc[year] = [];
       acc[year].push(month);
+      acc[year].sort((a, b) => a - b);
       return acc;
     }, {} as Record<number, number[]>);
-  };
+  }
 const [expandedYears, setExpandedYears] = useState<number[]>([]);
 
   // Close dropdown when clicking outside
@@ -174,11 +168,9 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  
-  // Removed step-based month/year selection; using mega menu instead
 
   return (
-    <div className="w-full mx-auto px-4 py-6 relative bg-gray-50">
+    <div className="w-full mx-auto p-4 relative bg-gray-50">
 
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
@@ -193,10 +185,10 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 2xl:text-sm font-bold text-gray-900">Total Items:</p>
-                <p className="text-sm 2xl:text-sm text-gray-900">{filteredItems.length}</p>
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{totalItemsCount}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -211,10 +203,10 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-sm font-bold text-gray-900">Delivered:</p>
-                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "Delivered").length}</p>
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{deliveredCount}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -229,10 +221,10 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-sm font-bold text-gray-900">For Delivery:</p>
-                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "For Delivery").length}</p>
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{forDeliveryCount}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
@@ -245,20 +237,21 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
+            
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-sm font-bold text-gray-900">Pending:</p>
-                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "Pending").length}</p>
+                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{pendingCount}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing ({selectedMonthYear?.year || 'Year'})</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Enhanced Table Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300">
-        <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-100">
+      <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden transition-all duration-300">
+        <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
@@ -266,7 +259,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                 </svg>
               </div>
-              <h2 className="text-sm font-bold text-gray-900">Inventory Items</h2>
+              <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
             </div>
             
             {/* Search and Filter Controls */}
@@ -288,12 +281,12 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoComplete="off"
-                  className="text-xs 3xl:text-xs w-86 pl-10 pr-10 py-1 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="text-xs text-xs w-86 pl-10 pr-10 py-1 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400hover:text-gray-800 hover:cursor-pointer transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-800 hover:cursor-pointer transition-colors"
                     type="button"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +310,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" />
                     </svg>
-                    {statusFilter === 'All' ? 'All Statuses' : statusFilter}
+                    {statusFilter === 'All' ? 'All Status' : statusFilter}
                   </div>
                   <svg
                     className={`size-4 transition-transform duration-200 ${isStatusDropdownOpen ? 'rotate-180' : ''}`}
@@ -384,7 +377,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                       ? "By Search"
                       : selectedMonthYear
                         ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                        : "Select Month"}
+                        : "Select Month Year"}
                   </div>
                   {selectedMonthYear && !isSearching && (
                     <span className="inline-flex items-center justify-center"></span>
@@ -404,69 +397,79 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                 </button>
                 {isDropdownOpen && (
                   <div
-                    className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 transform opacity-100 scale-100 transition-all duration-200"
+                    className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-2 transform opacity-100 scale-100 transition-all duration-200"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="hs-dropdown-default"
                   >
-                    <div className="p-4">
-                      <div className="grid grid-cols-1 gap-8">
-                        {(() => {
-                          const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
-                          const columns: number[][] = [];
-                          for (let i = 0; i < years.length; i += 6) {
-                            columns.push(years.slice(i, i + 6));
-                          }
-                          return columns.map((colYears, colIdx) => (
-                            <div key={colIdx} className="flex flex-col gap-2">
-                              {colYears.map(year => (
-                                <div key={year}>
-                                  <button
-                                    type="button"
-                                    onClick={() => setExpandedYears([year])}
-                                    className="font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer"
+                    {/* Mega Menu Years - 6 per column */}
+                    <div className="grid grid-cols-1 gap-4">
+                      {(() => {
+                        // Group years into arrays of 6 for columns
+                        const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
+                        const columns: number[][] = [];
+                        for (let i = 0; i < years.length; i += 6) {
+                          columns.push(years.slice(i, i + 6));
+                        }
+                        return columns.map((colYears, colIdx) => (
+                          <div key={colIdx} className="flex flex-col gap-2">
+                            {colYears.map(year => (
+                              <div key={year}>
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedYears([year])}
+                                  className="font-semibold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer px-3 py-1.5 rounded-lg"
+                                >
+                                  <span>{year}</span>
+                                  <svg
+                                    className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
                                   >
-                                    {year}
-                                    <svg
-                                      className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? 'rotate-180' : ''}`}
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+                                  </svg>
+                                </button>
+                                {/* Months grid: only show if this year is expanded */}
+                                {expandedYears.includes(year) && (() => {
+                                  const months = groupByYear(monthYearOptions)[year];
+                                  const monthCount = months.length;
+                                  const isGrid = monthCount >= 4;
+                                  return (
+                                    <div
+                                      className={`${isGrid ? "grid grid-cols-2" : "flex flex-col"} gap-x-6 gap-y-2 mb-2`}
                                     >
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-                                    </svg>
-                                  </button>
-                                  {expandedYears.includes(year) && (() => {
-                                    const months = groupByYear(monthYearOptions)[year];
-                                    const monthCount = months.length;
-                                    const isGrid = monthCount >= 4;
-                                    return (
-                                      <div className={`${isGrid ? 'grid grid-cols-2' : 'flex flex-col'} gap-1 mb-2`}>
-                                        {months.map((month) => {
-                                          const isSelected = selectedMonthYear?.month === month && selectedMonthYear?.year === year;
-                                          return (
-                                            <button
-                                              key={`${year}-${month}`}
-                                              onClick={() => { setSelectedMonthYear({ month, year }); setIsDropdownOpen(false); }}
-                                              className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${isSelected ? 'bg-blue-100 text-blue-800 font-semibold' : ''}`}
-                                              role="menuitem"
-                                            >
-                                              {monthYearToLabel(month, year)}
-                                            </button>
-                                          );
-                                        })}
-                                      </div>
-                                    );
-                                  })()}
-                                </div>
-                              ))}
-                            </div>
-                          ));
-                        })()}
-                      </div>
+                                      {months.map((month) => {
+                                        const isSelected =
+                                          selectedMonthYear?.month === month &&
+                                          selectedMonthYear?.year === year;
+
+                                        return (
+                                          <button
+                                            key={`${year}-${month}`}
+                                            onClick={() => {
+                                              setSelectedMonthYear({ month, year });
+                                              setIsDropdownOpen(false);
+                                            }}
+                                            className={`block text-left text-xs text-gray-700 px-3 py-1.5 hover:bg-gray-100 hover:cursor-pointer rounded-lg transition-colors ${
+                                              isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
+                                            }`}
+                                            role="menuitem"
+                                          >
+                                            {monthYearToLabel(month, year)}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            ))}
+                          </div>
+                        ));
+                      })()}
                     </div>
                   </div>
-                  
                 )}
               </div>
               <button
@@ -492,7 +495,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
           )}
 
           {error && (
-            <div className="flex flex-col items-center justify-center h-[60vh] bg-white rounded-2xl shadow-lg border border-red-100 mx-auto max-w-md">
+            <div className="flex flex-col items-center justify-center h-[40vh] bg-white mx-auto max-w-md">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
                 <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -502,7 +505,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
               <p className="text-red-600 text-center mb-4">Unable to load inventory items. Please try again later.</p>
               <button 
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+                className="px-6 py-2 font-semibold bg-red-600 hover:bg-red-700 hover:cursor-pointer text-white rounded-lg transition-colors duration-200"
               >
                 Retry
               </button>
@@ -511,29 +514,29 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
 
           {/* Enhanced Inventory Table */}
           {!loading && !error && (
-            <div className="w-full overflow-y-auto h-[calc(100vh-270px)]">
+            <div className="w-full overflow-y-auto h-[calc(100vh-270px)] pb-1">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Date of Entry
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Qty
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Distributor
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Delivery Date
                     </th>
-                    <th className="px-6 py-4 text-left text-2xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
@@ -543,36 +546,36 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                     <tr
                       key={item.item_id}
                       onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
-                      className={`hover:bg-blue-50/50 transition-all duration-200 cursor-pointer 
+                      className={`transition-all duration-200 cursor-pointer
                         ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
                       <td className="px-4">
                         <div className="flex items-center space-x-3">
-                          <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-2xs font-bold text-blue-600">
+                          <div className="w-6 h-6 text-xs bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">
                             {index + 1}
                           </div>
-                          <span className="font-medium text-xs text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
+                          <span className="font-medium text-sm text-gray-900">{formatTimestampToFullDate(item.entry_date)}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-4">
                         <div className="flex flex-col">
                           <span className="text-xs font-semibold text-gray-900 mb-1">{item.item_id}</span>
                           <span className="text-xs text-gray-600 whitespace-pre-wrap">{item.item_name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-2xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           {item.quantity}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs text-gray-700 break-words">
+                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
                         {item.distributor}
                       </td>
-                      <td className="px-6 py-4 text-xs text-gray-700 break-words">
+                      <td className="px-6 py-4 text-sm text-gray-800 break-words">
                         {item.client_name}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="text-center items-center">
                         <button 
                           onClick={(e) => {
                             if(item.item_status === "For Delivery" || item.delivered) return; 
@@ -581,8 +584,8 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                           }}
                           className={`text-xs ${
                             !item.delivered && item.item_status !== "For Delivery" 
-                              ? "text-blue-600 hover:underline hover:cursor-pointer" 
-                              : "text-gray-600"
+                              ? "italic text-blue-500 hover:underline hover:cursor-pointer" 
+                              : "text-gray-900"
                           }`}
                         >
                           {item.delivered || item.item_status === "For Delivery" 
@@ -594,7 +597,7 @@ const [expandedYears, setExpandedYears] = useState<number[]>([]);
                         </button>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-2xs font-semibold 
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold 
                           ${getStatusStyles(item.item_status).badge}`}
                         >
                           {item.item_status}

@@ -34,9 +34,11 @@ export default function DeleteCompanyModal({ companyName, isOpen, companyId, onC
   }
 
   return (
-    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white animate-expand-card rounded-lg p-6 max-w-xl w-full mx-4 max-h-60">
-        <div className="delay-show">
+    <div className="fixed inset-0 z-[999] bg-black/60 flex items-center justify-center">
+      <div className="bg-white animate-expand-card rounded-lg max-w-2xl 3xl:max-w-3xl w-full mx-4 max-h-60 3xl:max-h-64 flex flex-col">
+
+        {/* Modal Body */}
+        <div className="delay-show flex-1 px-6 py-5 overflow-auto">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,41 +46,41 @@ export default function DeleteCompanyModal({ companyName, isOpen, companyId, onC
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-lg font-medium text-gray-900">Delete Company Details<span className="font-medium ml-2"></span></h3>
+              <h3 className="text-lg font-medium text-gray-900">Delete Company Details</h3>
             </div>
           </div>
-        
-          <div className="text-center mt-8">
-            <p className="text-sm text-gray-800">
+
+          <div className="text-center mt-8 3xl:mt-10">
+            <p className="text-sm 3xl:text-base text-gray-800">
               Are you sure you want to remove the company details for <span className="font-semibold">{companyName}</span>?
             </p>
-            <p className="text-xs text-red-600 mt-4 italic">
+            <p className="text-xs 3xl:text-sm text-red-600 mt-4 italic">
               This action cannot be undone. All associated serial numbers will also be deleted.
             </p>
           </div>
+        </div>
 
-          <div className="flex justify-between mx-20 mt-8">
-            <button
-               type="button"
-               onClick={() => {
-                 onClose();
-               }}
-               disabled={loading}
-               className="px-6 py-2 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 hover:cursor-pointer disabled:opacity-50"
-             >
-               Cancel
-             </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={loading}
-              className="px-6 py-2 text-xs font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 hover:cursor-pointer disabled:opacity-50"
-            >
-              {loading ? "Deleting..." : "Delete"}
-            </button>
-          </div>
+        {/* Modal Footer */}
+        <div className="delay-show px-16 3xl:px-20 py-4 bg-gray-50 flex justify-between border-t border-gray-200">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={loading}
+            className="px-10 py-2 text-xs 3xl:text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 hover:cursor-pointer disabled:opacity-50"
+          >
+            {loading ? "Deleting..." : "Delete"}
+          </button>
+          
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-800 border border-gray-500 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
   );
-} 
+}

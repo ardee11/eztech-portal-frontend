@@ -7,11 +7,11 @@ export interface Item {
   distributor: string;
   client_name: string;
   entry_date: Date;
-  checked_by: string;
-  received_by: string;
+  checked_by: string[];
+  received_by: string[];
   delivered: boolean | null;
   delivery_date: Date | null;
-  delivered_by: string | null;
+  delivered_by: string[] | null;
   item_status: string;
   notes: string | null;
   created_at: Date;
@@ -26,13 +26,45 @@ interface SerialNumber {
   notes: string | null;
 }
 
-export function useInventory(month?: number, year?: number) {
-  const [items, setItems] = useState<Item[]>([]);
-  const [allItems, setAllItems] = useState<Item[]>([]);
+export interface Supplier {
+  id: number;
+  name: string;
+}
+
+export function useInventory() {
+  const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
+
+  const fetchAllItems = async (isMounted: boolean, token: string) => {
+    try {
+      const response = await fetch(`/api/inventory/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const parsed = data.map((item: any) => ({
+        ...item,
+        entry_date: new Date(item.entry_date),
+        delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
+        created_at: new Date(item.created_at),
+      }));
+
+      if (isMounted) {
+        setInventoryItems(parsed); // Update the single state variable
+        setLoading(false);
+        setError(null);
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch inventory:", err);
+      if (isMounted) {
+        setError("Failed to load inventory.");
+        setLoading(false);
+      }
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -43,65 +75,7 @@ export function useInventory(month?: number, year?: number) {
     }
 
     let isMounted = true;
-
-    const fetchItems = async () => {
-      try {
-        //const url = new URL(`/api/inventory`);
-        const url = new URL(`/api/inventory`, window.location.origin);
-        if (month && year) {
-          url.searchParams.append("month", month.toString());
-          url.searchParams.append("year", year.toString());
-        }
-
-        const response = await fetch(url.toString(), {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await response.json();
-
-        const parsed = data.map((item: any) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }));
-
-        if (isMounted) {
-          setItems(parsed);
-          setError(null);
-        }
-      } catch (err) {
-        console.error("Failed to fetch inventory:", err);
-        if (isMounted) setError("Failed to load inventory.");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    const fetchAllItems = async () => {
-      try {
-        const response = await fetch(`/api/inventory/all`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await response.json();
-
-        const parsed = data.map((item: any) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }));
-
-        if (isMounted) {
-          setAllItems(parsed);
-        }
-      } catch (err) {
-        console.error("Failed to fetch all inventory items:", err);
-      }
-    };
-
-    fetchAllItems();
-    fetchItems();
+    fetchAllItems(isMounted, token);
 
     const socket = new WebSocket(`ws://${window.location.host}/ws/inventory?token=${token}`);
     ws.current = socket;
@@ -111,58 +85,46 @@ export function useInventory(month?: number, year?: number) {
         socket.close();
         return;
       }
-      //console.log("Inventory WebSocket connected");
+        //console.log("Inventory WebSocket connected");
       setConnected(true);
     };
 
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-
-    if (message.type === 'inventory_update' && Array.isArray(message.data)) {
-      const filtered = (message.data as Item[]).filter((item) => {
-        const entryDate = new Date(item.entry_date);
-        return (
-          (!month || entryDate.getMonth() + 1 === month) &&
-          (!year || entryDate.getFullYear() === year)
-        );
-      });
-
-      const parsed = filtered
-        .map((item) => ({
+        if (message.type === 'inventory_update' && Array.isArray(message.data)) {
+          const parsed = message.data.map((item: any) => ({
           ...item,
           entry_date: new Date(item.entry_date),
           delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
           created_at: new Date(item.created_at),
-        }))
-        .sort((a, b) => b.entry_date.getTime() - a.entry_date.getTime());
+        }));
+          setInventoryItems(parsed); // Update the single source of truth
+        } else {
+          console.warn("Unhandled WebSocket message:", message);
+        }
+      } catch (err) {
+        console.error("Failed to parse WS message:", err);
+      }
+    };
 
-      setItems(parsed);
-    } else {
-      console.warn("Unhandled WebSocket message:", message);
-    }
-  } catch (err) {
-    console.error("Failed to parse WS message:", err);
-  }
-};
     socket.onerror = (event) => {
       console.error("WebSocket error:", event);
     };
 
     socket.onclose = () => {
-      //console.log(`Inventory WebSocket closed: code=${event.code}, reason=${event.reason}`);
       setConnected(false);
     };
 
     return () => {
       isMounted = false;
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.close();
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        ws.current.close();
       }
     };
-  }, [month, year]);
+  }, []); 
 
-  return { allItems, items, loading, error, connected };
+  return { inventoryItems, loading, error, connected };
 }
 
 export function useAddInventory() {
@@ -334,4 +296,47 @@ export function useDeleteInventory() {
   };
 
   return { deleteInventory, loading, error, success };
+}
+
+export function useSuppliers() {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found");
+      setLoading(false);
+      return;
+    }
+
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch("/api/suppliers", {
+          headers: {
+            method: "GET",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to fetch suppliers");
+        }
+
+        const data = await response.json();
+        setSuppliers(data);
+      } catch (err: any) {
+        console.error("Error fetching suppliers:", err);
+        setError(err.message || "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSuppliers();
+  }, []);
+
+  return { suppliers, loading, error };
 }
