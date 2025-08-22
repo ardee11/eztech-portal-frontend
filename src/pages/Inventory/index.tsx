@@ -59,9 +59,6 @@ export default function Inventory() {
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentStep, setCurrentStep] = useState<'year' | 'month'>('year');
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [availableMonths, setAvailableMonths] = useState<number[]>([]);
   const [statusFilter, setStatusFilter] = useState<'All' | 'Delivered' | 'Pending'>('All');
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
 
@@ -161,13 +158,6 @@ export default function Inventory() {
     }, {} as Record<number, number[]>);
   };
 const [expandedYears, setExpandedYears] = useState<number[]>([]);
-const toggleYear = (year: number) => {
-  setExpandedYears(prev =>
-    prev.includes(year)
-      ? prev.filter(y => y !== year)
-      : [...prev, year]
-  );
-};
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -184,41 +174,8 @@ const toggleYear = (year: number) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const handleYearSelect = (year: number) => {
-    setSelectedYear(year);
-    
-    // Get available months for selected year
-    const monthsForYear = monthYearOptions
-      .filter(option => option.year === year)
-      .map(option => option.month);
-    
-    setAvailableMonths(monthsForYear);
-    setCurrentStep('month');
-  };
-
-  const handleMonthSelect = (month: number) => {
-    if (selectedYear) {
-      setSelectedMonthYear({ month, year: selectedYear });
-      setIsDropdownOpen(false);
-      setCurrentStep('year'); // Reset for next time
-      setSelectedYear(null);
-      setAvailableMonths([]);
-    }
-  };
-
-  const handleBackToYear = () => {
-    setCurrentStep('year');
-    setSelectedYear(null);
-    setAvailableMonths([]);
-  };
-
-  const getYearRange = () => {
-    const years = [...new Set(monthYearOptions.map(option => option.year))];
-    return years.sort((a, b) => b - a); // Sort descending
-  };
   
-  // Removed year navigation arrows
+  // Removed step-based month/year selection; using mega menu instead
 
   return (
     <div className="w-full mx-auto px-4 py-6 relative bg-gray-50">
@@ -229,15 +186,15 @@ const toggleYear = (year: number) => {
         {/* Total Items Card */}
         <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p>
+                <p className="text-sm 2xl:text-sm font-bold text-gray-900">Total Items:</p>
+                <p className="text-sm 2xl:text-sm text-gray-900">{filteredItems.length}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items</p>
             </div>
@@ -247,15 +204,15 @@ const toggleYear = (year: number) => {
         {/* Delivered Items Card */}
         <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Delivered").length}</p>
+                <p className="text-sm 3xl:text-sm font-bold text-gray-900">Delivered:</p>
+                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "Delivered").length}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered</p>
             </div>
@@ -265,15 +222,15 @@ const toggleYear = (year: number) => {
         {/* For Delivery Items Card */}
         <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "For Delivery").length}</p>
+                <p className="text-sm 3xl:text-sm font-bold text-gray-900">For Delivery:</p>
+                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "For Delivery").length}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery</p>
             </div>
@@ -283,15 +240,15 @@ const toggleYear = (year: number) => {
         {/* Pending Items Card */}
         <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
-                <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.filter(item => item.item_status === "Pending").length}</p>
+                <p className="text-sm 3xl:text-sm font-bold text-gray-900">Pending:</p>
+                <p className="text-sm 3xl:text-sm text-gray-900">{filteredItems.filter(item => item.item_status === "Pending").length}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing</p>
             </div>
@@ -304,26 +261,18 @@ const toggleYear = (year: number) => {
         <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                 </svg>
               </div>
-              <h2 className="text-md font-bold text-gray-900">Inventory Items</h2>
+              <h2 className="text-sm font-bold text-gray-900">Inventory Items</h2>
             </div>
             
             {/* Search and Filter Controls */}
             <div className="flex items-center space-x-4">
               {/* Add Item Button */}
-              <button
-                onClick={() => navigate('/inventory/add')}
-                className="inline-flex items-center gap-x-1.5 px-1.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Add Item
-              </button>
+          
               
               {/* Search Input */}
               <div className="relative">
@@ -339,7 +288,7 @@ const toggleYear = (year: number) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoComplete="off"
-                  className="text-xs 3xl:text-sm w-86 pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="text-xs 3xl:text-xs w-86 pl-10 pr-10 py-1 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
@@ -382,99 +331,46 @@ const toggleYear = (year: number) => {
                   >
                     <path d="m6 9 6 6 6-6" />
                   </svg>
+                  
                 </button>
                 {isStatusDropdownOpen && (
                   <div
-                    className="absolute z-[100] min-w-96 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-4"
+                    className="absolute z-[100] min-w-40 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-2"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="hs-dropdown-default"
                     style={{ right: 0, left: "auto" }}
                   >
-                    {/* Mega Menu Years - 6 per column */}
-                    <div className="grid grid-cols-1 gap-8">
-                      {(() => {
-                        // Group years into arrays of 6 for columns
-                        const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
-                        const columns: number[][] = [];
-                        for (let i = 0; i < years.length; i += 6) {
-                          columns.push(years.slice(i, i + 6));
-                        }
-                        return columns.map((colYears, colIdx) => (
-                          <div key={colIdx} className="flex flex-col gap-2">
-                            {colYears.map(year => (
-                              <div key={year}>
-                                <button
-                                  type="button"
-                                  onClick={() => setExpandedYears([year])}
-                                  className="font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer"
-                                >
-                                  {year}
-                                  <svg
-                                    className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-                                  </svg>
-                                </button>
-                                {/* Months grid: only show if this year is expanded */}
-                                {expandedYears.includes(year) && (() => {
-                                  const months = groupByYear(monthYearOptions)[year];
-                                  const monthCount = months.length;
-                                  const isGrid = monthCount >= 4;
-                                  return (
-                                    <div
-                                      className={`${isGrid ? "grid grid-cols-2" : "flex flex-col"} gap-1 mb-2`}
-                                    >
-                                      {months.map((month) => {
-                                        const isSelected =
-                                          selectedMonthYear?.month === month &&
-                                          selectedMonthYear?.year === year;
-
-                                        return (
-                                          <button
-                                            key={`${year}-${month}`}
-                                            onClick={() => {
-                                              setSelectedMonthYear({ month, year });
-                                              setIsDropdownOpen(false);
-                                            }}
-                                            className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
-                                              isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
-                                            }`}
-                                            role="menuitem"
-                                          >
-                                            {monthYearToLabel(month, year)}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-                            ))}
-                          </div>
-                        ));
-                      })()}
+                    <div className="flex flex-col">
+                      <button
+                        className={`text-left text-xs px-3 py-2 rounded-md hover:bg-gray-100 ${statusFilter === 'All' ? 'bg-blue-100 text-blue-800 font-semibold' : 'text-gray-700'}`}
+                        onClick={() => { setStatusFilter('All'); setIsStatusDropdownOpen(false); }}
+                      >
+                        All
+                      </button>
+                      <button
+                        className={`text-left text-xs px-3 py-2 rounded-md hover:bg-gray-100 ${statusFilter === 'Delivered' ? 'bg-blue-100 text-blue-800 font-semibold' : 'text-gray-700'}`}
+                        onClick={() => { setStatusFilter('Delivered'); setIsStatusDropdownOpen(false); }}
+                      >
+                        Delivered
+                      </button>
+                      <button
+                        className={`text-left text-xs px-3 py-2 rounded-md hover:bg-gray-100 ${statusFilter === 'Pending' ? 'bg-blue-100 text-blue-800 font-semibold' : 'text-gray-700'}`}
+                        onClick={() => { setStatusFilter('Pending'); setIsStatusDropdownOpen(false); }}
+                      >
+                        Pending
+                      </button>
                     </div>
                   </div>
                 )}
               </div>
-              
+           
               {/* Filter Dropdown */}
               <div className="relative dropdown-container">
                 <button
                   id="monthYearSelect"
                   type="button"
-                  onClick={() => {
-                    if (!isDropdownOpen) {
-                      setCurrentStep('year');
-                      setSelectedYear(null);
-                      setAvailableMonths([]);
-                    }
-                    setIsDropdownOpen(!isDropdownOpen);
-                  }}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="py-1 px-1.5 inline-flex items-center gap-x-2 text-xs rounded-lg border border-gray-400 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
                   aria-haspopup="menu"  
                   aria-expanded={isDropdownOpen}
@@ -488,9 +384,7 @@ const toggleYear = (year: number) => {
                       ? "By Search"
                       : selectedMonthYear
                         ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                        : currentStep === 'month' 
-                          ? `Select Month for ${selectedYear}`
-                          : "Select Year"}
+                        : "Select Month"}
                   </div>
                   {selectedMonthYear && !isSearching && (
                     <span className="inline-flex items-center justify-center"></span>
@@ -515,73 +409,75 @@ const toggleYear = (year: number) => {
                     aria-orientation="vertical"
                     aria-labelledby="hs-dropdown-default"
                   >
-                    <div className="p-2">
-                      {currentStep === 'year' ? (
-                        // Year Selection Step
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-center">
-                            <h3 className="text-sm font-semibold text-gray-900">Select a Year</h3>
-                          </div>
-                          
-                          <div className="grid grid-cols-3 gap-2">
-                            {getYearRange().map((year) => (
-                              <button
-                                key={year}
-                                onClick={() => handleYearSelect(year)}
-                                className={`w-full inline-flex items-center justify-center text-xs 
-                                   rounded-md transition-colors text-center py-2.5 hover:cursor-pointer ${
-                                  selectedYear === year 
-                                    ? 'bg-green-100 text-green-800 font-semibold' 
-                                    : 'text-gray-700 hover:bg-gray-100 py-2.5 hover:cursor-pointer'
-                                }`}
-                              >
-                                {year}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        // Month Selection Step
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-semibold text-gray-900">Select a Month</h3>
-                            <button
-                              onClick={handleBackToYear}
-                              className="p-1 hover:bg-gray-100 rounded transition-colors"
-                            >
-                              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                              </svg>
-                          
-                            </button>
-                          </div>
-                          
-                          <div className="grid grid-cols-3 gap-2">
-                            {availableMonths.map((month) => {
-                              const monthName = new Date(2000, month - 1).toLocaleString('default', { month: 'short' });
-                              const isSelected = selectedMonthYear?.month === month && selectedMonthYear?.year === selectedYear;
-                              
-                              return (
-                                <button
-                                  key={month}
-                                  onClick={() => handleMonthSelect(month)}
-                                  className={`text-xs px-3 py-2 rounded-md transition-colors text-center ${
-                                    isSelected 
-                                      ? 'bg-green-100 text-green-800 font-semibold' 
-                                      : 'text-gray-700 hover:bg-gray-100'
-                                  }`}
-                                >
-                                  {monthName}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="p-4">
+                      <div className="grid grid-cols-1 gap-8">
+                        {(() => {
+                          const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
+                          const columns: number[][] = [];
+                          for (let i = 0; i < years.length; i += 6) {
+                            columns.push(years.slice(i, i + 6));
+                          }
+                          return columns.map((colYears, colIdx) => (
+                            <div key={colIdx} className="flex flex-col gap-2">
+                              {colYears.map(year => (
+                                <div key={year}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedYears([year])}
+                                    className="font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer"
+                                  >
+                                    {year}
+                                    <svg
+                                      className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? 'rotate-180' : ''}`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+                                    </svg>
+                                  </button>
+                                  {expandedYears.includes(year) && (() => {
+                                    const months = groupByYear(monthYearOptions)[year];
+                                    const monthCount = months.length;
+                                    const isGrid = monthCount >= 4;
+                                    return (
+                                      <div className={`${isGrid ? 'grid grid-cols-2' : 'flex flex-col'} gap-1 mb-2`}>
+                                        {months.map((month) => {
+                                          const isSelected = selectedMonthYear?.month === month && selectedMonthYear?.year === year;
+                                          return (
+                                            <button
+                                              key={`${year}-${month}`}
+                                              onClick={() => { setSelectedMonthYear({ month, year }); setIsDropdownOpen(false); }}
+                                              className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${isSelected ? 'bg-blue-100 text-blue-800 font-semibold' : ''}`}
+                                              role="menuitem"
+                                            >
+                                              {monthYearToLabel(month, year)}
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                              ))}
+                            </div>
+                          ));
+                        })()}
+                      </div>
                     </div>
                   </div>
+                  
                 )}
               </div>
+              <button
+                onClick={() => navigate('/inventory/add')}
+                className="inline-flex items-center gap-x-1.5 px-1.5 py-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Item
+              </button>
             </div>
           </div>
         </div>
