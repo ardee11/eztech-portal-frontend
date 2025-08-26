@@ -115,6 +115,7 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
                   className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Company Name"
                   required
+                  autoComplete="off"
                 />
               </div>
 
@@ -125,8 +126,10 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
                 <input
                   type="text"
                   id="companyAddress"
+                  name="no-companyAddress"
                   value={formData.companyAddress}
                   onChange={handleChange}
+                  autoComplete="new-company-address"
                   className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Company Address"
                   required
@@ -140,11 +143,13 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
                 <input
                   type="text"
                   id="contactPerson"
+                  name="no-contact-person"
                   value={formData.contactPerson}
                   onChange={handleChange}
                   className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Contact Person"
                   required
+                  autoComplete="new-contact-person"
                 />
               </div>
 
@@ -155,10 +160,12 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
                 <input
                   type="text"
                   id="contactNumber"
+                  name="no-contactNumber"
                   value={formData.contactNumber}
                   onChange={handleChange}
                   className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Contact Number"
+                  autoComplete="new-contact-number"
                 />
               </div>
 
@@ -173,6 +180,7 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
                   onChange={handleChange}
                   className="py-2 px-3 block w-full border border-gray-500 rounded-md text-xs 3xl:text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Email Address"
+                  autoComplete="new-email-address"
                 />
               </div>
 

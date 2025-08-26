@@ -72,7 +72,7 @@ const AdminModal = ({ isOpen, onClose }: AdminModalProps) => {
                     <input
                       type="text"
                       id="name"
-                      autoComplete="name"
+                      autoComplete="off"
                       className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -87,8 +87,8 @@ const AdminModal = ({ isOpen, onClose }: AdminModalProps) => {
                     </label>
                     <input
                       type="email"
-                      id="email"
-                      autoComplete="email"
+                      id="new-email"
+                      autoComplete="new-email"
                       className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -104,7 +104,7 @@ const AdminModal = ({ isOpen, onClose }: AdminModalProps) => {
                     <input
                       type="text"
                       id="position"
-                      autoComplete="organization-title"
+                      autoComplete="off"
                       className="p-2 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg"
                       value={position}
                       onChange={(e) => setPosition(e.target.value)}
