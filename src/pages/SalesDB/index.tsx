@@ -25,7 +25,7 @@ export default function SalesDB() {
               <DBSearch /> 
             </div>
 
-            <div className="flex-1 flex flex-col border border-gray-300 shadow-md bg-white rounded-xl p-5 overflow-hidden">
+            <div className="flex-1 flex flex-col border border-gray-300 shadow-md bg-white rounded-xl overflow-hidden">
               <DBInfo
                 selectedManagerFilter={selectedManagerFilter}
                 setSelectedManagerFilter={setSelectedManagerFilter}

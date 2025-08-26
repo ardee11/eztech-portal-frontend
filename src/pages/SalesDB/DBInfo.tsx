@@ -45,17 +45,17 @@ const DBInfo: React.FC<DBInfoProps> = ({
   }, [filteredCompanyNames]);
 
   return (
-    <div className="">
+    <div className="p-5">
       {isPrivilegedUser ? (
         <>
-          <h2 className="font-semibold mb-2">Account Managers</h2>
-          <div className="max-h-80 overflow-y-auto rounded-xl">
+          <h2 className="font-semibold mb-2 text-md 3xl:text-lg">Account Managers</h2>
+          <div className="h-[32vh] overflow-y-auto rounded-xl">
             {sortedManagers.length > 0 ? (
               <ul className="space-y-1">
                 {sortedManagers.map(([manager, count]) => (
                   <li
                     key={manager}
-                    className={`text-xs px-3 py-2.5 transition flex items-center
+                    className={`text-xs 3xl:text-sm px-3 py-2.5 transition flex items-center
                       hover:bg-blue-100/50 hover:font-semibold hover:cursor-pointer hover:rounded-lg
                       ${selectedManagerFilter === manager ? "bg-blue-100/50 font-semibold rounded-lg" : ""}`}
                     onClick={() => {
@@ -76,14 +76,14 @@ const DBInfo: React.FC<DBInfoProps> = ({
         </>
       ) : (
         <>
-          <h2 className="font-semibold mb-4">Account Manager Information</h2>
-          <div className="max-h-80 overflow-y-auto px-3">
-            <p className="text-sm text-gray-800 mb-2">
+          <h2 className="font-semibold mb-4 text-md 3xl:text-lg">Account Manager Information</h2>
+          <div className="h-[32vh] overflow-y-auto px-3">
+            <p className="text-sm 3xl:text-md text-gray-800 mb-2">
               Total Companies Handling:{" "}
               <span className="font-medium text-gray-700">{filteredCompanyNames.length}</span>
             </p>
             {Object.entries(remarkSummary).map(([remark, count]) => (
-              <p key={remark} className="text-sm text-gray-800 ml-3 mt-1">
+              <p key={remark} className="text-sm 3xl:text-md text-gray-800 ml-3 mt-1">
                 {remark}: <span className="font-medium text-gray-700">{count}</span>
               </p>
             ))}

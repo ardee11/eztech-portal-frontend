@@ -99,34 +99,34 @@ const DBSearch: React.FC<Props> = () => {
                   setSearchResult(null);
                   setSearchInput("");
                 }}
-                className="text-blue-600 hover:underline text-xs hover:cursor-pointer"
+                className="text-blue-600 hover:underline text-xs 3xl:text-sm hover:cursor-pointer"
               >
                 ← Back to Search
               </button>
               <div className="ml-3 mt-4">
-                <p className="text-sm mb-1 font-semibold">Company Name: 
+                <p className="text-sm 3xl:text-base mb-1 font-semibold">Company Name: 
                   <span className="ml-2 font-normal">{searchResult.comp_name}</span>
-                  <span className={`ml-2 font-normal rounded-xl px-3 py-0.5 text-xs text-white ${getRemarkColorClass(searchResult.remarks)}`}>{searchResult.remarks}</span>
+                  <span className={`ml-2 font-normal rounded-xl px-3 py-0.5 text-xs 3xl:text-sm text-white ${getRemarkColorClass(searchResult.remarks)}`}>{searchResult.remarks}</span>
                 </p>
-                <p className="text-sm mb-1 font-semibold">
+                <p className="text-sm 3xl:text-base mb-1 font-semibold">
                   {searchResult.remarks === "Open" ? "Previous Account Manager:" : "Account Manager:"}
                   <span className="ml-2 font-normal">{searchResult.acc_manager}</span>
                 </p>
                 {searchResult.remarks === "Open" && (
                   <>
-                  <p className="text-sm mb-1 font-semibold">Contact Person: 
+                  <p className="text-sm 3xl:text-base mb-1 font-semibold">Contact Person: 
                     <span className="ml-2 font-normal">{searchResult.comp_person ? searchResult.comp_person : "N/A"}</span>
                   </p>
-                  <p className="text-sm mb-1 font-semibold">Contact Number: 
+                  <p className="text-sm 3xl:text-base mb-1 font-semibold">Contact Number: 
                     <span className="ml-2 font-normal">{searchResult.comp_number ? searchResult.comp_number : "N/A" }</span>
                   </p>
-                  <p className="text-sm mb-1 font-semibold">Email Address: 
+                  <p className="text-sm 3xl:text-base mb-1 font-semibold">Email Address: 
                     <span className="ml-2 font-normal">{searchResult.comp_email ? searchResult.comp_email : "N/A" }</span>
                   </p>
                   </>
                 )}
-                <p className="text-sm mb-2 font-semibold mt-3">Company Address:</p>
-                <p className="text-sm ml-2 truncate">{searchResult.comp_address ? searchResult.comp_address : "N/A"}</p>
+                <p className="text-sm 3xl:text-base mb-2 font-semibold mt-3">Company Address:</p>
+                <p className="text-sm 3xl:text-base ml-2 truncate">{searchResult.comp_address ? searchResult.comp_address : "N/A"}</p>
               </div>
             </div>        
           ) : (
@@ -148,13 +148,13 @@ const DBSearch: React.FC<Props> = () => {
                   value={searchInput}
                   autoComplete="off"
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="w-full border py-2 ps-10 pe-16 block bg-white border-gray-500 rounded-full text-xs" 
+                  className="w-full border py-2 ps-10 pe-16 block bg-white border-gray-700 rounded-full text-xs 3xl:text-sm" 
                   placeholder="Search for company/organization name" 
                 />
               </div> 
               
               {searchError && (
-                <p className="text-red-500 text-center text-xs mt-3">{searchError}</p>
+                <p className="text-red-500 text-center text-xs 3xl:text-sm mt-3">{searchError}</p>
               )}
             </form>
             )}

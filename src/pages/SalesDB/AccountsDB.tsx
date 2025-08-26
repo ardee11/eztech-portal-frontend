@@ -108,11 +108,11 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
               onClick={handleBackToList}
               className={`cursor-pointer hover:bg-gray-100 rounded-full p-2 ${selectedCompany ? "block" : "hidden"}`}
             >
-              <svg className="w-4 h-4 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+              <svg className="w-4 h-4 3xl:w-5 3xl:h-5 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M13 5H1m0 0 4 4M1 5l4-4"/>
               </svg>
             </div>
-            <div className="text-lg font-semibold items-center flex">
+            <div className="text-lg 3xl:text-xl font-semibold items-center flex">
               {selectedCompany ? "Company Details" : 
               selectedManagerFilter ? `${selectedManagerFilter.trim().split(" ")[0]}'s Managed Accounts` :
               hasAccess ? "Managed Accounts" : "My Managed Accounts"}
@@ -126,7 +126,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
                   id="remark-filter"
                   value={selectedRemarkFilter || ""}
                   onChange={(e) => setSelectedRemarkFilter(e.target.value || null)}
-                  className="py-1 px-2 pe-3 block w-full appearance-none border border-gray-500 rounded-lg text-xs hover:cursor-pointer"
+                  className="py-1 px-2 pe-3 block w-full appearance-none border border-gray-500 rounded-lg text-xs 3xl:text-sm hover:cursor-pointer"
                 >
                   <option value="">All</option>
                   <option value="Active">Active</option>
@@ -137,7 +137,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
                 </select>
 
                 <div className="mb-1 pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-700">
-                  <svg className="w-4 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-4 h-3 3xl:h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -154,7 +154,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
                     companyListRef.current.scrollTop = 0;
                   }
                 }}                        
-                className="ml-1 px-3 py-1 text-blue-600 text-xs border rounded-lg hover:bg-blue-500/10 hover:cursor-pointer transition duration-150"
+                className="text-xs 3xl:text-sm ml-1 px-3 py-1 text-blue-600 text-xs border rounded-lg hover:bg-blue-500/10 hover:cursor-pointer transition duration-150"
               >
                 Clear Filter
               </button>
@@ -165,7 +165,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
           <div className="flex items-center space-x-2">
             {selectedCompany && canEditSelectedCompany() && (
               <div 
-                className="text-blue-600 border px-4 py-1 rounded-lg text-xs hover:bg-blue-50 hover:cursor-pointer transition duration-150"
+                className="text-blue-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:bg-blue-50 hover:cursor-pointer transition duration-150"
                 onClick={() => {
                   setEditingCompanyId(selectedCompany.comp_id);
                   setIsEditCompanyModalOpen(true);
@@ -177,7 +177,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
 
             {selectedCompany && canDeleteData() && (
               <div
-                className="text-red-600 border px-4 py-1 rounded-lg text-xs hover:bg-red-50 hover:cursor-pointer transition duration-150"
+                className="text-red-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:bg-red-50 hover:cursor-pointer transition duration-150"
                 onClick={() => setIsDeleteModalOpen(true)}
               >
                 Delete
@@ -190,7 +190,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
               onClick={() => setIsAddCompanyModalOpen(true)}
               className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-800 bg-teal-200 hover:bg-teal-300 hover:cursor-pointer transition"
             >
-              <svg className="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M12 5v14M5 12h14" /></svg>
+              <svg className="shrink-0 size-3.5 3xl:size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M12 5v14M5 12h14" /></svg>
             </button>
           )}
         </div>
@@ -206,7 +206,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
               autoComplete="off"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="mt-4 w-full border py-1.5 ps-10 pe-16 block border-gray-400 rounded-lg text-sm" placeholder="Search" 
+              className="mt-4 w-full border py-1.5 ps-10 pe-16 block border-gray-600 rounded-lg text-sm 3xl:text-base" placeholder="Search" 
             />
           </div>
         )}
@@ -216,11 +216,11 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
             <div className="flex flex-col items-center justify-center mt-20 text-center">
               {!loading && error ? (
                 <>
-                  <p className="text-red-500 text-sm font-semibold">Error: {error}</p>
-                  <p className="text-gray-500 text-sm mt-2">Contact your IT administrator.</p>
+                  <p className="text-red-500 text-sm 3xl:text-base font-semibold">Error: {error}</p>
+                  <p className="text-gray-500 text-sm 3xl:text-base mt-2">Contact your IT administrator.</p>
                 </>
               ) : (
-                <p className="text-gray-500 text-sm">No companies to show</p>
+                <p className="text-gray-500 text-sm 3xl:text-base">No companies to show</p>
               )}
             </div>
           ) : (
@@ -230,11 +230,11 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
                   <li
                     key={id}
                     onClick={() => handleSelectCompany(id)}
-                    className="text-sm p-4 hover:bg-gray-100 hover:cursor-pointer hover:rounded-lg transition flex justify-between items-center"
+                    className="text-sm 3xl:text-base p-4 hover:bg-gray-100 hover:cursor-pointer hover:rounded-lg transition flex justify-between items-center"
                   >
                     <span className="truncate">{name}</span>
                     <span
-                      className={`px-3 py-0.5 rounded-full w-22 text-center text-white text-xs whitespace-nowrap ${getRemarkColorClass(remarks)}`}
+                      className={`px-3 py-0.5 rounded-full w-22 text-center text-white text-xs 3xl:text-sm whitespace-nowrap ${getRemarkColorClass(remarks)}`}
                     >
                       {remarks || "N/A"}
                     </span>
@@ -244,14 +244,14 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
             </div>
           )
         ) : (
-          <div className="text-sm space-y-2 px-4 mt-8">
+          <div className="text-sm 3xl:text-base space-y-2 px-4 mt-8">
             <p><span className="font-medium">Company Name:</span> {selectedCompany["comp_name"]}</p>
             <p><span className="font-medium">Date Added:</span> {formatTimestampToFullDate(selectedCompany["created_at"])}</p>
             <p><span className="font-medium">Account Manager:</span> {selectedCompany["acc_manager"]}</p>
             <p><span className="font-medium">Contact Person:</span> {selectedCompany["comp_person"] || "N/A"}</p>
             <p><span className="font-medium">Contact Number:</span> {selectedCompany["comp_number"] || "N/A"}</p>
             <p><span className="font-medium">Email:</span> {selectedCompany["comp_email"] || "N/A"}</p>
-            <p className="font-medium">Remarks:<span className={`font-normal ml-2 px-4 py-0.5 rounded-full w-22 text-center text-white text-xs whitespace-nowrap ${getRemarkColorClass(selectedCompany["remarks"])}`}>
+            <p className="font-medium">Remarks:<span className={`font-normal ml-2 px-4 py-0.5 rounded-full w-22 text-center text-white text-xs 3xl:text-sm whitespace-nowrap ${getRemarkColorClass(selectedCompany["remarks"])}`}>
               {selectedCompany["remarks"] || "N/A"}
             </span></p>
             <p className="font-medium truncate mt-4">Company Address:</p>
