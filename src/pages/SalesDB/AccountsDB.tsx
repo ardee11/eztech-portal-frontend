@@ -39,14 +39,17 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
       const matchesManager = selectedManagerFilter ? company.acc_manager === selectedManagerFilter : true;
       return matchesSearch && matchesRemark && matchesManager;
     })
-    .map((company, idx) => ({
+    .map((company) => ({
       name: company.comp_name,
       remarks: company.remarks,
-      id: idx,
+      id: company.comp_id
     }));
 
-  const handleSelectCompany = (index: number) => {
-    setSelectedCompany(data[index]);
+  const handleSelectCompany = (comp_id: number) => {
+    const company = data.find(c => c.comp_id === comp_id);
+    if (company) {
+      setSelectedCompany(company);
+    }
   };
 
   const handleBackToList = () => {
