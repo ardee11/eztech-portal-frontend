@@ -1,12 +1,13 @@
 import AccountsDB from "./AccountsDB";
 import DBSearch from "./DBSearch";
 import DBInfo from "./DBInfo";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
 import { ClipLoader } from "react-spinners";
 
 export default function SalesDB() {
   const { loading } = useSalesAccounts();
+  const companyListRef = useRef<HTMLDivElement>(null);
   const [selectedManagerFilter, setSelectedManagerFilter] = useState<string | null>(null);
 
   return (
@@ -17,6 +18,7 @@ export default function SalesDB() {
             <AccountsDB 
               selectedManagerFilter={selectedManagerFilter} 
               setSelectedManagerFilter={setSelectedManagerFilter}
+              companyListRef={companyListRef}
             />
           </div>
 
@@ -29,6 +31,7 @@ export default function SalesDB() {
               <DBInfo
                 selectedManagerFilter={selectedManagerFilter}
                 setSelectedManagerFilter={setSelectedManagerFilter}
+                companyListRef={companyListRef}
               />
             </div>
           </div>

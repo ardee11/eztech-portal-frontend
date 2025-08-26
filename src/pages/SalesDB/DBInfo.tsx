@@ -1,19 +1,20 @@
 import { useAuth } from "../../contexts/authContext";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
-import { useRef, useMemo } from "react";
+import { useMemo } from "react";
 
 interface DBInfoProps {
   selectedManagerFilter: string | null;
   setSelectedManagerFilter: (manager: string | null) => void;
+  companyListRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const DBInfo: React.FC<DBInfoProps> = ({
   selectedManagerFilter,
   setSelectedManagerFilter,
+  companyListRef
 }) => {
   const { user } = useAuth();
   const { data } = useSalesAccounts();
-  const companyListRef = useRef<HTMLDivElement>(null);
 
   const canViewAllDataRoles = ["Admin", "Super Admin", "Sales Manager"];
 

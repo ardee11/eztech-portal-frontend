@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/authContext";
 import { useSalesAccounts } from "../../hooks/useSalesDB";
 import AddCompanyModal from "../../components/modal/SalesDB/AddCompanyModal";
@@ -9,16 +9,16 @@ import DeleteCompanyModal from "../../components/modal/SalesDB/DeleteCompanyModa
 interface AccountsDBProps {
   selectedManagerFilter: string | null;
   setSelectedManagerFilter: (manager: string | null) => void;
+  companyListRef: React.RefObject<HTMLDivElement | null>;
 }
 
-const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelectedManagerFilter }) => {
+const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelectedManagerFilter, companyListRef }) => {
   const [reloadFlag, setReloadFlag] = useState(false);
   const { data, loading, error } = useSalesAccounts(reloadFlag);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRemarkFilter, setSelectedRemarkFilter] = useState<string | null>(null);
   const [selectedCompany, setSelectedCompany] = useState<any | null>(null);
-  const companyListRef = useRef<HTMLDivElement>(null);
   const [isAddCompanyModalOpen, setIsAddCompanyModalOpen] = useState(false);
   const [isEditCompanyModalOpen, setIsEditCompanyModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -39,6 +39,9 @@ const AccountsDB: React.FC<AccountsDBProps> = ({ selectedManagerFilter, setSelec
       const matchesManager = selectedManagerFilter ? company.acc_manager === selectedManagerFilter : true;
       return matchesSearch && matchesRemark && matchesManager;
     })
+    .sort((a, b) => 
+      a.comp_name.trim().toLowerCase().localeCompare(b.comp_name.trim().toLowerCase())
+    )
     .map((company) => ({
       name: company.comp_name,
       remarks: company.remarks,
