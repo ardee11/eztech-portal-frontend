@@ -2,12 +2,6 @@
 @import "tailwindcss";
 @import "preline/variants.css";
 
-input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.1) inset !important;
-  -webkit-text-fill-color: white !important;
-  transition: background-color 9999s ease-in-out 0s;
-}
-
 @theme {
   --breakpoint-3xl: 100rem;
 }
