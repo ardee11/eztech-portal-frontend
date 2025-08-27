@@ -167,7 +167,8 @@ export default function Sidebar() {
 
                   <svg className="hs-accordion-active:hidden ms-auto block size-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
                 </button>
-
+                
+                {userRole && hasAnyAccess(userRole, "super admin") && (
                 <div id="account-accordion-child" className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="account-accordion">
                   <ul className="ps-6 pt-2 space-y-1">
                       <li>
@@ -200,6 +201,7 @@ export default function Sidebar() {
 
                   </ul>
                 </div>
+                )}
               </li>
             </ul>
           </nav>

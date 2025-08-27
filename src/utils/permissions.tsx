@@ -9,10 +9,10 @@ export const Roles = {
 
 export type Role = (typeof Roles)[keyof typeof Roles];
 
-export type PageAccess = "inventory" | "sales" | "admin";
+export type PageAccess = "inventory" | "sales" | "admin" |"super admin";
 
 export const AccessControl: Record<Role, PageAccess[]> = {
-  [Roles.SUPER_ADMIN]: ["inventory", "sales", "admin"],
+  [Roles.SUPER_ADMIN]: ["super admin", "inventory", "sales", "admin"],
   [Roles.ADMIN]: ["inventory", "sales"],
   [Roles.INVENTORY_VIEWER]: ["inventory"],
   [Roles.INVENTORY_MANAGER]: ["inventory"],

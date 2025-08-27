@@ -9,30 +9,30 @@ import ItemNotesModal from "../../components/modal/Inventory/EditItemNotes";
 import ItemStatusModal from "../../components/modal/Inventory/EditItemStatus";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
+import { useAuth } from "../../contexts/authContext";
 
 function ItemDetails() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { itemId } = useParams<{ itemId: string }>();
   const { item: fetchedItem, loading, error, refetch } = useItemDetails(itemId!);
   const [item, setItem] = useState<Item | null>(null);
-
-  useEffect(() => {
-    if (fetchedItem) {
-      setItem(fetchedItem);
-    }
-  }, [fetchedItem]);
-
-  const handleItemUpdate = (updatedFields: Partial<Item>) => {
-    setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
-    refetch();
-  };
 
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isSetDeliveryModalOpen, setIsSetDeliveryModalOpen] = useState(false);
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
+  const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
 
+  const canEditInventory = Array.isArray(user?.role)
+    ? user.role.some(role => canEditInventoryRoles.includes(role))
+    : canEditInventoryRoles.includes(user?.role || "");
+
+  const handleItemUpdate = (updatedFields: Partial<Item>) => {
+    setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
+    refetch();
+  };
   useEffect(() => {
     if (item) {
       setTimeout(() => {
@@ -42,6 +42,12 @@ function ItemDetails() {
       }, 100);
     }
   }, [item]);
+
+  useEffect(() => {
+    if (fetchedItem) {
+      setItem(fetchedItem);
+    }
+  }, [fetchedItem]);
   
   return (
     <div className="w-full mx-auto p-4 relative bg-gray-50 min-h-screen">
@@ -132,6 +138,7 @@ function ItemDetails() {
                         </div>
                         <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Item Details</h2>
                       </div>
+                      {canEditInventory && (
                       <button
                         onClick={() => setIsItemModalOpen(true)}
                         className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white text-xs 3xl:text-sm font-medium rounded-lg transition-colors duration-200"
@@ -141,6 +148,7 @@ function ItemDetails() {
                         </svg>
                         <span>Edit</span>
                       </button>
+                      )}
                     </div>
                   </div>
                   <div className="px-6 py-4 3xl:py-5">
@@ -300,6 +308,7 @@ function ItemDetails() {
                         </div>
                         <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Notes</h2>
                       </div>
+                      {canEditInventory && (
                       <button
                         onClick={() => setIsNoteModalOpen(true)}
                         className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white text-xs 3xl:text-sm font-medium rounded-lg transition-colors duration-200"
@@ -309,6 +318,7 @@ function ItemDetails() {
                         </svg>
                         <span>Edit</span>
                       </button>
+                      )}
                     </div>
                   </div>
                   <div className="px-6 py-4 3xl:py-5">
@@ -337,7 +347,7 @@ function ItemDetails() {
                       
                       {/* Action Buttons */}
                       <div className="flex items-center space-x-2 3xl:space-x-3">
-                        {!item?.delivered && item?.item_status === "For Delivery" && (
+                        {!item?.delivered && item?.item_status === "For Delivery" && canEditInventory && (
                           <button 
                             onClick={() => setIsMarkDeliveredModalOpen(true)}
                             className="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 hover:cursor-pointer text-white text-xs font-semibold rounded-full transition-colors duration-200"
@@ -349,7 +359,7 @@ function ItemDetails() {
                           </button>
                         )}
 
-                        {!item?.delivered && item?.item_status === "Pending" && (
+                        {!item?.delivered && item?.item_status === "Pending" && canEditInventory && (
                           <button
                             onClick={() => setIsSetDeliveryModalOpen(true)}
                             className="inline-flex items-center px-2 py-1 3xl:px-2.5 3xl:py-1.5 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white text-xs rounded-full transition-colors duration-200"
@@ -478,12 +488,14 @@ function ItemDetails() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-gray-700">Status Timeline</h3>
+                        {canEditInventory && (
                         <button 
                           onClick={() => setIsStatusModalOpen(true)}
                           className="text-xs rounded-full border px-4 py-1 text-blue-600 hover:bg-blue-100/50 hover:cursor-pointer transition-colors"
                         >
                           Edit
                         </button>
+                        )}
                       </div>
                       
                       <div className="space-y-3">

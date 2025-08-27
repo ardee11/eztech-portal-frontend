@@ -9,6 +9,7 @@ import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal"
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
 import { getStatusStyles } from "../../utils/getStatusStyles";
+import { useAuth } from "../../contexts/authContext";
 
 type MonthYear = { month: number | null; year: number };
 
@@ -18,6 +19,7 @@ function monthYearToLabel(month: number, year: number): string {
 }
 
 export default function Inventory() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +35,11 @@ export default function Inventory() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
+  const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
+
+  const canEditInventory = Array.isArray(user?.role)
+    ? user.role.some(role => canEditInventoryRoles.includes(role))
+    : canEditInventoryRoles.includes(user?.role || "");
 
   const openMarkDeliveredModal = (itemId: string | null) => {
     setMarkDeliveredItemId(itemId);
@@ -438,6 +445,7 @@ export default function Inventory() {
                 )}
               </div>
 
+              {canEditInventory && (
               <div>
                 <button
                   onClick={() => navigate("/inventory/add")}
@@ -449,6 +457,7 @@ export default function Inventory() {
                   Add Item
                 </button>
               </div>
+              )}
 
             </div>
           </div>

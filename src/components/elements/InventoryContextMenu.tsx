@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/authContext";
 
 type Props = {
   visible: boolean;
@@ -26,8 +27,15 @@ export default function InventoryContextMenu({
   onOpenMarkDeliveredModal,
   onOpenDeleteModal,
 }: Props) {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const menuRef = useRef<HTMLUListElement>(null);
+  const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
+
+  const canEditInventory = Array.isArray(user?.role)
+    ? user.role.some(role => canEditInventoryRoles.includes(role))
+    : canEditInventoryRoles.includes(user?.role || "");
+
 
   useEffect(() => {
     if (!visible) return;
@@ -72,7 +80,7 @@ export default function InventoryContextMenu({
         View Details
       </li>
 
-      {!itemDelivered && itemStatus === "Pending" && (
+      {!itemDelivered && itemStatus === "Pending" && canEditInventory && (
         <li
           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
           onClick={() => {
@@ -83,7 +91,7 @@ export default function InventoryContextMenu({
         </li>
       )}
 
-      {!itemDelivered && itemStatus === "For Delivery" && (
+      {!itemDelivered && itemStatus === "For Delivery" && canEditInventory && (
         <li
           className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
           onClick={() => {
@@ -94,6 +102,7 @@ export default function InventoryContextMenu({
         </li>
       )}
 
+      {canEditInventory && (
       <li
         className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600 hover:text-red-700"
         onClick={() => {
@@ -103,6 +112,7 @@ export default function InventoryContextMenu({
       >
         Delete Item
       </li>
+      )}
     </ul>
   );
 }
