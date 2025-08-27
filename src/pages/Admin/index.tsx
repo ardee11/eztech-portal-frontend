@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAdmin, useAdminDetails } from "../../hooks/useAdmin";
+import { useAdmin } from "../../hooks/useAdmin";
 import { ClipLoader } from "react-spinners";
 import AdminModal from "../../components/modal/Admin/AdminAddModal";
 import { AdminRemoveModal } from "../../components/modal/Admin/AdminRemoveModal";
