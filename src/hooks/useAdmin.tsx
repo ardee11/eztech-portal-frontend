@@ -46,29 +46,59 @@ export const useAdmin = (trigger?: boolean) => {
   return { admins, loading, error };
 };
 
-export const useAdminDetails = (email: string | null) => {
+export const useAdminDetails = (id: number | null) => {
   const [adminData, setAdminData] = useState<Admin | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
 
+  // Helper to clean role strings
+  const cleanRoleData = (rawRole: any): string[] => {
+    if (!rawRole) return [];
+
+    if (Array.isArray(rawRole)) {
+      return rawRole.flatMap((item: string) =>
+        item
+          .replace(/[{}"]/g, "") // remove curly braces and quotes
+          .split(",")
+          .map((role: string) => role.trim()) // explicitly typed here
+          .filter((role: string) => role.length > 0)
+      );
+    }
+
+    if (typeof rawRole === "string") {
+      return rawRole
+        .replace(/[{}"]/g, "")
+        .split(",")
+        .map((role: string) => role.trim())
+        .filter((role: string) => role.length > 0);
+    }
+
+    return [];
+  };
+
   useEffect(() => {
-    if (email === null) return;
+    if (id === null) return;
 
     const fetchAdmin = async () => {
       setLoadingDetails(true);
       setErrorDetails(null);
       try {
-        const res = await fetch(`/admins/${email}`, {
+        const res = await fetch(`/admins/${id}`, {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
         });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.message || "Failed to fetch admin");
         }
         const data = await res.json();
-        setAdminData(data);
-        console.log(data);
+
+        const normalizedData = {
+          ...data,
+          role: cleanRoleData(data.role),
+        };
+
+        setAdminData(normalizedData);
       } catch (err) {
         if (err instanceof Error) setErrorDetails(err.message);
         else setErrorDetails("Unknown error");
@@ -79,7 +109,7 @@ export const useAdminDetails = (email: string | null) => {
     };
 
     fetchAdmin();
-  }, [email]);
+  }, [id]);
 
   return { adminData, loadingDetails, errorDetails };
 };
@@ -112,6 +142,37 @@ export const useAddAdmin = () => {
   };
 
   return { addAdmin };
+};
+
+export const useEditAdmin = () => {
+  const editAdmin = async (
+    id: number,
+    name: string,
+    email: string,
+    position: string,
+    role: string[]
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await fetch(`/admins/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, position, role }),
+      });
+
+      if (!response.ok) {
+        const errorRes = await response.json();
+        return { success: false, error: errorRes.message || "Failed to update admin." };
+      }
+
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: "Network error while updating admin." };
+    }
+  };
+
+  return { editAdmin };
 };
 
 export const removeAdmin = async (
