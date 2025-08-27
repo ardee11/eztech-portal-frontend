@@ -3,14 +3,14 @@ import { useAdmin, useAdminDetails } from "../../hooks/useAdmin";
 import { ClipLoader } from "react-spinners";
 import AdminModal from "../../components/modal/Admin/AdminAddModal";
 import { AdminRemoveModal } from "../../components/modal/Admin/AdminRemoveModal";
+import AdminEditModal from "../../components/modal/Admin/AdminEditModal";
 
 export default function Admin() {
   const [refresh, setRefresh] = useState(false);
   const { admins, loading, error } = useAdmin(refresh);
   const [adminToDelete, setAdminToDelete] = useState<null | { aid: number; name: string; email: string }>(null);
-  const [selectedID, setSelectedID] = useState<string | null>(null);
+  const [adminToEdit, setAdminToEdit] = useState<null | { aid: number; }>(null);
   const [isAddAdminModalOpen, setIsAddCompanyModalOpen] = useState(false);
-  const {} = useAdminDetails(selectedID);
 
   const handleModalClose = () => {
     setRefresh(prev => !prev); 
@@ -20,6 +20,11 @@ export default function Admin() {
   const handleRemoveModalClose = () => {
     setRefresh(prev => !prev); 
     setAdminToDelete(null);
+  };
+
+  const handleEditModalClose = () => {
+    setRefresh(prev => !prev); 
+    setAdminToEdit(null);
   };
 
   return (
@@ -80,8 +85,10 @@ export default function Admin() {
                     {admins.map((admin) => (
                       <div 
                         key={admin.aid} 
-                        onClick={() => setSelectedID(admin.email)}
-                        className="flex items-center hover:bg-gray-50 text-sm 3xl:text-base transition duration-150">
+                        onClick={() => 
+                          setAdminToEdit({aid: admin.aid})
+                        }
+                        className="flex items-center hover:bg-gray-100 text-sm hover:cursor-pointer 3xl:text-base transition duration-200">
                         <div className="px-6 py-3 3xl:py-4 w-[20%] flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
                           {admin.name}
@@ -119,6 +126,13 @@ export default function Admin() {
                   email={adminToDelete.email}
                   isOpen={true}
                   onClose={handleRemoveModalClose}
+                />
+              )}
+              {adminToEdit && (
+                <AdminEditModal
+                  aid={adminToEdit.aid}
+                  isOpen={true}
+                  onClose={handleEditModalClose}
                 />
               )}
               <div className="py-5 flex justify-between border-t border-gray-300">
