@@ -2,12 +2,10 @@ import logo from '../../assets/ez-logo.png';
 import staffAvatar from '../../assets/default-avatar.png';
 import { useAuth } from '../../contexts/authContext';
 import { useSignOut } from '../../hooks/useSignOut';
-import { useLayout } from '../../contexts/layoutContext';
 
 
 export default function Header() {
   const { user } = useAuth();
-  const { isSidebarMinimized } = useLayout();
   const handleSignOut = useSignOut();
 
   return (
