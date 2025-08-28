@@ -2,16 +2,18 @@ import logo from '../../assets/ez-logo.png';
 import staffAvatar from '../../assets/default-avatar.png';
 import { useAuth } from '../../contexts/authContext';
 import { useSignOut } from '../../hooks/useSignOut';
+import { useLayout } from '../../contexts/layoutContext';
+
 
 export default function Header() {
   const { user } = useAuth();
+  const { isSidebarMinimized } = useLayout();
   const handleSignOut = useSignOut();
 
   return (
     <>
-      <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-48 w-full bg-white border-b border-gray-300 shadow-xs text-sm py-2.5 lg:ps-65">
+      <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-48 w-full bg-white border-b border-gray-300 shadow-xs text-sm py-2.5 transition-all duration-300 ease-in-out">
         <nav className="px-4 sm:px-6 flex basis-full items-center w-full mx-auto">
-
           <div className="me-5 lg:me-0 lg:hidden">
             <img src={logo} className="w-48 h-auto" alt="Logo"/>
             <div className="lg:hidden ms-1">
