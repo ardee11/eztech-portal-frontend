@@ -259,7 +259,7 @@ export default function AddItem() {
                 </div>
                 
                 <div className="group">
-                  <label className="block text-xs 3xl:text-sm font-semibold text-gray-800 mb-2">
+                  <label htmlFor="hasSerial" className="block text-xs 3xl:text-sm font-semibold text-gray-800 mb-2">
                     <p>&nbsp;</p>
                   </label>
                   <div className="flex items-center space-x-3 h-9.5 px-4 ">

@@ -115,6 +115,7 @@ export default function InputDropdown({ label, value, onChange, options }: Staff
       )}
 
       <input
+        id={id}
         ref={inputRef}
         type="text"
         value={search}
