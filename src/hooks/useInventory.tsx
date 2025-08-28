@@ -27,7 +27,7 @@ interface SerialNumber {
 }
 
 export interface Supplier {
-  id: number;
+  aid: number;
   name: string;
 }
 

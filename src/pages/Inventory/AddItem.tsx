@@ -301,7 +301,7 @@ export default function AddItem() {
                   onChange={(value) => setDistributor(value ?? "")}
                   options={suppliers.map(supplier => ({
                     name: supplier.name,
-                    aid: supplier.id
+                    aid: supplier.aid
                   }))}
                 />
               </div>

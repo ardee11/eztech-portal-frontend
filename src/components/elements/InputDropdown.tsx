@@ -5,7 +5,7 @@ type StaffDropdownProps = {
   label?: string;
   value: string | null;
   onChange: (value: string | null) => void;
-  options: { name: string; aid: string | number }[];
+  options: { name: string; aid: number }[];
 };
 
 export default function InputDropdown({ label, value, onChange, options }: StaffDropdownProps) {
