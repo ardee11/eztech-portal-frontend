@@ -117,15 +117,15 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
                   placeholder="Client Name" 
                 />
 
-                <label htmlFor="itemDistributor" className="block text-xs 3xl:text-sm mb-1">
+                <p className="block text-xs 3xl:text-sm mb-1">
                   Distributor
-                </label>
+                </p>
                 <InputDropdown
                   value={itemDistributor}
                   onChange={(value) => setItemDistributor(value ?? "")}
                   options={suppliers.map(supplier => ({
                     name: supplier.name,
-                    aid: supplier.id
+                    aid: supplier.aid
                   }))}
                 />
               </form>
@@ -153,7 +153,6 @@ const ItemDetailsModal = ({ isItemModalOpen, onClose, item, onUpdate }: Props) =
           </div>
         </div>
       )}
-
     </>
   );
 };

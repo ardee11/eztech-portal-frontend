@@ -109,13 +109,13 @@ export default function InputDropdown({ label, value, onChange, options }: Staff
   return (
     <div className="relative" ref={containerRef}>
       {label && (
-        <label id={labelId} className="block text-xs mb-1">
+        <label htmlFor={labelId} className="block text-xs mb-1">
           {label}
         </label>
       )}
 
       <input
-        id={id}
+        id={labelId}
         ref={inputRef}
         type="text"
         value={search}

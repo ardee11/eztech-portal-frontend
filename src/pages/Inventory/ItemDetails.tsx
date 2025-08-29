@@ -10,14 +10,16 @@ import ItemStatusModal from "../../components/modal/Inventory/EditItemStatus";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 import { useAuth } from "../../contexts/authContext";
+import EditModal from "../../components/modal/Inventory/EditDetails";
 
 function ItemDetails() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { itemId } = useParams<{ itemId: string }>();
   const { item: fetchedItem, loading, error, refetch } = useItemDetails(itemId!);
-  const [item, setItem] = useState<Item | null>(null);
+  const navigate = useNavigate();
 
+  const [item, setItem] = useState<Item | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -33,6 +35,7 @@ function ItemDetails() {
     setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
     refetch();
   };
+
   useEffect(() => {
     if (item) {
       setTimeout(() => {
@@ -78,25 +81,34 @@ function ItemDetails() {
               />
             </svg>
           </div>
-          <div className="flex items-center space-x-16">
+          <div className="flex items-center space-x-32">
             <div>
-              <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Item Details</p>
+              <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Item ID</p>
               <p className="text-md 3xl:text-lg font-bold text-gray-900">
-                ITEM ID: <span className="text-blue-600">{item?.item_id}</span>
+                {item?.item_id}
               </p>
             </div>
             <div>
               <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Purchase Order No. | Work Order No.</p>
               <p className="text-md 3xl:text-lg font-bold text-gray-900">
-                TEST
+                {item?.order_no ? item.order_no : "N/A"}
               </p>
             </div>
           </div>
         </div>
-        {/* <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span className="text-sm text-gray-500">Live</span>
-        </div> */}
+        <div className="flex items-center space-x-2">
+          {canEditInventory && (
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white text-xs 3xl:text-sm font-medium rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            <span>Edit</span>
+          </button>
+          )}
+        </div>
       </div>
 
       <div className="relative flex-grow">
@@ -154,25 +166,25 @@ function ItemDetails() {
                   <div className="px-6 py-4 3xl:py-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       <div className="group">
-                        <label className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Model Name</label>
+                        <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Model Name</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-normal transition-colors">
                           {item?.item_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Quantity</label>
+                        <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Quantity</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-normal transition-colors">
                           {item?.quantity ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Client Name</label>
+                        <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Client Name</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-pre-wrap transition-colors">
                           {item?.client_name ?? "-"}
                         </p>
                       </div>
                       <div className="group">
-                        <label className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Distributor</label>
+                        <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Distributor</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-pre-wrap transition-colors">
                           {item?.distributor ?? "-"}
                         </p>
@@ -611,6 +623,13 @@ function ItemDetails() {
       </div>
 
       {/* Modals */}
+      <EditModal 
+        isEditModalOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        item={item}
+        onUpdate={handleItemUpdate}
+      />
+
       <ItemDetailsModal 
         isItemModalOpen={isItemModalOpen} 
         onClose={() => setIsItemModalOpen(false)} 

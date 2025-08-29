@@ -16,6 +16,7 @@ export interface Item {
   notes: string | null;
   created_at: Date;
   created_by: string | null; //to be not nulled
+  order_no: string | null;
   serialnumbers: SerialNumber[];
 }
 
@@ -199,6 +200,7 @@ export function useItemDetails(itemId: string | null) {
         notes: data.notes,
         created_at: new Date(data.created_at),
         created_by: data.created_by,
+        order_no: data.order_no,
         serialnumbers: data.serialnumbers ?? [],
       });
     } catch (err) {
@@ -233,7 +235,7 @@ export function useUpdateInventory() {
       const cleanedUpdates = Object.fromEntries(
         Object.entries(updates).filter(([_, v]) => v !== undefined)
       );
-
+      
       const response = await fetch(`/api/inventory/${itemId}`, {
         method: "PUT",
         headers: {

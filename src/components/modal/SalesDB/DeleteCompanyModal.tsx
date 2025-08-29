@@ -75,7 +75,7 @@ export default function DeleteCompanyModal({ companyName, isOpen, companyId, onC
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="px-10 py-2 text-xs 3xl:text-sm font-medium text-gray-800 border border-gray-500 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
+            className="px-10 py-2 text-xs 3xl:text-sm font-medium bg-white text-gray-800 border border-gray-500 rounded-md hover:bg-gray-100 hover:cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>

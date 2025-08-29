@@ -132,9 +132,9 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
   return (
     <div className="relative">
       {label && (
-        <label id={labelId} className="block text-xs 3xl:text-sm mb-1">
+        <h1 className="block text-xs 3xl:text-sm mb-1">
           {label}
-        </label>
+        </h1>
       )}
 
       <div
@@ -193,6 +193,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
           >
             <div className="px-3 pt-3 sticky top-0 bg-white z-10">
               <input
+                id="staffInput"
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -211,6 +212,7 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
                     className="flex items-center gap-2 px-4 py-2 text-xs 3xl:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   >
                     <input
+                      id={`staff-${id}-${option.aid}`}
                       type="checkbox"
                       checked={value.includes(option.name)}
                       onChange={() => handleToggle(option.name)}

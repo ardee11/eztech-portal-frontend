@@ -4,17 +4,17 @@ import { ClipLoader } from "react-spinners";
 import { showToast } from "../../../utils/toastUtils";
 
 type Props = {
-  isNoteModalOpen: boolean;
+  isEditModalOpen: boolean;
   onClose: () => void;
   item: Item | null;
   onUpdate: (updatedFields: Partial<Item>) => void;
 };
 
-const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => {
+const EditModal = ({ isEditModalOpen, onClose, item, onUpdate }: Props) => {
   const { updateInventory, loading } = useUpdateInventory();
-  const [note, setNote] = useState("");
+  const [orderNo, setOrderNo] = useState("");
 
-  const isFormValid = note.trim() !== "" && note !== (item?.notes ?? "");
+  const isFormValid = orderNo.trim() !== "" && orderNo !== (item?.order_no ?? "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,37 +22,37 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
     if (!item || !item.item_id || !isFormValid) return;
 
     try {
-      await updateInventory(item.item_id, { notes: note });
-      onUpdate({ notes: note });
+      await updateInventory(item.item_id, { order_no: orderNo });
+      onUpdate({ order_no: orderNo });
       resetFormField();
-      showToast("Notes updated successfully!", "success");
+      showToast("Order no. updated successfully!", "success");
     } catch (err) {
-      showToast("Failed to update notes", "error");
+      showToast("Failed to update order no.", "error");
     }
   };
 
   useEffect(() => {
-    if (!isNoteModalOpen) return;
+    if (!isEditModalOpen) return;
     if (item) {
-      setNote(item.notes || "");
+      setOrderNo(item.order_no || "");
     }
-  }, [item?.notes, isNoteModalOpen]);
+  }, [item?.order_no, isEditModalOpen]);
 
   const resetFormField = () => {
-    setNote("");
+    setOrderNo("");
     onClose();
   };
 
   return (
     <>
-      {isNoteModalOpen && (
+      {isEditModalOpen && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60">
-          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-xl 3xl:max-w-2xl max-h-100 3xl:max-h-110 overflow-hidden flex flex-col">
+          <div className="bg-white rounded-xl shadow-2xl animate-expand-card max-w-xl 3xl:max-w-2xl max-h-76 3xl:max-h-84 overflow-hidden flex flex-col">
             
             {/* Header */}
             <div className="delay-show px-8 py-4 3xl:py-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg 3xl:text-xl font-bold text-gray-900">Add Notes</h3>
+                <h3 className="text-lg 3xl:text-xl font-bold text-gray-900">Edit Purchase/Work Order No.</h3>
                 <button
                   onClick={onClose}
                   className="text-gray-500 hover:text-gray-800 hover:cursor-pointer transition-colors"
@@ -66,15 +66,15 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
 
             {/* Scrollable Content */}
             <div className="delay-show px-14 py-4 overflow-auto flex-1">
-              <form id="editNotes" onSubmit={handleSubmit}>
-                <label htmlFor="itemNote" className="block text-xs 3xl:text-sm mb-1">
-                  Notes:
+              <form id="editDetails" onSubmit={handleSubmit}>
+                <label htmlFor="orderNo" className="block text-xs 3xl:text-sm mb-1">
+                  Purchase/Work Order No:
                 </label>
                 <textarea
-                  id="itemNote"
-                  className="p-2 w-full h-48 text-xs border border-gray-500 rounded-lg resize-none"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
+                  id="orderNo"
+                  className="p-2 w-full h-24 text-xs border border-gray-500 rounded-lg resize-none"
+                  value={orderNo}
+                  onChange={(e) => setOrderNo(e.target.value)}
                   required
                 />
               </form>
@@ -84,7 +84,7 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
             <div className="delay-show px-16 3xl:px-20 py-5 border-t border-gray-200 bg-gray-50 flex justify-between">
               <button
                 type="submit"
-                form="editNotes"
+                form="editDetails"
                 disabled={loading || !isFormValid}
                 className="px-12 py-2 text-xs 3xl:text-sm font-medium text-white bg-teal-600 border border-transparent rounded-lg hover:bg-teal-700 hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
               >
@@ -106,4 +106,4 @@ const ItemNotesModal = ({ isNoteModalOpen, onClose, item, onUpdate }: Props) => 
   );
 };
 
-export default ItemNotesModal;
+export default EditModal;

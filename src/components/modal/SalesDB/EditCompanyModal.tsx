@@ -174,9 +174,9 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {canEditAccountManager && (
                   <div>
-                    <label htmlFor="acc_manager" className="block text-xs 3xl:text-sm font-medium mb-2">
+                    <p className="block text-xs 3xl:text-sm font-medium mb-2">
                       Account Manager
-                    </label>
+                    </p>
                     <div className="relative">
                       <InputDropdown
                         value={formData.acc_manager}
