@@ -123,6 +123,7 @@ export default function AddItem() {
       notes: itemNote.trim(),
       created_at: new Date(),
       created_by: user?.name || user?.email || "Unknown",
+      order_no: null,
       serialnumbers,
     };
 
