@@ -23,6 +23,7 @@ export default function Inventory() {
   const navigate = useNavigate();
   const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
@@ -70,23 +71,20 @@ export default function Inventory() {
   }, [yearOptions]);
   
   const { inventoryItems, loading, error } = useInventory();
+    const isSearching = searchQuery.trim().length >= 3;
+    const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
 
-  const isSearching = searchQuery.trim().length > 0;
-  //const baseItems = isSearching ? allItems : items;
-
-  const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
-
-  const filteredItems = inventoryItems
-    .filter((item) => {
-      if (searchQuery.trim() !== "") {
-        const query = searchQuery.toLowerCase();
-        const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
+    const filteredItems = inventoryItems
+      .filter((item) => {
+        if (debouncedSearchQuery.trim() !== "") {
+        const query = debouncedSearchQuery.toLowerCase();
+        //const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
         const serialMatch =
           item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ??
           false;
         const clientMatch =
           item.client_name?.toLowerCase().includes(query) ?? false;
-        return idMatch || serialMatch || clientMatch;
+        return serialMatch || clientMatch;
       }
 
       const matchYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
@@ -106,6 +104,17 @@ export default function Inventory() {
       if (dateDiff !== 0) return dateDiff;
       return extractNum(b.item_id || "") - extractNum(a.item_id || "");
     });
+
+  useEffect(() => {
+    if (searchQuery.trim().length >= 3) {
+      const timer = setTimeout(() => {
+          setDebouncedSearchQuery(searchQuery);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setDebouncedSearchQuery("");
+    }
+  }, [searchQuery]);
     
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -492,7 +501,7 @@ export default function Inventory() {
 
           {/* Enhanced Inventory Table */}
           {!loading && !error && (
-            <div className="w-full overflow-y-auto h-[calc(100vh-270px)] pb-1">
+            <div className="w-full overflow-y-auto h-[66vh] 3xl:h-[70vh] pb-1">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
