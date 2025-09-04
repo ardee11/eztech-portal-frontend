@@ -254,16 +254,18 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
 
         {/* Main Content */}
         {!selectedCompany ? (
-          filteredCompanyNames.length === 0 || error ? (
+          loading ? (
             <div className="flex flex-col items-center justify-center mt-20 text-center">
-              {!loading && error ? (
-                <>
-                  <p className="text-red-500 text-sm 3xl:text-base font-semibold">Error: {error}</p>
-                  <p className="text-gray-500 text-sm 3xl:text-base mt-2">Contact your IT administrator.</p>
-                </>
-              ) : !loading && !error ? (
-                <p className="text-gray-500 text-sm 3xl:text-base">No companies to show</p>
-              ) : <ClipLoader color="#14b8a6" />}
+              <ClipLoader color="#14b8a6" />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center mt-20 text-center">
+              <p className="text-red-500 text-sm 3xl:text-base font-semibold">Error: {error}</p>
+              <p className="text-gray-500 text-sm 3xl:text-base mt-2">Contact your IT administrator.</p>
+            </div>
+          ) : filteredCompanyNames.length === 0 ? (
+            <div className="flex flex-col items-center justify-center mt-20 text-center">
+              <p className="text-gray-500 text-sm 3xl:text-base">No companies to show</p>
             </div>
           ) : (
             <div ref={companyListRef} className="h-[80%] overflow-y-auto mt-4">
