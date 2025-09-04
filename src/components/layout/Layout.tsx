@@ -32,9 +32,8 @@ export default function Layout() {
       <div className="w-full">
         <div style={{ paddingLeft }}>
           <Header />
+          <Breadcrumb />
         </div>
-
-        <Breadcrumb />
 
         <div style={{ paddingLeft }}>
           <Outlet />
