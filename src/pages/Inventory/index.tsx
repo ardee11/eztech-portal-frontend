@@ -25,18 +25,30 @@ export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
+  const [activeFilterType, setActiveFilterType] = useState<"STATUS" | "YEAR-MONTH" | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
   const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
 
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  //const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
   const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
+
+  const availableMonthsByYear: Record<number, number[]> = monthYearOptions.reduce((acc, { month, year }) => {
+  if (!acc[year]) acc[year] = [];
+  if (!acc[year].includes(month)) acc[year].push(month);
+  acc[year].sort((a, b) => a - b);
+  return acc;
+}, {} as Record<number, number[]>);
+
 
   const canEditInventory = Array.isArray(user?.role)
     ? user.role.some(role => canEditInventoryRoles.includes(role))
@@ -76,12 +88,10 @@ export default function Inventory() {
 
     const filteredItems = inventoryItems
       .filter((item) => {
-        if (debouncedSearchQuery.trim() !== "") {
+      if (debouncedSearchQuery.trim() !== "") {
         const query = debouncedSearchQuery.toLowerCase();
-        //const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
         const serialMatch =
-          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ??
-          false;
+          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ?? false;
         const clientMatch =
           item.client_name?.toLowerCase().includes(query) ?? false;
         return serialMatch || clientMatch;
@@ -93,14 +103,16 @@ export default function Inventory() {
           ? true
           : item.entry_date.getMonth() + 1 === selectedMonthYear?.month;
 
-      if (!matchYear) return false;
-      if (selectedMonthYear?.month) {
-        return matchMonth;
+      if (!matchYear || !matchMonth) return false;
+
+      if (statusFilter && statusFilter !== "All") {
+        return item.item_status === statusFilter;
       }
-      return true;
-    })
+
+    return true;
+  })
     .sort((b, a) => {
-      const dateDiff = b.entry_date.getTime() - a.entry_date.getTime();
+      const dateDiff = a.entry_date.getTime() - b.entry_date.getTime();
       if (dateDiff !== 0) return dateDiff;
       return extractNum(b.item_id || "") - extractNum(a.item_id || "");
     });
@@ -141,25 +153,13 @@ export default function Inventory() {
       itemDelivered,
     });
   };
-
-  const groupByYear = (options: MonthYear[]) => {
-    return options.reduce((acc, { month, year }) => {
-      if (month === null) return acc;
-      if (!acc[year]) acc[year] = [];
-      acc[year].push(month);
-      acc[year].sort((a, b) => a - b);
-      return acc;
-    }, {} as Record<number, number[]>);
-  };
-
-  const [expandedYears, setExpandedYears] = useState<number[]>([]);
   
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
       if (!target.closest('.dropdown-container')) {
-        setIsDropdownOpen(false);
+        setFilterDropdownOpen(false);
       }
     };
 
@@ -203,10 +203,8 @@ export default function Inventory() {
 
   return (
     <div className="w-full mx-auto p-4 relative bg-gray-50">
-
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-
         {/* Total Items Card */}
         <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
@@ -335,10 +333,10 @@ export default function Inventory() {
                 <button
                   id="monthYearSelect"
                   type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
                   className="py-2 px-3 text-xs 3xl:text-sm inline-flex items-center gap-x-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
                   aria-haspopup="menu"
-                  aria-expanded={isDropdownOpen}
+                  aria-expanded={filterDropdownOpen}
                   aria-label="Dropdown"
                 >
                   <div className="flex items-center gap-x-1">
@@ -354,7 +352,7 @@ export default function Inventory() {
                         : "Select Month Year"}
                   </div>
                   <svg
-                    className={`size-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`size-4 transition-transform duration-200 ${filterDropdownOpen ? 'rotate-180' : ''}`}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -367,89 +365,109 @@ export default function Inventory() {
                   </svg>
                 </button>
 
-                {isDropdownOpen && (
-                  <div
-                    className="absolute z-[100] min-w-96 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-4"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="hs-dropdown-default"
-                    style={{ right: 0, left: "auto" }}
-                  >
-                    {/* Mega Menu Years - 6 per column */}
-                    <div className="grid grid-cols-1 gap-8">
-                      {(() => {
-                        // Group years into arrays of 6 for columns
-                        const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
-                        const columns: number[][] = [];
-                        for (let i = 0; i < years.length; i += 6) {
-                          columns.push(years.slice(i, i + 6));
-                        }
-                        return columns.map((colYears, colIdx) => (
-                          <div key={colIdx} className="flex flex-col">
-                            {colYears.map(year => (
-                              <div key={year}>
-                                <button
-                                  type="button"
-                                    onClick={() => {
-                                    if(expandedYears.includes(year)) {
-                                      setExpandedYears([]);
-                                      setSelectedMonthYear({ month: null, year }); 
-                                    } else {
-                                      setExpandedYears([year]);
-                                      setSelectedMonthYear({ month: null, year }); 
-                                    }
-                                  }}
-                                  className={`py-1 px-2 rounded-lg font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer ${year === selectedMonthYear?.year ? "bg-blue-100/70" : ""}`}
-                                >
-                                  {year}
-                                  <svg
-                                    className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-                                  </svg>
-                                </button>
-                                {/* Months grid: only show if this year is expanded */}
-                                {expandedYears.includes(year) && (() => {
-                                  const months = groupByYear(monthYearOptions)[year];
-                                  const monthCount = months.length;
-                                  const isGrid = monthCount >= 4;
-                                  return (
-                                    <div
-                                      className={`${isGrid ? "grid grid-cols-2" : "flex flex-col"} gap-1 mb-2`}
-                                    >
-                                      {months.map((month) => {
-                                        const isSelected =
-                                          selectedMonthYear?.month === month &&
-                                          selectedMonthYear?.year === year;
+                {filterDropdownOpen && (
+                  <div className="absolute right-0 top-full z-[100] mt-2 min-w-[240px] bg-white border border-gray-200 rounded-xl shadow-lg p-4">
+                    <p className="text-sm font-bold text-gray-800 mb-1">Filter Options</p>
+                    <p className="text-xs italic text-gray-700 mb-4">(Choose the field that you want to filter)</p>
 
-                                        return (
-                                          <button
-                                            key={`${year}-${month}`}
-                                            onClick={() => {
-                                              setSelectedMonthYear({ month, year });
-                                              setIsDropdownOpen(false);
-                                            }}
-                                            className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
-                                              isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
-                                            }`}
-                                            role="menuitem"
-                                          >
-                                            {monthYearToLabel(month, year)}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-                            ))}
-                          </div>
-                        ));
-                      })()}
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        className={`flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs ${
+                          selectedFilterTypes.includes("STATUS") ? "bg-blue-50 text-blue-600" : "text-gray-800"
+                        }`}
+                        onClick={() => {
+                          if (selectedFilterTypes.includes("STATUS")) {
+                            setSelectedFilterTypes(prev => prev.filter(type => type !== "STATUS"));
+                          } else {
+                            setSelectedFilterTypes(["STATUS"]);
+                          }
+                          setActiveFilterType("STATUS");
+                        }}
+                      > 
+                        STATUS
+                        <svg className={`size-4 transition-transform duration-200 ${selectedFilterTypes.includes("STATUS") ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                          
+                      {/* Submenu: STATUS */}
+                      {selectedFilterTypes.includes("STATUS") && (
+                        <div className="flex flex-col gap-0 text-xs">
+                          {["All", "Delivered", "Pending"].map((status) => (
+                            <button
+                              key={status}
+                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 ${
+                                statusFilter === status ? "font-bold text-blue-600" : "text-gray-800"
+                              }`}
+                              onClick={() => {
+                                setStatusFilter(status as typeof statusFilter);
+                                setActiveFilterType(null);
+                                setSelectedFilterTypes([]);
+                              }}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      <button 
+                        className={`flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs ${
+                          selectedFilterTypes.includes("YEAR-MONTH") ? "text-blue-600 bg-blue-50" : "text-gray-800"
+                        }`}
+                        onClick={() => {
+                          if (selectedFilterTypes.includes("YEAR-MONTH")) {
+                            setSelectedFilterTypes(prev => prev.filter(type => type !== "YEAR-MONTH"));
+                          } else {
+                            setSelectedFilterTypes(["YEAR-MONTH"]);
+                          }
+                          setActiveFilterType("YEAR-MONTH");
+                        }}
+                      > 
+                        YEAR-MONTH
+                        <svg className={`size-4 transition-transform duration-200 ${selectedFilterTypes.includes("YEAR-MONTH") ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
                     </div>
+                    
+                    {/* Submenu: YEAR-MONTH */}
+                    {selectedFilterTypes.includes("YEAR-MONTH") && (
+                      <div className="flex flex-col gap-2">
+                        {yearOptions.map(year => (
+                          <div key={year}>
+                            <button
+                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 font-bold ${
+                                selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800" 
+                              }`}
+                              onClick={() => setSelectedMonthYear({ month: null, year })}
+                            >
+                              {year}
+                            </button>
+                            {/* Show months if year is selected */}
+                            {selectedMonthYear?.year === year && (
+                              <div className="grid grid-cols-4 gap-1 mt-1 px-2">
+                                {(availableMonthsByYear[year] || []).map(month => (
+                                  <button
+                                    key={month}
+                                    className={`text-xs px-2 py-1 rounded hover:bg-blue-50 mt-3 ${
+                                      selectedMonthYear?.month === month ? "bg-blue-200 text-blue-700 font-bold" : "text-gray-700"
+                                    }`}
+                                    onClick={() => {
+                                      setSelectedMonthYear({ month, year });
+                                      setActiveFilterType(null);
+                                      setSelectedFilterTypes([]);
+                                    }}
+                                  >
+                                    {new Date(year, month - 1).toLocaleString("default", { month: "short" })}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
