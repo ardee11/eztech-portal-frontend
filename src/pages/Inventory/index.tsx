@@ -306,7 +306,7 @@ export default function Inventory() {
                     
                       <div className="flex flex-col gap-2">
                         <button 
-                          className={`flex items-center justify-between px-0 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs ${
+                          className={`flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs ${
                             selectedFilterTypes.includes("STATUS") ? "text-teal-600 bg-teal-50" : "text-blue-600"
                           }`}
                           onClick={() => {
