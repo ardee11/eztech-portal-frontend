@@ -164,26 +164,26 @@ function ItemDetails() {
                     </div>
                   </div>
                   <div className="px-6 py-4 3xl:py-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      <div className="group">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+                      <div className="group lg:col-span-4">
                         <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Model Name</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-normal transition-colors">
                           {item?.item_name ?? "-"}
                         </p>
                       </div>
-                      <div className="group">
+                      <div className="group lg:col-span-2">
                         <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Quantity</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-normal transition-colors">
                           {item?.quantity ?? "-"}
                         </p>
                       </div>
-                      <div className="group">
+                      <div className="group lg:col-span-3">
                         <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Client Name</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-pre-wrap transition-colors">
                           {item?.client_name ?? "-"}
                         </p>
                       </div>
-                      <div className="group">
+                      <div className="group lg:col-span-3">
                         <p className="text-xs 3xl:text-sm font-semibold text-gray-500 uppercase tracking-wide">Distributor</p>
                         <p className="text-sm 3xl:text-base font-medium text-gray-900 mt-1 group-hover:text-blue-600 break-words whitespace-pre-wrap transition-colors">
                           {item?.distributor ?? "-"}
