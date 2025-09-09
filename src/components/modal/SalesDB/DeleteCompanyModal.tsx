@@ -55,7 +55,7 @@ export default function DeleteCompanyModal({ companyName, isOpen, companyId, onC
               Are you sure you want to remove the company details for <span className="font-semibold">{companyName}</span>?
             </p>
             <p className="text-xs 3xl:text-sm text-red-600 mt-4 italic">
-              This action cannot be undone. All associated serial numbers will also be deleted.
+              This action would be recorded in the system logs and cannot be undone.
             </p>
           </div>
         </div>
