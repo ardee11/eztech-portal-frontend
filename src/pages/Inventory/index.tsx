@@ -38,6 +38,11 @@ export default function Inventory() {
   const [deleteItemName, setDeleteItemName] = useState<string>("");
   const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
 
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
+  const [activeFilterType, setActiveFilterType] = useState<"STATUS" | "YEAR-MONTH" | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
+
   const canEditInventory = Array.isArray(user?.role)
     ? user.role.some(role => canEditInventoryRoles.includes(role))
     : canEditInventoryRoles.includes(user?.role || "");
@@ -85,6 +90,10 @@ export default function Inventory() {
         const clientMatch =
           item.client_name?.toLowerCase().includes(query) ?? false;
         return serialMatch || clientMatch;
+      }
+
+      if (statusFilter !=="All" && item.item_status !== statusFilter) {
+        return false;
       }
 
       const matchYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
@@ -330,126 +339,128 @@ export default function Inventory() {
                 )}
               </div>
               
-              {/* Filter Dropdown */}
-              <div className="relative dropdown-container">
+             {/* Filter Dropdown */}
+              <div className="relative dropdown-container inline-block ml-2">
                 <button
-                  id="monthYearSelect"
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="py-2 px-3 text-xs 3xl:text-sm inline-flex items-center gap-x-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
-                  aria-haspopup="menu"
-                  aria-expanded={isDropdownOpen}
-                  aria-label="Dropdown"
+                  onClick={() => setFilterDropdownOpen((open) => !open)}
+                  className="flex items-center justify-between w-60 px-2 py-1 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-700 text-sm font-semibold hover:bg-blue-50 hover:cursor-pointer transition-all duration-200 h-10"
                 >
-                  <div className="flex items-center gap-x-1">
-                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
-                    </svg>
-                    {isSearching
-                      ? "By Search"
-                      : selectedMonthYear
-                        ? selectedMonthYear.month === null
-                          ? `${selectedMonthYear.year}`
-                          : monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                        : "Select Month Year"}
-                  </div>
-                  <svg
-                    className={`size-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m6 9 6 6 6-6" />
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+</svg>
+                    <span className="font-semibold text-gray-700">Filter Options</span>
+                  </span>
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
+                {filterDropdownOpen && (
+                  <div className="absolute left-0 top-full z-[100] mt-2 min-w-[240px] bg-white border border-gray-200 rounded-xl shadow-lg p-4">
+                    <p className="text-sm font-bold text-gray-800 mb-1">Filter Options</p>
+                    <p className="text-xs text-gray-700 mb-4">(Choose the field that you want to filter)</p>
+                    
+                    {/* Main menu: STATUS and YEAR-MONTH */}
+                    
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          className={`flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer ${
+                            selectedFilterTypes.includes("STATUS") ? "text-teal-600 bg-teal-50" : "text-blue-600"
+                          }`}
+                          onClick={() => {
+                            if (selectedFilterTypes.includes("STATUS")) {
+                              setSelectedFilterTypes(prev => prev.filter(type => type !== "STATUS"));
+                            } else {
+                              setSelectedFilterTypes(prev => [...prev, "STATUS"]);
+                            }
+                            setActiveFilterType("STATUS");
+                          }
+                          }
+                          > STATUS
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          
+                          {/* Submenu: STATUS */}
+                    {selectedFilterTypes.includes("STATUS") && (
+                      <div className="flex flex-col gap-0 text-xs">
+                        {["All", "Delivered", "Pending"].map((status) => (
+                          <button
+                            key={status}
+                            className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 hover:cursor-pointer ${
+                              statusFilter === status ? "font-bold text-blue-600" : "text-gray-800"
+                            }`}
+                            onClick={() => {
+                              setStatusFilter(status as typeof statusFilter);
+                              setFilterDropdownOpen(false);
+                              setActiveFilterType(null);
+                              setSelectedFilterTypes([]);
+                            }}
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    )}
 
-                {isDropdownOpen && (
-                  <div
-                    className="absolute z-[100] min-w-96 bg-white shadow-lg border border-gray-200 rounded-lg mt-2 p-4"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="hs-dropdown-default"
-                    style={{ right: 0, left: "auto" }}
-                  >
-                    {/* Mega Menu Years - 6 per column */}
-                    <div className="grid grid-cols-1 gap-8">
-                      {(() => {
-                        // Group years into arrays of 6 for columns
-                        const years = Object.keys(groupByYear(monthYearOptions)).map(Number).sort((a, b) => b - a);
-                        const columns: number[][] = [];
-                        for (let i = 0; i < years.length; i += 6) {
-                          columns.push(years.slice(i, i + 6));
-                        }
-                        return columns.map((colYears, colIdx) => (
-                          <div key={colIdx} className="flex flex-col">
-                            {colYears.map(year => (
-                              <div key={year}>
-                                <button
-                                  type="button"
+                        <button 
+                          className={`flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 hover:cursor-pointer font-bold text-xs ${
+                            selectedFilterTypes.includes("YEAR-MONTH") ? "text-teal-600 bg-teal-50" : "text-blue-600"
+                          }`}
+                          onClick={() => {
+                            if (selectedFilterTypes.includes("YEAR-MONTH")) {
+                              setSelectedFilterTypes(prev => prev.filter(type => type !== "YEAR-MONTH"));
+                            } else {
+                              setSelectedFilterTypes(prev => [...prev, "YEAR-MONTH"]);
+                            }
+                            setActiveFilterType("YEAR-MONTH");
+                          }}
+                          > YEAR-MONTH
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                      </div>
+                    
+                    {/* Submenu: YEAR-MONTH */}
+                    {selectedFilterTypes.includes("YEAR-MONTH") && (
+                      <div className="flex flex-col gap-2">
+                        {yearOptions.map(year => (
+                          <div key={year}>
+                            <button
+                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 hover:cursor-pointer font-bold ${
+                                selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800" 
+                              }`}
+                              onClick={() => setSelectedMonthYear({ month: null, year })}
+                            >
+                              {year}
+                            </button>
+                            {/* Show months if year is selected */}
+                            {selectedMonthYear?.year === year && (
+                              <div className="grid grid-cols-4 gap-1 mt-1 px-2">
+                                {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                                  <button
+                                    key={month}
+                                    className={`text-xs px-2 py-1 rounded hover:bg-blue-50 hover:cursor-pointer mt-3 ${
+                                      selectedMonthYear?.month === month ? "bg-blue-200 text-blue-700 font-bold w-10 h-8" : "text-gray-700"
+                                    }`}
                                     onClick={() => {
-                                    if(expandedYears.includes(year)) {
-                                      setExpandedYears([]);
-                                      setSelectedMonthYear({ month: null, year }); 
-                                    } else {
-                                      setExpandedYears([year]);
-                                      setSelectedMonthYear({ month: null, year }); 
-                                    }
-                                  }}
-                                  className={`py-1 px-2 rounded-lg font-bold text-blue-700 mb-2 flex items-center justify-between w-full hover:cursor-pointer ${year === selectedMonthYear?.year ? "bg-blue-100/70" : ""}`}
-                                >
-                                  {year}
-                                  <svg
-                                    className={`w-4 h-4 transition-transform ${expandedYears.includes(year) ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+                                      setSelectedMonthYear({ month, year });
+                                      setFilterDropdownOpen(false);
+                                      setActiveFilterType(null);
+                                      setSelectedFilterTypes([]);
+                                    }}
                                   >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
-                                  </svg>
-                                </button>
-                                {/* Months grid: only show if this year is expanded */}
-                                {expandedYears.includes(year) && (() => {
-                                  const months = groupByYear(monthYearOptions)[year];
-                                  const monthCount = months.length;
-                                  const isGrid = monthCount >= 4;
-                                  return (
-                                    <div
-                                      className={`${isGrid ? "grid grid-cols-2" : "flex flex-col"} gap-1 mb-2`}
-                                    >
-                                      {months.map((month) => {
-                                        const isSelected =
-                                          selectedMonthYear?.month === month &&
-                                          selectedMonthYear?.year === year;
-
-                                        return (
-                                          <button
-                                            key={`${year}-${month}`}
-                                            onClick={() => {
-                                              setSelectedMonthYear({ month, year });
-                                              setIsDropdownOpen(false);
-                                            }}
-                                            className={`block text-left text-xs text-gray-700 px-3 py-2 hover:bg-gray-100 hover:cursor-pointer rounded-md transition-colors ${
-                                              isSelected ? "bg-blue-100 text-blue-800 font-semibold" : ""
-                                            }`}
-                                            role="menuitem"
-                                          >
-                                            {monthYearToLabel(month, year)}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  );
-                                })()}
+                                    {new Date(year, month - 1).toLocaleString("default", { month: "short" })}
+                                  </button>
+                                ))}
                               </div>
-                            ))}
+                            )}
                           </div>
-                        ));
-                      })()}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -458,10 +469,10 @@ export default function Inventory() {
               <div>
                 <button
                   onClick={() => navigate("/inventory/add")}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200 text-xs 3xl:text-sm flex items-center hover:cursor-pointer"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition-colors duration-200 text-xs 3xl:text-sm flex items-center hover:cursor-pointer"
                 >
                   <svg className="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d  ="M12 4v16m8-8H4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d  ="M12 4v16m8-8H4" />
                   </svg>
                   Add Item
                 </button>
