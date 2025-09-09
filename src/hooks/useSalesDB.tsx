@@ -153,12 +153,16 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     });
 
     if (response.status === 409) {
-      throw new Error("This company already exists in the database.");
+      const error = new Error("This company already exists in the database.");
+      (error as any).status = 409;
+      throw error;
     }
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error || "Failed to add company details.");
+      const error = new Error(errorData.error || "Failed to add company details.");
+      (error as any).status = response.status;
+      throw error;
     }
   }
 
