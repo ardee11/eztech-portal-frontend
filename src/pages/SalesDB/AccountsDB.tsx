@@ -69,7 +69,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
   };
 
   const canDeleteData = () => {
-    return hasAccess;
+    return hasAccess || selectedCompany.acc_manager === userName;
   };
 
   const getRemarkColorClass = (remark: string) => {
@@ -209,7 +209,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
             {!selectedCompany && (
               <button
                 onClick={() => setIsAddCompanyModalOpen(true)}
-                className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-800 bg-teal-200 hover:cursor-pointer hover:bg-teal-300 transition"
+                className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-700 bg-teal-300 hover:cursor-pointer hover:bg-teal-400 transition"
               >
                 <svg
                   className="shrink-0 size-3.5 3xl:size-4"
@@ -217,6 +217,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  strokeWidth="3"
                 >
                   <path d="M12 5v14M5 12h14" />
                 </svg>
