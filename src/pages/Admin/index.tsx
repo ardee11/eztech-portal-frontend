@@ -42,7 +42,7 @@ export default function Admin() {
                 
                 <div>
                   <button 
-                    className="py-2 px-3 inline-flex items-center gap-x-2 text-xs 3xl:text-sm font-medium rounded-lg text-white bg-teal-600 shadow-2xs hover:bg-teal-400 hover:cursor-pointer transition"
+                    className="py-2 px-3 inline-flex items-center gap-x-2 text-xs 3xl:text-sm font-medium rounded-lg text-white bg-teal-500 shadow-2xs hover:bg-teal-600 hover:cursor-pointer transition"
                     onClick={()=>setIsAddCompanyModalOpen(true)}
                   >
                     <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>

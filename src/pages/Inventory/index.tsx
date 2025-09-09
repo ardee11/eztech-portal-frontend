@@ -25,24 +25,21 @@ export default function Inventory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
+  const [activeFilterType, setActiveFilterType] = useState<"STATUS" | "YEAR-MONTH" | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
   const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
 
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
   const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
-
-  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
-  const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
-  const [activeFilterType, setActiveFilterType] = useState<"STATUS" | "YEAR-MONTH" | null>(null);
-  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
-
   const canEditInventory = Array.isArray(user?.role)
     ? user.role.some(role => canEditInventoryRoles.includes(role))
     : canEditInventoryRoles.includes(user?.role || "");
@@ -68,7 +65,7 @@ export default function Inventory() {
     setIsDeleteModalOpen(true);
     setContextMenu(prev => ({ ...prev, visible: false }));
   };
- 
+  
   useEffect(() => {
     if (yearOptions.length > 0) {
       setSelectedMonthYear({ month: null, year: yearOptions[0] }); 
@@ -81,12 +78,10 @@ export default function Inventory() {
 
     const filteredItems = inventoryItems
       .filter((item) => {
-        if (debouncedSearchQuery.trim() !== "") {
+      if (debouncedSearchQuery.trim() !== "") {
         const query = debouncedSearchQuery.toLowerCase();
-        //const idMatch = item.item_id?.toLowerCase().includes(query) ?? false;
         const serialMatch =
-          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ??
-          false;
+          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ?? false;
         const clientMatch =
           item.client_name?.toLowerCase().includes(query) ?? false;
         return serialMatch || clientMatch;
@@ -102,14 +97,16 @@ export default function Inventory() {
           ? true
           : item.entry_date.getMonth() + 1 === selectedMonthYear?.month;
 
-      if (!matchYear) return false;
-      if (selectedMonthYear?.month) {
-        return matchMonth;
+      if (!matchYear || !matchMonth) return false;
+
+      if (statusFilter && statusFilter !== "All") {
+        return item.item_status === statusFilter;
       }
-      return true;
-    })
+
+    return true;
+  })
     .sort((b, a) => {
-      const dateDiff = b.entry_date.getTime() - a.entry_date.getTime();
+      const dateDiff = a.entry_date.getTime() - b.entry_date.getTime();
       if (dateDiff !== 0) return dateDiff;
       return extractNum(b.item_id || "") - extractNum(a.item_id || "");
     });
@@ -150,25 +147,13 @@ export default function Inventory() {
       itemDelivered,
     });
   };
-
-  const groupByYear = (options: MonthYear[]) => {
-    return options.reduce((acc, { month, year }) => {
-      if (month === null) return acc;
-      if (!acc[year]) acc[year] = [];
-      acc[year].push(month);
-      acc[year].sort((a, b) => a - b);
-      return acc;
-    }, {} as Record<number, number[]>);
-  };
-
-  const [expandedYears, setExpandedYears] = useState<number[]>([]);
   
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
       if (!target.closest('.dropdown-container')) {
-        setIsDropdownOpen(false);
+        setFilterDropdownOpen(false);
       }
     };
 
@@ -209,15 +194,24 @@ export default function Inventory() {
       }
     }
   }, [inventoryItems, selectedMonthYear]);
+  
+  // New function to reset only the status filter
+  const resetStatusFilter = () => {
+    setStatusFilter("All");
+  };
+
+  // New function to reset only the year-month filter
+  const resetMonthYearFilter = () => {
+    setSelectedMonthYear(yearOptions.length > 0 ? { month: null, year: yearOptions[0] } : null);
+  };
+
 
   return (
-    <div className="w-full mx-auto p-4 relative bg-gray-50">
-
+    <div className="w-full mx-auto px-4 py-3 relative bg-gray-50">
       {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-
         {/* Total Items Card */}
-        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +230,7 @@ export default function Inventory() {
         </div>
 
         {/* Delivered Items Card */}
-        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +248,7 @@ export default function Inventory() {
         </div>
 
         {/* For Delivery Items Card */}
-        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,7 +266,7 @@ export default function Inventory() {
         </div>
 
         {/* Pending Items Card */}
-        <div className="p-4 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

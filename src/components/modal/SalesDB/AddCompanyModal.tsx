@@ -74,8 +74,12 @@ export default function AddCompanyModal({ isOpen, onSuccess, onClose }: Props) {
       await addCompany(companyData);
       showToast("Company details added successfully!", "success");
       if (onSuccess) onSuccess();
-    } catch (error) {
-      showToast("There was an error added company details. Please try again.", "error");
+    } catch (error: any) {
+      if (error.status === 409) {
+        showToast(error.message, "error");
+      } else {
+        showToast("There was an error adding company details. Please try again.", "error");
+      }
     } finally {
       handleClose();
       setLoadingSubmit(false);
