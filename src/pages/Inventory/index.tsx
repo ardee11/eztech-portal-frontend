@@ -344,21 +344,23 @@ export default function Inventory() {
                     <p className="text-xs italic text-gray-700 mb-4">(Choose the field that you want to filter)</p>
 
                     <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer">
-                        <button
+                      <div 
+                        className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer"
+                        onClick={() => {
+                          if (selectedFilterTypes.includes("STATUS")) {
+                            setSelectedFilterTypes(prev => prev.filter(type => type !== "STATUS"));
+                          } else {
+                            setSelectedFilterTypes(["STATUS"]);
+                          }
+                        }}
+                      >
+                        <p
                           className={`flex-1 text-left hover:cursor-pointer ${
                             selectedFilterTypes.includes("STATUS") ? "text-blue-600" : "text-gray-800"
                           }`}
-                          onClick={() => {
-                            if (selectedFilterTypes.includes("STATUS")) {
-                              setSelectedFilterTypes(prev => prev.filter(type => type !== "STATUS"));
-                            } else {
-                              setSelectedFilterTypes(["STATUS"]);
-                            }
-                          }}
                         >
                           Status
-                        </button>
+                        </p>
                         {statusFilter !== "All" && (
                           <button
                             onClick={(e) => {
@@ -394,21 +396,23 @@ export default function Inventory() {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer">
-                        <button
+                      <div 
+                        className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer"
+                        onClick={() => {
+                          if (selectedFilterTypes.includes("YEAR-MONTH")) {
+                            setSelectedFilterTypes(prev => prev.filter(type => type !== "YEAR-MONTH"));
+                          } else {
+                            setSelectedFilterTypes(["YEAR-MONTH"]);
+                          }
+                        }}
+                      >
+                        <p
                           className={`flex-1 text-left hover:cursor-pointer ${
                             selectedFilterTypes.includes("YEAR-MONTH") ? "text-blue-600" : "text-gray-800"
                           }`}
-                          onClick={() => {
-                            if (selectedFilterTypes.includes("YEAR-MONTH")) {
-                              setSelectedFilterTypes(prev => prev.filter(type => type !== "YEAR-MONTH"));
-                            } else {
-                              setSelectedFilterTypes(["YEAR-MONTH"]);
-                            }
-                          }}
                         >
                           Year-Month
-                        </button>
+                        </p>
                         {selectedMonthYear?.year !== (yearOptions.length > 0 ? yearOptions[0] : null) || selectedMonthYear?.month !== null ? (
                           <button
                             onClick={(e) => {
