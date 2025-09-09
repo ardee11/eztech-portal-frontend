@@ -15,7 +15,7 @@ export interface Item {
   item_status: string;
   notes: string | null;
   created_at: Date;
-  created_by: string | null; //to be not nulled
+  created_by: string | null;
   order_no: string | null;
   serialnumbers: SerialNumber[];
 }
@@ -32,19 +32,54 @@ export interface Supplier {
   name: string;
 }
 
-export function useInventory() {
+export interface YearlyStatusCounts {
+  total: number;
+  delivered: number;
+  forDelivery: number;
+  pending: number;
+}
+
+// Main hook for fetching a filtered/searchable list of inventory items
+export function useInventory(
+  searchQuery: string,
+  statusFilter: "All" | "Delivered" | "Pending",
+  selectedMonthYear: { month: number | null; year: number } | null
+) {
   const [inventoryItems, setInventoryItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
-  const fetchAllItems = async (isMounted: boolean, token: string) => {
+  const stateRef = useRef({ searchQuery, statusFilter, selectedMonthYear });
+  stateRef.current = { searchQuery, statusFilter, selectedMonthYear };
+
+  // New state for the yearly status counts (for the top cards)
+  const [yearlyStatusCounts, setYearlyStatusCounts] = useState<YearlyStatusCounts>({
+    total: 0,
+    delivered: 0,
+    forDelivery: 0,
+    pending: 0,
+  });
+
+  const fetchFilteredItems = async (isMounted: boolean, token: string, params: URLSearchParams) => {
     try {
-      const response = await fetch(`/api/inventory/all`, {
-          headers: { Authorization: `Bearer ${token}` },
+      const response = await fetch(`/api/inventory/all?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch filtered inventory data.");
+      }
+
       const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.error("API did not return an array:", data);
+        throw new TypeError("Unexpected data format from server for filtered items.");
+      }
+
       const parsed = data.map((item: any) => ({
         ...item,
         entry_date: new Date(item.entry_date),
@@ -53,20 +88,53 @@ export function useInventory() {
       }));
 
       if (isMounted) {
-        setInventoryItems(parsed); // Update the single state variable
+        setInventoryItems(parsed);
         setLoading(false);
         setError(null);
       }
-
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch inventory:", err);
       if (isMounted) {
-        setError("Failed to load inventory.");
+        setError(err.message || "Failed to load inventory.");
         setLoading(false);
       }
     }
-  }
+  };
+  
+  // New function to fetch all yearly status counts in one go
+  const fetchAllYearlyStatusCounts = async (year: number) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
+    try {
+        const response = await fetch(`/api/inventory/yearly-status-counts?year=${year}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to fetch yearly status totals.");
+        }
+
+        const data = await response.json();
+
+        setYearlyStatusCounts({
+            total: data.total || 0,
+            delivered: data["Delivered"] || 0,
+            forDelivery: data["For Delivery"] || 0,
+            pending: data["Pending"] || 0,
+        });
+
+        // The console.log here would show the *old* state due to closure.
+        // To see the new state, you would need to log it outside this function, 
+        // e.g., in a useEffect hook that depends on yearlyStatusCounts.
+    } catch (err: any) {
+      console.error("Failed to fetch yearly status totals:", err);
+      setYearlyStatusCounts({ total: 0, delivered: 0, forDelivery: 0, pending: 0 });
+    }
+  };
+
+  // useEffect for fetching filtered items (for the table)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -74,33 +142,56 @@ export function useInventory() {
       setLoading(false);
       return;
     }
+    let isMounted = true;
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('q', searchQuery);
+    if (statusFilter !== 'All') params.append('status', statusFilter);
+    if (selectedMonthYear?.year) params.append('year', selectedMonthYear.year.toString());
+    if (selectedMonthYear?.month) params.append('month', selectedMonthYear.month.toString());
+
+    fetchFilteredItems(isMounted, token, params);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchQuery, statusFilter, selectedMonthYear]);
+
+  // New useEffect that runs only when the selected year changes (for the top cards)
+  useEffect(() => {
+    if (selectedMonthYear?.year) {
+      fetchAllYearlyStatusCounts(selectedMonthYear.year);
+    }
+  }, [selectedMonthYear?.year]);
+
+  // useEffect for WebSocket updates
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
     let isMounted = true;
-    fetchAllItems(isMounted, token);
-
     const socket = new WebSocket(`ws://${window.location.host}/ws/inventory?token=${token}`);
     ws.current = socket;
 
     socket.onopen = () => {
-      if (!isMounted) {
-        socket.close();
-        return;
+      if (isMounted) {
+        setConnected(true);
       }
-        //console.log("Inventory WebSocket connected");
-      setConnected(true);
     };
 
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        if (message.type === 'inventory_update' && Array.isArray(message.data)) {
-          const parsed = message.data.map((item: any) => ({
-          ...item,
-          entry_date: new Date(item.entry_date),
-          delivery_date: item.delivery_date ? new Date(item.delivery_date) : null,
-          created_at: new Date(item.created_at),
-        }));
-          setInventoryItems(parsed); // Update the single source of truth
+        if (message.type === 'inventory_update') {
+          const params = new URLSearchParams();
+          if (stateRef.current.searchQuery) params.append('q', stateRef.current.searchQuery);
+          if (stateRef.current.statusFilter !== 'All') params.append('status', stateRef.current.statusFilter);
+          if (stateRef.current.selectedMonthYear?.year) params.append('year', stateRef.current.selectedMonthYear.year.toString());
+          if (stateRef.current.selectedMonthYear?.month) params.append('month', stateRef.current.selectedMonthYear.month.toString());
+
+          fetchFilteredItems(isMounted, token, params);
+          if (stateRef.current.selectedMonthYear?.year) {
+            fetchAllYearlyStatusCounts(stateRef.current.selectedMonthYear.year);
+          }
         } else {
           console.warn("Unhandled WebSocket message:", message);
         }
@@ -123,11 +214,12 @@ export function useInventory() {
         ws.current.close();
       }
     };
-  }, []); 
+  }, []);
 
-  return { inventoryItems, loading, error, connected };
+  return { inventoryItems, loading, error, connected, yearlyStatusCounts };
 }
 
+// Hook for adding a new inventory item
 export function useAddInventory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,6 +254,7 @@ export function useAddInventory() {
       }
     } catch (err: any) {
       console.error("Add inventory error:", err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -170,6 +263,7 @@ export function useAddInventory() {
   return { addInventory, loading, error, success };
 }
 
+// Hook for fetching a single item's details
 export function useItemDetails(itemId: string | null) {
   const [item, setItem] = useState<Item | null>(null);
   const [loading, setLoading] = useState(true);
@@ -183,24 +277,11 @@ export function useItemDetails(itemId: string | null) {
       if (!res.ok) throw new Error("Failed to fetch item");
 
       const data = await res.json();
-
       setItem({
-        item_id: data.item_id,
-        item_name: data.item_name,
-        quantity: data.quantity,
-        distributor: data.distributor,
-        client_name: data.client_name,
+        ...data,
         entry_date: new Date(data.entry_date),
-        checked_by: data.checked_by,
-        received_by: data.received_by,
-        delivered: data.delivered,
         delivery_date: data.delivery_date ? new Date(data.delivery_date) : null,
-        delivered_by: data.delivered_by,
-        item_status: data.item_status,
-        notes: data.notes,
         created_at: new Date(data.created_at),
-        created_by: data.created_by,
-        order_no: data.order_no,
         serialnumbers: data.serialnumbers ?? [],
       });
     } catch (err) {
@@ -218,6 +299,7 @@ export function useItemDetails(itemId: string | null) {
   return { item, loading, error, refetch: fetchItem };
 }
 
+// Hook for updating an inventory item
 export function useUpdateInventory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -262,6 +344,7 @@ export function useUpdateInventory() {
   return { updateInventory, loading, error, success };
 }
 
+// Hook for deleting an inventory item
 export function useDeleteInventory() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -300,6 +383,7 @@ export function useDeleteInventory() {
   return { deleteInventory, loading, error, success };
 }
 
+// Hook for fetching suppliers
 export function useSuppliers() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

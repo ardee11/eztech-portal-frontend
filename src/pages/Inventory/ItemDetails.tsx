@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { formatTimestampToFullDate } from "../../utils/DateFormat";
-import { Item, useItemDetails } from "../../hooks/useInventory";
+import { Item, useItemDetails } from "../../hooks/useInventory"; // This import is now valid again.
 
 import ItemDetailsModal from "../../components/modal/Inventory/EditItemDetails";
 import ItemNotesModal from "../../components/modal/Inventory/EditItemNotes";
@@ -15,7 +15,10 @@ import EditModal from "../../components/modal/Inventory/EditDetails";
 function ItemDetails() {
   const { user } = useAuth();
   const { itemId } = useParams<{ itemId: string }>();
+  
+  // Use the restored hook to fetch the specific item's details.
   const { item: fetchedItem, loading, error, refetch } = useItemDetails(itemId!);
+  
   const navigate = useNavigate();
 
   const [item, setItem] = useState<Item | null>(null);
@@ -33,7 +36,7 @@ function ItemDetails() {
 
   const handleItemUpdate = (updatedFields: Partial<Item>) => {
     setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
-    refetch();
+    refetch(); // Call refetch to get the latest data from the server
   };
 
   useEffect(() => {
@@ -126,7 +129,7 @@ function ItemDetails() {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to Load</h3>
             <p className="text-red-600 text-center mb-4">Unable to load item details. Please try again later.</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
             >
@@ -283,7 +286,7 @@ function ItemDetails() {
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <button 
+                                <button
                                   className="p-2 hover:bg-blue-100 rounded-lg transition-colors duration-200 group hover:cursor-pointer"
                                   //onClick={}
                                 >
@@ -360,7 +363,7 @@ function ItemDetails() {
                       {/* Action Buttons */}
                       <div className="flex items-center space-x-2 3xl:space-x-3">
                         {!item?.delivered && item?.item_status === "For Delivery" && canEditInventory && (
-                          <button 
+                          <button
                             onClick={() => setIsMarkDeliveredModalOpen(true)}
                             className="inline-flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 hover:cursor-pointer text-white text-xs font-semibold rounded-full transition-colors duration-200"
                           >
@@ -392,8 +395,8 @@ function ItemDetails() {
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-xs 3xl:text-sm font-semibold text-gray-700">Current Status</h3>
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                          item?.item_status === "Delivered" 
-                            ? "bg-green-100 text-green-800" 
+                          item?.item_status === "Delivered"
+                            ? "bg-green-100 text-green-800"
                             : item?.item_status === "For Delivery"
                             ? "bg-blue-100 text-blue-800"
                             : "bg-amber-100 text-amber-800"
@@ -443,7 +446,7 @@ function ItemDetails() {
                                 ? item.delivered_by.join(", ")
                                 : "Not specified"}
                             </span>
-                          </p> 
+                          </p>
                         </div>
                       )}
 
@@ -470,38 +473,12 @@ function ItemDetails() {
                       )}
                     </div>
 
-                    {/* Status Summary */}
-                    <div className="space-y-4 mb-4">
-                      {/* Checked Stage */}
-                      {item?.checked_by && item?.received_by && (
-                        <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-md 3xl:text-lg font-bold text-gray-900">Checked</h3>
-                            <span className="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                              ✓ Complete
-                            </span>
-                          </div>
-                          <p className="text-xs 3xl:text-sm text-gray-600 mb-1">
-                            <span className="font-medium">Date:</span> {formatTimestampToFullDate(item.entry_date)}
-                          </p>
-                          <p className="text-xs 3xl:text-sm text-gray-600">
-                            <span className="font-medium">Checked By:{" "}</span> 
-                            <span className="text-blue-600 font-semibold">
-                              {item.checked_by && item.checked_by.length > 0
-                                ? item.checked_by.join(", ")
-                                : "Not Specified"}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
                     {/* Status Timeline */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-semibold text-gray-700">Status Timeline</h3>
                         {canEditInventory && (
-                        <button 
+                        <button
                           onClick={() => setIsStatusModalOpen(true)}
                           className="text-xs rounded-full border px-4 py-1 text-blue-600 hover:bg-blue-100/50 hover:cursor-pointer transition-colors"
                         >
@@ -522,12 +499,12 @@ function ItemDetails() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-semibold text-gray-800">Received 
+                              <h4 className="text-sm font-semibold text-gray-800">Received
                                 <span className="ml-1.5 text-gray-600 font-normal text-xs 3xl:text-sm">
                                   ({formatTimestampToFullDate(item.entry_date)})
                                 </span>
                               </h4>
-                              <p className="text-xs text-gray-600">By{" "} 
+                              <p className="text-xs text-gray-600">By{" "}
                                 <span className="text-blue-600">
                                   {item.received_by && item.received_by.length > 0
                                     ? item.received_by.join(", ")
@@ -623,30 +600,30 @@ function ItemDetails() {
       </div>
 
       {/* Modals */}
-      <EditModal 
-        isEditModalOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+      <EditModal
+        isEditModalOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         item={item}
         onUpdate={handleItemUpdate}
       />
 
-      <ItemDetailsModal 
-        isItemModalOpen={isItemModalOpen} 
-        onClose={() => setIsItemModalOpen(false)} 
+      <ItemDetailsModal
+        isItemModalOpen={isItemModalOpen}
+        onClose={() => setIsItemModalOpen(false)}
         item={item}
         onUpdate={handleItemUpdate}
       />
 
-      <ItemNotesModal 
-        isNoteModalOpen={isNoteModalOpen} 
-        onClose={() => setIsNoteModalOpen(false)} 
+      <ItemNotesModal
+        isNoteModalOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
         item={item}
         onUpdate={handleItemUpdate}
       />
 
-      <ItemStatusModal 
-        isStatusModalOpen={isStatusModalOpen} 
-        onClose={() => setIsStatusModalOpen(false)} 
+      <ItemStatusModal
+        isStatusModalOpen={isStatusModalOpen}
+        onClose={() => setIsStatusModalOpen(false)}
         item={item}
         onUpdate={handleItemUpdate}
       />

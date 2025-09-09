@@ -1,6 +1,8 @@
+// Inventory.jsx
+
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
-import { useInventory } from "../../hooks/useInventory";
+import { useInventory } from "../../hooks/useInventory"; 
 import { formatTimestampToFullDate } from "../../utils/DateFormat";
 import { useNavigate } from "react-router-dom";
 import { useInventoryFilterOptions } from "../../hooks/useInventoryFilterOptions";
@@ -14,7 +16,7 @@ import { useAuth } from "../../contexts/authContext";
 type MonthYear = { month: number | null; year: number };
 
 function monthYearToLabel(month: number, year: number): string {
-  const date = new Date(year, month - 1); 
+  const date = new Date(year, month - 1);
   return date.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
@@ -27,7 +29,6 @@ export default function Inventory() {
   const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
-  const [activeFilterType, setActiveFilterType] = useState<"STATUS" | "YEAR-MONTH" | null>(null);
   const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
 
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
@@ -48,7 +49,6 @@ export default function Inventory() {
     return acc;
   }, {} as Record<number, number[]>);
 
-
   const canEditInventory = Array.isArray(user?.role)
     ? user.role.some(role => canEditInventoryRoles.includes(role))
     : canEditInventoryRoles.includes(user?.role || "");
@@ -67,66 +67,35 @@ export default function Inventory() {
 
   const openDeleteModal = (itemId: string | null) => {
     if (itemId) {
-      const item = filteredItems.find(item => item.item_id === itemId);
+      const item = inventoryItems.find(item => item.item_id === itemId);
       setDeleteItemName(item?.item_name || "");
     }
     setDeleteItemId(itemId);
     setIsDeleteModalOpen(true);
     setContextMenu(prev => ({ ...prev, visible: false }));
   };
-  
+
   useEffect(() => {
     if (yearOptions.length > 0) {
-      setSelectedMonthYear({ month: null, year: yearOptions[0] }); 
+      setSelectedMonthYear({ month: null, year: yearOptions[0] });
     }
   }, [yearOptions]);
-  
-  const { inventoryItems, loading, error } = useInventory();
-    const isSearching = searchQuery.trim().length >= 3;
-    const extractNum = (id: string) => parseInt(id.match(/\d+/)?.[0] || "0", 10);
 
-    const filteredItems = inventoryItems
-      .filter((item) => {
-      if (debouncedSearchQuery.trim() !== "") {
-        const query = debouncedSearchQuery.toLowerCase();
-        const serialMatch =
-          item.serialnumbers?.some((sn) => sn.id.toLowerCase().includes(query)) ?? false;
-        const clientMatch =
-          item.client_name?.toLowerCase().includes(query) ?? false;
-        return serialMatch || clientMatch;
-      }
+  const { inventoryItems, loading, error, yearlyStatusCounts } = useInventory(debouncedSearchQuery, statusFilter, selectedMonthYear);
+  const isSearching = debouncedSearchQuery.trim().length >= 3;
 
-      const matchYear = item.entry_date.getFullYear() === selectedMonthYear?.year;
-      const matchMonth =
-        selectedMonthYear?.month === null
-          ? true
-          : item.entry_date.getMonth() + 1 === selectedMonthYear?.month;
-
-      if (!matchYear || !matchMonth) return false;
-
-      if (statusFilter && statusFilter !== "All") {
-        return item.item_status === statusFilter;
-      }
-
-    return true;
-  })
-    .sort((b, a) => {
-      const dateDiff = a.entry_date.getTime() - b.entry_date.getTime();
-      if (dateDiff !== 0) return dateDiff;
-      return extractNum(b.item_id || "") - extractNum(a.item_id || "");
-    });
-
+  // Debounce search query
   useEffect(() => {
     if (searchQuery.trim().length >= 3) {
       const timer = setTimeout(() => {
-          setDebouncedSearchQuery(searchQuery);
+        setDebouncedSearchQuery(searchQuery);
       }, 500);
       return () => clearTimeout(timer);
     } else {
       setDebouncedSearchQuery("");
     }
   }, [searchQuery]);
-    
+
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -152,7 +121,7 @@ export default function Inventory() {
       itemDelivered,
     });
   };
-  
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -161,7 +130,6 @@ export default function Inventory() {
         setFilterDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -169,47 +137,42 @@ export default function Inventory() {
   }, []);
 
   const [monthlyCount, setMonthlyCount] = useState(0);
-  const [yearlyCount, setYearlyCount] = useState({
+  const [filteredItemCount, setFilteredItemCount] = useState({
     total: 0,
     delivered: 0,
     forDelivery: 0,
     pending: 0,
   });
-  
-  useEffect(() => {
-    if (selectedMonthYear?.year) {
-      const yearItems = inventoryItems.filter(item => item.entry_date.getFullYear() === selectedMonthYear.year);
-      
-      const deliveredCount = yearItems.filter(item => item.item_status === "Delivered").length;
-      const forDeliveryCount = yearItems.filter(item => item.item_status === "For Delivery").length;
-      const pendingCount = yearItems.filter(item => item.item_status === "Pending").length;
-      
-      setYearlyCount({
-        total: yearItems.length,
-        delivered: deliveredCount,
-        forDelivery: forDeliveryCount,
-        pending: pendingCount,
-      });
 
-      if (selectedMonthYear.month) {
-        const monthItems = yearItems.filter(item => item.entry_date.getMonth() + 1 === selectedMonthYear.month);
-        setMonthlyCount(monthItems.length);
-      } else {
-        setMonthlyCount(0);
-      }
+  // Calculate counts based on the filtered list returned from the server
+  useEffect(() => {
+    const deliveredCount = inventoryItems.filter(item => item.item_status === "Delivered").length;
+    const forDeliveryCount = inventoryItems.filter(item => item.item_status === "For Delivery").length;
+    const pendingCount = inventoryItems.filter(item => item.item_status === "Pending").length;
+
+    if (selectedMonthYear?.month) {
+        setMonthlyCount(inventoryItems.length);
+    } else {
+      setMonthlyCount(0);
     }
+
+    setFilteredItemCount({
+      total: inventoryItems.length,
+      delivered: deliveredCount,
+      forDelivery: forDeliveryCount,
+      pending: pendingCount,
+    });
   }, [inventoryItems, selectedMonthYear]);
-  
-  // New function to reset only the status filter
+
+  //reset the status filter
   const resetStatusFilter = () => {
     setStatusFilter("All");
   };
 
-  // New function to reset only the year-month filter
+  //reset year-month filter
   const resetMonthYearFilter = () => {
     setSelectedMonthYear(yearOptions.length > 0 ? { month: null, year: yearOptions[0] } : null);
   };
-
 
   return (
     <div className="w-full mx-auto px-4 py-3 relative bg-gray-50">
@@ -226,10 +189,11 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Total Items:</p>
-                {/* <p className="text-sm 3xl:text-lg text-gray-900">{filteredItems.length}</p> */}
-                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.total}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyStatusCounts.total}</p>
               </div>
-              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">All inventory items ({selectedMonthYear?.year || 'Year'})</p>
+              <p className="text-xs 3xl:text-sm text-gray-600 mt-1">
+                {`All inventory items (${selectedMonthYear?.year || 'Year'})`}
+              </p>
             </div>
           </div>
         </div>
@@ -245,7 +209,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Delivered:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.delivered}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyStatusCounts.delivered}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Items Delivered ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -263,7 +227,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">For Delivery:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.forDelivery}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyStatusCounts.forDelivery}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">For Delivery ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -281,7 +245,7 @@ export default function Inventory() {
             <div className="flex flex-col justify-start">
               <div className="flex items-baseline space-x-2">
                 <p className="text-sm 3xl:text-lg font-bold text-gray-900">Pending:</p>
-                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyCount.pending}</p>
+                <p className="text-sm 3xl:text-lg text-gray-900">{yearlyStatusCounts.pending}</p>
               </div>
               <p className="text-xs 3xl:text-sm text-gray-600 mt-1">Awaiting processing ({selectedMonthYear?.year || 'Year'})</p>
             </div>
@@ -302,7 +266,7 @@ export default function Inventory() {
               <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
               {!isSearching && (
                 <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                  {selectedMonthYear?.month ? `${monthlyCount}` : `${yearlyCount.total}`} items
+                  {selectedMonthYear?.month ? `${monthlyCount}` : `${filteredItemCount.total}`} items
                 </span>
               )}
             </div>
@@ -381,7 +345,7 @@ export default function Inventory() {
 
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer">
-                        <button 
+                        <button
                           className={`flex-1 text-left hover:cursor-pointer ${
                             selectedFilterTypes.includes("STATUS") ? "text-blue-600" : "text-gray-800"
                           }`}
@@ -391,13 +355,12 @@ export default function Inventory() {
                             } else {
                               setSelectedFilterTypes(["STATUS"]);
                             }
-                            setActiveFilterType("STATUS");
                           }}
                         >
                           Status
                         </button>
                         {statusFilter !== "All" && (
-                          <button 
+                          <button
                             onClick={(e) => {
                               e.stopPropagation();
                               resetStatusFilter();
@@ -411,7 +374,7 @@ export default function Inventory() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
-                          
+
                       {/* Submenu: STATUS */}
                       {selectedFilterTypes.includes("STATUS") && (
                         <div className="flex flex-col gap-0 text-xs">
@@ -432,7 +395,7 @@ export default function Inventory() {
                       )}
 
                       <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer">
-                        <button 
+                        <button
                           className={`flex-1 text-left hover:cursor-pointer ${
                             selectedFilterTypes.includes("YEAR-MONTH") ? "text-blue-600" : "text-gray-800"
                           }`}
@@ -442,7 +405,6 @@ export default function Inventory() {
                             } else {
                               setSelectedFilterTypes(["YEAR-MONTH"]);
                             }
-                            setActiveFilterType("YEAR-MONTH");
                           }}
                         >
                           Year-Month
@@ -462,61 +424,60 @@ export default function Inventory() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
+
+                      {/* Submenu: YEAR-MONTH */}
+                      {selectedFilterTypes.includes("YEAR-MONTH") && (
+                        <div className="flex flex-col gap-2">
+                          {yearOptions.map(year => (
+                            <div key={year}>
+                              <button
+                                className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 font-bold hover:cursor-pointer ${
+                                  selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800"
+                                }`}
+                                onClick={() => setSelectedMonthYear({ month: null, year })}
+                              >
+                                {year}
+                              </button>
+                              {/* Show months if year is selected */}
+                              {selectedMonthYear?.year === year && (
+                                <div className="grid grid-cols-4 gap-1 mt-1 px-2">
+                                  {(availableMonthsByYear[year] || []).map(month => (
+                                    <button
+                                      key={month}
+                                      className={`text-xs px-2 py-1 rounded hover:bg-blue-50 mt-3 hover:cursor-pointer ${
+                                        selectedMonthYear?.month === month ? "bg-blue-50 text-blue-600 font-bold" : "text-gray-700"
+                                      }`}
+                                      onClick={() => {
+                                        setSelectedMonthYear({ month, year });
+                                      }}
+                                    >
+                                      {new Date(year, month - 1).toLocaleString("default", { month: "short" })}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    
-                    {/* Submenu: YEAR-MONTH */}
-                    {selectedFilterTypes.includes("YEAR-MONTH") && (
-                      <div className="flex flex-col gap-2">
-                        {yearOptions.map(year => (
-                          <div key={year}>
-                            <button
-                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 font-bold hover:cursor-pointer ${
-                                selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800" 
-                              }`}
-                              onClick={() => setSelectedMonthYear({ month: null, year })}
-                            >
-                              {year}
-                            </button>
-                            {/* Show months if year is selected */}
-                            {selectedMonthYear?.year === year && (
-                              <div className="grid grid-cols-4 gap-1 mt-1 px-2">
-                                {(availableMonthsByYear[year] || []).map(month => (
-                                  <button
-                                    key={month}
-                                    className={`text-xs px-2 py-1 rounded hover:bg-blue-50 mt-3 hover:cursor-pointer ${
-                                      selectedMonthYear?.month === month ? "bg-blue-50 text-blue-600 font-bold" : "text-gray-700"
-                                    }`}
-                                    onClick={() => {
-                                      setSelectedMonthYear({ month, year });
-                                    }}
-                                  >
-                                    {new Date(year, month - 1).toLocaleString("default", { month: "short" })}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
 
               {canEditInventory && (
-              <div>
-                <button
-                  onClick={() => navigate("/inventory/add")}
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200 text-xs 3xl:text-sm flex items-center hover:cursor-pointer"
-                >
-                  <svg className="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d ="M12 4v16m8-8H4" />
-                  </svg>
-                  Add Item
-                </button>
-              </div>
+                <div>
+                  <button
+                    onClick={() => navigate("/inventory/add")}
+                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors duration-200 text-xs 3xl:text-sm flex items-center hover:cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d ="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Item
+                  </button>
+                </div>
               )}
-
             </div>
           </div>
         </div>
@@ -539,7 +500,7 @@ export default function Inventory() {
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Failed to Load</h3>
               <p className="text-red-600 text-center mb-4">Unable to load inventory items. Please try again later.</p>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="px-6 py-2 font-semibold bg-red-600 hover:bg-red-700 hover:cursor-pointer text-white rounded-lg transition-colors duration-200"
               >
@@ -578,7 +539,7 @@ export default function Inventory() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {filteredItems.map((item, index) => (
+                  {inventoryItems.map((item, index) => (
                     <tr
                       key={item.item_id}
                       onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
@@ -609,28 +570,28 @@ export default function Inventory() {
                         {item.client_name}
                       </td>
                       <td className="text-center items-center">
-                        <button 
+                        <button
                           onClick={(e) => {
-                            if(item.item_status === "For Delivery" || item.delivered) return; 
-                            e.stopPropagation();  
+                            if(item.item_status === "For Delivery" || item.delivered) return;
+                            e.stopPropagation();
                             openDeliveryModal(item.item_id);
                           }}
                           className={`text-xs 3xl:text-sm font-medium ${
-                            !item.delivered && item.item_status !== "For Delivery" 
-                              ? "italic text-blue-500 hover:underline hover:cursor-pointer" 
+                            !item.delivered && item.item_status !== "For Delivery"
+                              ? "italic text-blue-500 hover:underline hover:cursor-pointer"
                               : "text-gray-900"
                           }`}
                         >
-                          {item.delivered || item.item_status === "For Delivery" 
-                            ? formatTimestampToFullDate(item.delivery_date) 
-                            : item.client_name === "EZTECH" 
-                              ? "" 
+                          {item.delivered || item.item_status === "For Delivery"
+                            ? formatTimestampToFullDate(item.delivery_date)
+                            : item.client_name === "EZTECH"
+                              ? ""
                               : "Set Delivery Date"
                           }
                         </button>
                       </td>
                       <td className="text-center items-center">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold 
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold
                           ${getStatusStyles(item.item_status).badge}`}
                         >
                           {item.item_status}
