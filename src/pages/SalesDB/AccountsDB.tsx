@@ -189,7 +189,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
           <div className="flex items-center space-x-2">
             {selectedCompany && canEditSelectedCompany() && (
               <button
-                className="text-blue-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:bg-blue-50 transition"
+                className="text-blue-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:cursor-pointer hover:bg-blue-50 transition"
                 onClick={() => {
                   setEditingCompanyId(selectedCompany.comp_id);
                   setIsEditCompanyModalOpen(true);
@@ -200,7 +200,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
             )}
             {selectedCompany && canDeleteData() && (
               <button
-                className="text-red-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:bg-red-50 transition"
+                className="text-red-600 border px-4 py-1 rounded-lg text-xs 3xl:text-sm hover:cursor-pointer hover:bg-red-50 transition"
                 onClick={() => setIsDeleteModalOpen(true)}
               >
                 Delete
@@ -209,7 +209,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
             {!selectedCompany && (
               <button
                 onClick={() => setIsAddCompanyModalOpen(true)}
-                className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-800 bg-teal-200 hover:bg-teal-300 transition"
+                className="py-2 px-3 inline-flex items-center gap-x-1 rounded-lg text-teal-800 bg-teal-200 hover:cursor-pointer hover:bg-teal-300 transition"
               >
                 <svg
                   className="shrink-0 size-3.5 3xl:size-4"
