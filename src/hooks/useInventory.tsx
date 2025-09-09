@@ -124,12 +124,8 @@ export function useInventory(
             forDelivery: data["For Delivery"] || 0,
             pending: data["Pending"] || 0,
         });
-
-        // The console.log here would show the *old* state due to closure.
-        // To see the new state, you would need to log it outside this function, 
-        // e.g., in a useEffect hook that depends on yearlyStatusCounts.
     } catch (err: any) {
-      console.error("Failed to fetch yearly status totals:", err);
+      //console.error("Failed to fetch yearly status totals:", err);
       setYearlyStatusCounts({ total: 0, delivered: 0, forDelivery: 0, pending: 0 });
     }
   };

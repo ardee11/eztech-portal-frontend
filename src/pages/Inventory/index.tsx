@@ -264,11 +264,9 @@ export default function Inventory() {
                 </svg>
               </div>
               <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
-              {!isSearching && (
                 <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                  {selectedMonthYear?.month ? `${monthlyCount}` : `${filteredItemCount.total}`} items
+                  {filteredItemCount.total} items
                 </span>
-              )}
             </div>
             
             {/* Search and Filter Controls */}
@@ -308,21 +306,30 @@ export default function Inventory() {
                   id="monthYearSelect"
                   type="button"
                   onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-                  className="py-2 px-3 text-xs 3xl:text-sm inline-flex items-center gap-x-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
+                  className="py-2 px-4 3xl:px-6 text-xs 3xl:text-sm inline-flex items-center gap-x-2 rounded-lg border border-gray-300 bg-white text-gray-800 shadow-sm hover:bg-gray-50 hover:cursor-pointer transition-all duration-200"
                   aria-haspopup="menu"
                   aria-expanded={filterDropdownOpen}
                   aria-label="Dropdown"
                 >
-                  <div className="flex items-center gap-x-1">
+                  <div className="flex items-center gap-x-2">
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
                     </svg>
-                    {isSearching ? "Filtered: By Search"
-                      : selectedMonthYear ? selectedMonthYear.month === null
-                        ? `Filtered: ${selectedMonthYear.year} ${statusFilter && statusFilter !== "All" ? `(${statusFilter})` : ""}`
-                        : `Filtered: ${monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)} ${statusFilter && statusFilter !== "All" ? `(${statusFilter})` : ""}`
-                        : statusFilter ? `Filtered: ${statusFilter}`
-                          : "Select Month Year"}
+                      {isSearching ? "Filtered: By Search"
+                      : statusFilter !== "All" || (selectedMonthYear && selectedMonthYear.year !== yearOptions[0])
+                        ? `Filtered: ${
+                            selectedMonthYear?.month
+                              ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
+                              : selectedMonthYear?.year
+                          }${
+                            statusFilter !== "All" ? ` (${statusFilter})` : ""
+                          }`
+                        : selectedFilterTypes.includes("YEAR-MONTH")  && (selectedMonthYear?.month)
+                          ? `Filtered: ${selectedMonthYear?.month
+                              ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
+                              : selectedMonthYear?.year}`
+                          : "Filter Options"
+                      }
                   </div>
                   <svg
                     className={`size-4 transition-transform duration-200 ${filterDropdownOpen ? 'rotate-180' : ''}`}
