@@ -136,7 +136,6 @@ export default function Inventory() {
     };
   }, []);
 
-  const [monthlyCount, setMonthlyCount] = useState(0);
   const [filteredItemCount, setFilteredItemCount] = useState({
     total: 0,
     delivered: 0,
@@ -149,12 +148,6 @@ export default function Inventory() {
     const deliveredCount = inventoryItems.filter(item => item.item_status === "Delivered").length;
     const forDeliveryCount = inventoryItems.filter(item => item.item_status === "For Delivery").length;
     const pendingCount = inventoryItems.filter(item => item.item_status === "Pending").length;
-
-    if (selectedMonthYear?.month) {
-        setMonthlyCount(inventoryItems.length);
-    } else {
-      setMonthlyCount(0);
-    }
 
     setFilteredItemCount({
       total: inventoryItems.length,
