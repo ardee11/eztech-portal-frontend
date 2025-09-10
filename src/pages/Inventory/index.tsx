@@ -519,19 +519,19 @@ export default function Inventory() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+                    <th className="px-6 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
                       Date of Entry
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
+                    <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/18">
+                    <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/18">
                       Qty
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
+                    <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Distributor
                     </th>
-                    <th className="px-3 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
+                    <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">
                       Client
                     </th>
                     <th className="text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/7">

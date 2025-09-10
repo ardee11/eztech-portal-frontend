@@ -131,6 +131,7 @@ export default function InputDropdown({ label, value, onChange, options }: Staff
         }}
         placeholder={value || "Select..."}
         className="w-full py-2 px-3 text-xs 3xl:text-sm rounded-md border border-gray-500 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-teal-400"
+        autoComplete="off"
       />
 
       {isOpen &&
