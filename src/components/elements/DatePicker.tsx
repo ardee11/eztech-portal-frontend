@@ -113,7 +113,7 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
         {yearRange.map((year) => (
           <div
             key={year}
-            className="px-2 py-1 text-sm hover:bg-gray-100 cursor-pointer"
+            className="px-2 py-1 text-sm hover:bg-blue-100 cursor-pointer"
             onClick={() => {
               setCurrentYear(year);
               setShowYearDropdown(false);
