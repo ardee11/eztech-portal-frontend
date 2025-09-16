@@ -14,28 +14,22 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1; 
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((y) => y - 1);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
+  // --- New Logic: Add a year and month selector ---
+  const years = Array.from({ length: 201 }, (_, i) => today.getFullYear() - 100 + i);
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentYear(parseInt(event.target.value, 10));
   };
 
-  const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((y) => y + 1);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
+  const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentMonth(parseInt(event.target.value, 10));
   };
+  // --------------------------------------------------
 
   const formatDate = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
   const handleDateClick = (day: number) => {
     const date = new Date(Date.UTC(currentYear, currentMonth, day));
@@ -67,18 +61,30 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
   }, [onClose]);
 
   return (
-    <div 
+    <div
       ref={pickerRef}
-      className="fade-in w-80 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden p-3 text-sm">
+      className="fade-in w-80 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden p-3 text-sm"
+    >
       {/* Header */}
-      <div className="grid grid-cols-5 items-center mb-3 w-80">
-        <button onClick={handlePrevMonth} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
+      <div className="flex items-center justify-between mb-3 px-1">
+        <button onClick={() => setCurrentMonth(m => (m === 0 ? 11 : m - 1))} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
           ‹
         </button>
-        <div className="col-span-3 text-center font-medium text-gray-800">
-          {monthNames[currentMonth]} {currentYear}
+        <div className="flex space-x-2">
+          {/* Month Selector */}
+          <select value={currentMonth} onChange={handleMonthChange} className="bg-white border border-gray-300 rounded-md py-1 px-2 text-sm font-medium">
+            {monthNames.map((name, index) => (
+              <option key={name} value={index}>{name}</option>
+            ))}
+          </select>
+          {/* Year Selector */}
+          <select value={currentYear} onChange={handleYearChange} className="bg-white border border-gray-300 rounded-md py-1 px-2 text-sm font-medium">
+            {years.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
         </div>
-        <button onClick={handleNextMonth} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
+        <button onClick={() => setCurrentMonth(m => (m === 11 ? 0 : m + 1))} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
           ›
         </button>
       </div>
@@ -92,38 +98,38 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
 
       {/* Days Grid */}
       <div className="grid grid-cols-7">
-      {daysArray.map((day, index) => {
-        if (day === null) {
-          return <div key={index} className="w-10 h-10 p-0.5" />;
-        }
+        {daysArray.map((day, index) => {
+          if (day === null) {
+            return <div key={index} className="w-10 h-10 p-0.5" />;
+          }
 
-        const isToday =
-          today.getDate() === day &&
-          today.getMonth() === currentMonth &&
-          today.getFullYear() === currentYear;
+          const isToday =
+            today.getDate() === day &&
+            today.getMonth() === currentMonth &&
+            today.getFullYear() === currentYear;
 
-        const dateString = formatDate(new Date(currentYear, currentMonth, day));
-        const isSelected = selectedDate === dateString;
+          const dateString = formatDate(new Date(currentYear, currentMonth, day));
+          const isSelected = selectedDate === dateString;
 
-        return (
-          <div key={index} className="w-10 h-10 p-0.5">
-            <button
-              onClick={() => handleDateClick(day)}
-              className={`w-full h-full rounded-full flex items-center justify-center
-                ${
-                  isSelected
-                    ? "border border-teal-500 text-teal-600"
-                    : isToday
-                    ? "bg-teal-500 text-white font-medium"
-                    : "text-gray-800"
-                }
-                hover:border hover:cursor-pointer hover:border-teal-500 hover:text-teal-600`}
-            >
-              {day}
-            </button>
-          </div>
-        );
-      })}
+          return (
+            <div key={index} className="w-10 h-10 p-0.5">
+              <button
+                onClick={() => handleDateClick(day)}
+                className={`w-full h-full rounded-full flex items-center justify-center
+                  ${
+                    isSelected
+                      ? "border border-teal-500 text-teal-600"
+                      : isToday
+                      ? "bg-teal-500 text-white font-medium"
+                      : "text-gray-800"
+                  }
+                  hover:border hover:cursor-pointer hover:border-teal-500 hover:text-teal-600`}
+              >
+                {day}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
