@@ -44,7 +44,7 @@ function App() {
                   <Route path="inventory/:itemId" element={<ItemDetails />} />
                 </Route>
 
-                <Route element={<ProtectedRoute page="sales" />}>
+                <Route element={<ProtectedRoute page="inventory" />}>
                   <Route path="inventory/add" element={<AddItem />} />
                 </Route>
 
