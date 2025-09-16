@@ -1,4 +1,7 @@
+// src/App.jsx
+
 import { AuthProvider, useAuth } from "./contexts/authContext";
+import { FilterProvider } from "./contexts/FilterContext"; // <-- Import the FilterProvider
 import PrelineInitializer from "./utils/PrelineInitializer";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -21,49 +24,47 @@ function App() {
     <Router>
       <AuthProvider>
         <LayoutProvider>
-          <PrelineInitializer />
-          <Routes>
-            {/* Public Route: Redirect to Home if already logged in */}
-            <Route path="/login" element={<RedirectIfLoggedIn />} />
-            <Route path="/set-password" element={<SetUpPassword />} />
+          <FilterProvider> 
+            <PrelineInitializer />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<RedirectIfLoggedIn />} />
+              <Route path="/set-password" element={<SetUpPassword />} />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<Layout />}>
-                {/* Dashboard with modal for password setup */}
-                <Route
-                  index
-                  element={
-                    <Dashboard />
-                  }
-                />
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<Layout />}>
+                  {/* Dashboard */}
+                  <Route index element={<Dashboard />} />
 
-                {/* Inventory and Sales routes */}
-                <Route element={<ProtectedRoute page="inventory" />}>
-                  <Route path="inventory" element={<Inventory />} />
-                  <Route path="inventory/:itemId" element={<ItemDetails />} />
-                </Route>
+                  {/* Inventory Routes */}
+                  <Route element={<ProtectedRoute page="inventory" />}>
+                    <Route path="inventory" element={<Inventory />} />
+                    <Route path="inventory/:itemId" element={<ItemDetails />} />
+                  </Route>
 
-                <Route element={<ProtectedRoute page="inventory" />}>
-                  <Route path="inventory/add" element={<AddItem />} />
-                </Route>
+                  <Route element={<ProtectedRoute page="inventory" />}>
+                    <Route path="inventory/add" element={<AddItem />} />
+                  </Route>
 
-                <Route element={<ProtectedRoute page="sales" />}>
-                  <Route path="sales-database" element={<SalesDB />} />
-                </Route>
+                  {/* Sales Routes */}
+                  <Route element={<ProtectedRoute page="sales" />}>
+                    <Route path="sales-database" element={<SalesDB />} />
+                  </Route>
 
-                {/* Admin-only routes */}
-                <Route element={<ProtectedRoute page="admin" />}>
-                  <Route path="admin" element={<Admin />} />
+                  {/* Admin Routes */}
+                  <Route element={<ProtectedRoute page="admin" />}>
+                    <Route path="admin" element={<Admin />} />
+                  </Route>
                 </Route>
               </Route>
-            </Route>
 
-            {/* Redirect all other paths to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        <ToastContainer />
-      </LayoutProvider>
+              {/* Redirect all other paths to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            <ToastContainer />
+          </FilterProvider>
+        </LayoutProvider>
       </AuthProvider>
     </Router>
   );

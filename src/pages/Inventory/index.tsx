@@ -1,5 +1,4 @@
-// Inventory.jsx
-
+// src/pages/Inventory.jsx
 import { useEffect, useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { useInventory } from "../../hooks/useInventory"; 
@@ -12,31 +11,29 @@ import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliver
 import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
 import { getStatusStyles } from "../../utils/getStatusStyles";
 import { useAuth } from "../../contexts/authContext";
-
-type MonthYear = { month: number | null; year: number };
+import { useFilter } from "../../contexts/FilterContext";
 
 function monthYearToLabel(month: number, year: number): string {
-  const date = new Date(year, month - 1);
-  return date.toLocaleString("default", { month: "long", year: "numeric" });
+  const date = new Date(year, month - 1);
+  return date.toLocaleString("default", { month: "long", year: "numeric" });
 }
 
 export default function Inventory() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [selectedMonthYear, setSelectedMonthYear] = useState<MonthYear | null>(null);
+
+  // 1. Use the global filter state and setter
+  const { filterState, setFilterState } = useFilter();
+  const { searchQuery, debouncedSearchQuery, selectedMonthYear, statusFilter } = filterState;
+
+  // Local state for UI-related elements can remain
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
-  const [statusFilter, setStatusFilter] = useState<"All" | "Delivered" | "Pending">("All");
-
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
   const [markDeliveredItemId, setMarkDeliveredItemId] = useState<string | null>(null);
-
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
   const [modalItemId, setModalItemId] = useState<string | null>(null);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
@@ -75,26 +72,32 @@ export default function Inventory() {
     setContextMenu(prev => ({ ...prev, visible: false }));
   };
 
+  // 2. This useEffect correctly sets the initial year only if the global state is empty.
   useEffect(() => {
-    if (yearOptions.length > 0) {
-      setSelectedMonthYear({ month: null, year: yearOptions[0] });
+    if (yearOptions.length > 0 && !selectedMonthYear) {
+      setFilterState(prev => ({ ...prev, selectedMonthYear: { month: null, year: yearOptions[0] } }));
     }
-  }, [yearOptions]);
+  }, [yearOptions, selectedMonthYear, setFilterState]);
 
   const { inventoryItems, loading, error, yearlyStatusCounts } = useInventory(debouncedSearchQuery, statusFilter, selectedMonthYear);
   const isSearching = debouncedSearchQuery.trim().length >= 3;
 
-  // Debounce search query
+  // 3. Update the search input handler to use the global state setter
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilterState(prev => ({ ...prev, searchQuery: e.target.value }));
+  };
+
+  // 4. Debounce the global search query state
   useEffect(() => {
     if (searchQuery.trim().length >= 3) {
       const timer = setTimeout(() => {
-        setDebouncedSearchQuery(searchQuery);
+        setFilterState(prev => ({ ...prev, debouncedSearchQuery: searchQuery }));
       }, 500);
       return () => clearTimeout(timer);
     } else {
-      setDebouncedSearchQuery("");
+      setFilterState(prev => ({ ...prev, debouncedSearchQuery: "" }));
     }
-  }, [searchQuery]);
+  }, [searchQuery, setFilterState]);
 
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -122,7 +125,6 @@ export default function Inventory() {
     });
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
@@ -143,7 +145,6 @@ export default function Inventory() {
     pending: 0,
   });
 
-  // Calculate counts based on the filtered list returned from the server
   useEffect(() => {
     const deliveredCount = inventoryItems.filter(item => item.item_status === "Delivered").length;
     const forDeliveryCount = inventoryItems.filter(item => item.item_status === "For Delivery").length;
@@ -157,21 +158,18 @@ export default function Inventory() {
     });
   }, [inventoryItems, selectedMonthYear]);
 
-  //reset the status filter
+  // 5. Update reset filter functions to use the global state setter
   const resetStatusFilter = () => {
-    setStatusFilter("All");
+    setFilterState(prev => ({ ...prev, statusFilter: "All" }));
   };
 
-  //reset year-month filter
   const resetMonthYearFilter = () => {
-    setSelectedMonthYear(yearOptions.length > 0 ? { month: null, year: yearOptions[0] } : null);
+    setFilterState(prev => ({ ...prev, selectedMonthYear: yearOptions.length > 0 ? { month: null, year: yearOptions[0] } : null }));
   };
 
   return (
     <div className="w-full mx-auto px-4 py-3 relative bg-gray-50">
-      {/* Enhanced Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-        {/* Total Items Card */}
         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -190,8 +188,6 @@ export default function Inventory() {
             </div>
           </div>
         </div>
-
-        {/* Delivered Items Card */}
         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
@@ -208,8 +204,6 @@ export default function Inventory() {
             </div>
           </div>
         </div>
-
-        {/* For Delivery Items Card */}
         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -226,8 +220,6 @@ export default function Inventory() {
             </div>
           </div>
         </div>
-
-        {/* Pending Items Card */}
         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -245,8 +237,6 @@ export default function Inventory() {
           </div>
         </div>
       </div>
-
-      {/* Enhanced Table Card */}
       <div className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden transition-all duration-300">
         <div className="bg-blue-100 px-4 py-3 3xl:px-6 3xl:py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
@@ -257,14 +247,11 @@ export default function Inventory() {
                 </svg>
               </div>
               <h2 className="text-md 3xl:text-xl font-bold text-gray-900">Inventory Items</h2>
-                <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                  {filteredItemCount.total} items
-                </span>
+              <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                {filteredItemCount.total} items
+              </span>
             </div>
-            
-            {/* Search and Filter Controls */}
             <div className="flex items-center space-x-4">
-              {/* Search Input */}
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -276,13 +263,13 @@ export default function Inventory() {
                   id="searchInput"
                   placeholder="Search by serial number or company name"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                   autoComplete="off"
                   className="text-xs 3xl:text-sm w-86 3xl:w-110 pl-10 pr-10 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => setFilterState(prev => ({ ...prev, searchQuery: "" }))}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-800 hover:cursor-pointer transition-colors"
                     type="button"
                   >
@@ -292,8 +279,6 @@ export default function Inventory() {
                   </button>
                 )}
               </div>
-              
-              {/* Filter Dropdown */}
               <div className="relative dropdown-container">
                 <button
                   id="monthYearSelect"
@@ -308,21 +293,21 @@ export default function Inventory() {
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
                     </svg>
-                      {isSearching ? "Filtered: By Search"
+                    {isSearching ? "Filtered: By Search"
                       : statusFilter !== "All" || (selectedMonthYear && selectedMonthYear.year !== yearOptions[0])
                         ? `Filtered: ${
-                            selectedMonthYear?.month
-                              ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                              : selectedMonthYear?.year
-                          }${
-                            statusFilter !== "All" ? ` (${statusFilter})` : ""
-                          }`
-                        : selectedFilterTypes.includes("YEAR-MONTH")  && (selectedMonthYear?.month)
+                          selectedMonthYear?.month
+                            ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
+                            : selectedMonthYear?.year
+                        }${
+                          statusFilter !== "All" ? ` (${statusFilter})` : ""
+                        }`
+                        : selectedFilterTypes.includes("YEAR-MONTH") && (selectedMonthYear?.month)
                           ? `Filtered: ${selectedMonthYear?.month
-                              ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
-                              : selectedMonthYear?.year}`
+                            ? monthYearToLabel(selectedMonthYear.month, selectedMonthYear.year)
+                            : selectedMonthYear?.year}`
                           : "Filter Options"
-                      }
+                    }
                   </div>
                   <svg
                     className={`size-4 transition-transform duration-200 ${filterDropdownOpen ? 'rotate-180' : ''}`}
@@ -337,12 +322,10 @@ export default function Inventory() {
                     <path d="m6 9 6 6 6-6" />
                   </svg>
                 </button>
-
                 {filterDropdownOpen && (
                   <div className="absolute right-0 top-full z-[100] mt-2 min-w-[260px] 3xl:min-w-[280px] bg-white border border-gray-200 rounded-xl shadow-lg p-4">
                     <p className="text-sm font-bold text-gray-800 mb-1">Filter Options by:</p>
                     <p className="text-xs italic text-gray-700 mb-4">(Choose the field that you want to filter)</p>
-
                     <div className="flex flex-col gap-2">
                       <div 
                         className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer"
@@ -354,11 +337,7 @@ export default function Inventory() {
                           }
                         }}
                       >
-                        <p
-                          className={`flex-1 text-left hover:cursor-pointer ${
-                            selectedFilterTypes.includes("STATUS") ? "text-blue-600" : "text-gray-800"
-                          }`}
-                        >
+                        <p className={`flex-1 text-left hover:cursor-pointer ${selectedFilterTypes.includes("STATUS") ? "text-blue-600" : "text-gray-800"}`}>
                           Status
                         </p>
                         {statusFilter !== "All" && (
@@ -376,18 +355,14 @@ export default function Inventory() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
-
-                      {/* Submenu: STATUS */}
                       {selectedFilterTypes.includes("STATUS") && (
                         <div className="flex flex-col gap-0 text-xs">
                           {["All", "Delivered", "Pending"].map((status) => (
                             <button
                               key={status}
-                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 hover:cursor-pointer ${
-                                statusFilter === status ? "font-bold text-blue-600 bg-blue-50" : "text-gray-800"
-                              }`}
+                              className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 hover:cursor-pointer ${statusFilter === status ? "font-bold text-blue-600 bg-blue-50" : "text-gray-800"}`}
                               onClick={() => {
-                                setStatusFilter(status as typeof statusFilter);
+                                setFilterState(prev => ({ ...prev, statusFilter: status as typeof statusFilter }));
                               }}
                             >
                               {status}
@@ -395,7 +370,6 @@ export default function Inventory() {
                           ))}
                         </div>
                       )}
-
                       <div 
                         className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-blue-50 font-bold text-xs hover:cursor-pointer"
                         onClick={() => {
@@ -406,14 +380,10 @@ export default function Inventory() {
                           }
                         }}
                       >
-                        <p
-                          className={`flex-1 text-left hover:cursor-pointer ${
-                            selectedFilterTypes.includes("YEAR-MONTH") ? "text-blue-600" : "text-gray-800"
-                          }`}
-                        >
+                        <p className={`flex-1 text-left hover:cursor-pointer ${selectedFilterTypes.includes("YEAR-MONTH") ? "text-blue-600" : "text-gray-800"}`}>
                           Year-Month
                         </p>
-                        {selectedMonthYear?.year !== (yearOptions.length > 0 ? yearOptions[0] : null) || selectedMonthYear?.month !== null ? (
+                        {(selectedMonthYear?.year !== (yearOptions.length > 0 ? yearOptions[0] : null) || selectedMonthYear?.month !== null) && (
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -423,36 +393,29 @@ export default function Inventory() {
                           >
                             Reset
                           </button>
-                        ) : null}
+                        )}
                         <svg className={`size-4 transition-transform duration-200 ${selectedFilterTypes.includes("YEAR-MONTH") ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
-
-                      {/* Submenu: YEAR-MONTH */}
                       {selectedFilterTypes.includes("YEAR-MONTH") && (
                         <div className="flex flex-col gap-2">
                           {yearOptions.map(year => (
                             <div key={year}>
                               <button
-                                className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 font-bold hover:cursor-pointer ${
-                                  selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800"
-                                }`}
-                                onClick={() => setSelectedMonthYear({ month: null, year })}
+                                className={`text-left px-3 py-2 rounded-lg hover:bg-blue-100 font-bold hover:cursor-pointer ${selectedMonthYear?.year === year ? "text-sm text-blue-600" : "text-gray-800"}`}
+                                onClick={() => setFilterState(prev => ({ ...prev, selectedMonthYear: { month: null, year } }))}
                               >
                                 {year}
                               </button>
-                              {/* Show months if year is selected */}
                               {selectedMonthYear?.year === year && (
                                 <div className="grid grid-cols-4 gap-1 mt-1 px-2">
                                   {(availableMonthsByYear[year] || []).map(month => (
                                     <button
                                       key={month}
-                                      className={`text-xs px-2 py-1 rounded hover:bg-blue-50 mt-3 hover:cursor-pointer ${
-                                        selectedMonthYear?.month === month ? "bg-blue-50 text-blue-600 font-bold" : "text-gray-700"
-                                      }`}
+                                      className={`text-xs px-2 py-1 rounded hover:bg-blue-50 mt-3 hover:cursor-pointer ${selectedMonthYear?.month === month ? "bg-blue-50 text-blue-600 font-bold" : "text-gray-700"}`}
                                       onClick={() => {
-                                        setSelectedMonthYear({ month, year });
+                                        setFilterState(prev => ({ ...prev, selectedMonthYear: { month, year } }));
                                       }}
                                     >
                                       {new Date(year, month - 1).toLocaleString("default", { month: "short" })}
@@ -468,7 +431,6 @@ export default function Inventory() {
                   </div>
                 )}
               </div>
-
               {canEditInventory && (
                 <div>
                   <button
@@ -485,8 +447,6 @@ export default function Inventory() {
             </div>
           </div>
         </div>
-
-        {/* Table Content */}
         <div className="overflow-x-auto">
           {loading && (
             <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -494,7 +454,6 @@ export default function Inventory() {
               <p className="text-gray-400 text-xs mt-2">Loading inventory items...</p>
             </div>
           )}
-
           {error && (
             <div className="flex flex-col items-center justify-center h-[40vh] bg-white mx-auto max-w-md">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
@@ -512,8 +471,6 @@ export default function Inventory() {
               </button>
             </div>
           )}
-
-          {/* Enhanced Inventory Table */}
           {!loading && !error && (
             <div className="w-full overflow-y-auto h-[66vh] 3xl:h-[70vh] pb-1">
               <table className="w-full">
@@ -547,8 +504,7 @@ export default function Inventory() {
                     <tr
                       key={item.item_id}
                       onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
-                      className={`transition-all duration-200 cursor-pointer
-                        ${getStatusStyles(item.item_status).row}`}
+                      className={`transition-all duration-200 cursor-pointer ${getStatusStyles(item.item_status).row}`}
                       onClick={() => navigate(`/inventory/${item.item_id}`)}
                     >
                       <td className="px-4">
@@ -580,11 +536,9 @@ export default function Inventory() {
                             e.stopPropagation();
                             openDeliveryModal(item.item_id);
                           }}
-                          className={`text-xs 3xl:text-sm font-medium ${
-                            !item.delivered && item.item_status !== "For Delivery"
-                              ? "italic text-blue-500 hover:underline hover:cursor-pointer"
-                              : "text-gray-900"
-                          }`}
+                          className={`text-xs 3xl:text-sm font-medium ${!item.delivered && item.item_status !== "For Delivery"
+                            ? "italic text-blue-500 hover:underline hover:cursor-pointer"
+                            : "text-gray-900"}`}
                         >
                           {item.delivered || item.item_status === "For Delivery"
                             ? formatTimestampToFullDate(item.delivery_date)
@@ -595,9 +549,7 @@ export default function Inventory() {
                         </button>
                       </td>
                       <td className="text-center items-center">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold
-                          ${getStatusStyles(item.item_status).badge}`}
-                        >
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs 3xl:text-sm font-semibold ${getStatusStyles(item.item_status).badge}`}>
                           {item.item_status}
                         </span>
                       </td>
@@ -609,7 +561,6 @@ export default function Inventory() {
           )}
         </div>
       </div>
-
       <InventoryContextMenu
         visible={contextMenu.visible}
         x={contextMenu.x}
@@ -622,7 +573,6 @@ export default function Inventory() {
         onOpenMarkDeliveredModal={openMarkDeliveredModal}
         onOpenDeleteModal={openDeleteModal}
       />
-
       {modalItemId && (
         <SetDeliveryModal
           isOpen={isDeliveryModalOpen}
@@ -630,7 +580,6 @@ export default function Inventory() {
           itemId={modalItemId}
         />
       )}
-
       {markDeliveredItemId && (
         <MarkAsDeliveredModal
           isOpen={isMarkDeliveredModalOpen}
@@ -638,7 +587,6 @@ export default function Inventory() {
           itemId={markDeliveredItemId}
         />
       )}
-
       {deleteItemId && (
         <DeleteItemModal
           isOpen={isDeleteModalOpen}
