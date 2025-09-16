@@ -17,7 +17,8 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
   // --- New Logic: Add a year and month selector ---
-  const years = Array.from({ length: 201 }, (_, i) => today.getFullYear() - 100 + i);
+  const years = Array.from({ length: 5 }, (_, i) => today.getFullYear() - 4 + i);
+  //const years = Array.from({ length: 5 }, (_, i) => 2021 + i);
 
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentYear(parseInt(event.target.value, 10));
