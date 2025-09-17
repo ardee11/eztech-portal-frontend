@@ -14,15 +14,23 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1; 
+  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
-  const [showMonthDropdown, setShowMonthDropdown] = useState(false);
-  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  // --- New Logic: Add a year and month selector ---
+  const years = Array.from({ length: 5 }, (_, i) => today.getFullYear() - 4 + i);
+  //const years = Array.from({ length: 5 }, (_, i) => 2021 + i);
 
-  const yearRange = Array.from({ length: 10 }, (_, i) => 2020 + i);
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentYear(parseInt(event.target.value, 10));
+  };
+
+  const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentMonth(parseInt(event.target.value, 10));
+  };
+  // --------------------------------------------------
 
   const formatDate = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
   const handleDateClick = (day: number) => {
     const date = new Date(Date.UTC(currentYear, currentMonth, day));
@@ -36,8 +44,8 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
   });
 
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
 
   const weekDays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -54,122 +62,77 @@ const DatePicker = ({ onDateSelect, selectedDate, onClose }: DatePickerProps) =>
   }, [onClose]);
 
   return (
-      <div className="relative w-70">
-<div className="flex flex-row gap-2 mt-3 mb-1">
-  {/* Month Dropdown */}
-  <div className="relative w-40 px-1.5 mt-1 mb-2">
-    <button
-      type="button"
-      className="border border-gray-400 px-3 py-1 w-40 rounded flex justify-between items-center hover:cursor-pointer"
-      onClick={() => setShowMonthDropdown((prev) => !prev)}
+    <div
+      ref={pickerRef}
+      className="fade-in w-80 bg-white border border-gray-200 shadow-lg rounded-xl overflow-hidden p-3 text-sm"
     >
-      {monthNames[currentMonth]}
-      <svg
-  width="16"
-  height="16"
-  fill="none"
-  className={`opacity-40 transform transition-transform duration-200 ${showMonthDropdown ? "rotate-180" : ""}`}
->
-  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-</svg>
-    </button>
-    {showMonthDropdown && (
-      <div className="absolute z-10 w-full h-40 text-sm bg-white border border-gray-300 rounded shadow grid grid-cols-3 gap-2 mt-2 px-1 py-1">
-        {monthNames.map((name, idx) => (
-          <div
-            key={name}
-            className="px-2 py-1.5 hover:bg-blue-100 rounded cursor-pointer"
-            onClick={() => {
-              setCurrentMonth(idx);
-              setShowMonthDropdown(false);
-            }}
-          >
-            {name}
-          </div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3 px-1">
+        <button onClick={() => setCurrentMonth(m => (m === 0 ? 11 : m - 1))} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
+          ‹
+        </button>
+        <div className="flex space-x-2">
+          {/* Month Selector */}
+          <select value={currentMonth} onChange={handleMonthChange} className="bg-white border border-gray-300 rounded-md py-1 px-2 text-sm font-medium">
+            {monthNames.map((name, index) => (
+              <option key={name} value={index}>{name}</option>
+            ))}
+          </select>
+          {/* Year Selector */}
+          <select value={currentYear} onChange={handleYearChange} className="bg-white border border-gray-300 rounded-md py-1 px-2 text-sm font-medium">
+            {years.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+        <button onClick={() => setCurrentMonth(m => (m === 11 ? 0 : m + 1))} className="size-8 flex justify-center items-center text-gray-800 hover:bg-gray-100 hover:cursor-pointer rounded-full">
+          ›
+        </button>
+      </div>
+
+      {/* Week Days */}
+      <div className="flex justify-between text-gray-500">
+        {weekDays.map((day) => (
+          <span key={day} className="w-10 text-center">{day}</span>
         ))}
       </div>
-    )}
-  </div>
+  
 
-  {/* Year Dropdown */}
-  <div className="relative mt-1 mb-2">
-    <button
-      type="button"
-      className="border border-gray-400 px-3 py-1 w-26 rounded flex justify-between items-center hover:cursor-pointer"
-      onClick={() => setShowYearDropdown((prev) => !prev)}
-    >
-      {currentYear}
-      <svg
-  width="16"
-  height="16"
-  fill="none"
-  className={`opacity-40 transform transition-transform duration-200 ${showYearDropdown ? "rotate-180" : ""}`}
->
-  <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-</svg>
-    </button>
-    {showYearDropdown && (
-      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow max-h-41 overflow-auto">
-        {yearRange.map((year) => (
-          <div
-            key={year}
-            className="px-2 py-1 text-sm hover:bg-blue-100 cursor-pointer"
-            onClick={() => {
-              setCurrentYear(year);
-              setShowYearDropdown(false);
-            }}
-          >
-            {year}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
- 
+      {/* Days Grid */}
+      <div className="grid grid-cols-7">
+        {daysArray.map((day, index) => {
+          if (day === null) {
+            return <div key={index} className="w-10 h-10 p-0.5" />;
+          }
 
-{/* Week Days */}
-<div className="flex justify-between text-gray-500">
-{weekDays.map((day) => (
-<span key={day} className="w-10 text-center">{day}</span>
-  ))}
-    </div>
+          const isToday =
+            today.getDate() === day &&
+            today.getMonth() === currentMonth &&
+            today.getFullYear() === currentYear;
 
-{/* Days Grid */}
-  <div className="grid grid-cols-7">
-    {daysArray.map((day, index) => {
-      if (day === null) {
-        return <div key={index} className="w-10 h-10 p-0.5" />;
-      }
+          const dateString = formatDate(new Date(currentYear, currentMonth, day));
+          const isSelected = selectedDate === dateString;
 
-      const isToday =
-        today.getDate() === day &&
-        today.getMonth() === currentMonth &&
-        today.getFullYear() === currentYear;
-
-        const dateString = formatDate(new Date(currentYear, currentMonth, day));
-        const isSelected = selectedDate === dateString;
-
-        return (
-          <div key={index} className="w-10 h-10 p-0.5">
-            <button
-              onClick={() => handleDateClick(day)}
-              className={`w-full h-full rounded-full flex items-center justify-center
-                ${
-                  isSelected
-                    ? "border border-teal-500 text-teal-600"
-                    : isToday
-                    ? "bg-teal-500 text-white font-medium"
-                    : "text-gray-800"
-                }
-                hover:border hover:cursor-pointer hover:border-teal-500 hover:text-teal-600`}
-            >
-              {day}
-            </button>
-          </div>
-        );
-      })}
-      </div>
+          return (
+            <div key={index} className="w-10 h-10 p-0.5">
+              <button
+                onClick={() => handleDateClick(day)}
+                className={`w-full h-full rounded-full flex items-center justify-center
+                  ${
+                    isSelected
+                      ? "border border-teal-500 text-teal-600"
+                      : isToday
+                      ? "bg-teal-500 text-white font-medium"
+                      : "text-gray-800"
+                  }
+                  hover:border hover:cursor-pointer hover:border-teal-500 hover:text-teal-600`}
+              >
+                {day}
+              </button>
+            </div>
+          );
+        })}
+        </div>
     </div>
   );
 };

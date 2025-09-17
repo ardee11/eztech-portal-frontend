@@ -2,26 +2,28 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { formatTimestampToFullDate } from "../../utils/DateFormat";
-import { Item, useItemDetails } from "../../hooks/useInventory"; // This import is now valid again.
+import { Item, SerialNumber, useItemDetails } from "../../hooks/useInventory"; // This import is now valid again.
 
 import ItemDetailsModal from "../../components/modal/Inventory/EditItemDetails";
 import ItemNotesModal from "../../components/modal/Inventory/EditItemNotes";
 import ItemStatusModal from "../../components/modal/Inventory/EditItemStatus";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
+import SerialNumberMenu from "../../components/elements/SerialNumberMenu";
 import { useAuth } from "../../contexts/authContext";
 import EditModal from "../../components/modal/Inventory/EditDetails";
+import DeleteSerialModal from "../../components/modal/Inventory/SerialNumbers/DeleteSerialModal";
+import EditSerialDetailsModal from "../../components/modal/Inventory/SerialNumbers/EditSerialModal";
 
 function ItemDetails() {
   const { user } = useAuth();
   const { itemId } = useParams<{ itemId: string }>();
-  
-  // Use the restored hook to fetch the specific item's details.
   const { item: fetchedItem, loading, error, refetch } = useItemDetails(itemId!);
-  
   const navigate = useNavigate();
 
   const [item, setItem] = useState<Item | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
@@ -36,7 +38,41 @@ function ItemDetails() {
 
   const handleItemUpdate = (updatedFields: Partial<Item>) => {
     setItem((prev) => prev ? { ...prev, ...updatedFields } : prev);
-    refetch(); // Call refetch to get the latest data from the server
+    refetch();
+  };
+
+  const handleMenuOpen = (e: React.MouseEvent, serialId: string) => {
+    e.preventDefault();
+    setMenuPos({ x: e.clientX, y: e.clientY });
+    setOpenMenuId(serialId);
+  };
+
+  const [editSerialId, setEditSerialId] = useState<SerialNumber | null>(null);
+  const [isEditSerialModalOpen, setIsEditSerialModalOpen] = useState(false);
+  const handleEdit = (id: SerialNumber | null) => {
+    setEditSerialId(id);
+    setIsEditSerialModalOpen(true);
+    setOpenMenuId(null);
+  };
+
+  const [deleteSerialId, setDeleteSerialId] = useState<string | null>(null);
+  const [isDeleteSerialModalOpen, setIsDeleteSerialModalOpen] = useState(false);
+  const handleDelete = (id: string | null) => {
+    setDeleteSerialId(id);
+    setIsDeleteSerialModalOpen(true);
+    setOpenMenuId(null);
+  };
+
+  const handleDeleteSerialSuccess = (deletedId: string) => {
+    refetch();
+
+    setItem((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        serialnumbers: prev.serialnumbers.filter(sn => sn.id !== deletedId),
+      };
+    });
   };
 
   useEffect(() => {
@@ -226,7 +262,6 @@ function ItemDetails() {
                               Notes
                             </th>
                             <th className="px-6 py-2.5 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">
-                              Actions
                             </th>
                           </tr>
                         </thead>
@@ -288,7 +323,7 @@ function ItemDetails() {
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <button
                                   className="p-2 hover:bg-blue-100 rounded-lg transition-colors duration-200 group hover:cursor-pointer"
-                                  //onClick={}
+                                  onClick={(e) => handleMenuOpen(e, serial.id)}
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -299,6 +334,17 @@ function ItemDetails() {
                                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
                                   </svg>
                                 </button>
+                                {openMenuId === serial.id && (
+                                  <SerialNumberMenu
+                                    visible={!!openMenuId}
+                                    serial={serial}
+                                    x={menuPos.x}
+                                    y={menuPos.y}
+                                    onClose={() => setOpenMenuId(null)}
+                                    onEdit={handleEdit}
+                                    onDelete={handleDelete}
+                                  />
+                                )}
                               </td>
                             </tr>
                           ))}
@@ -641,6 +687,24 @@ function ItemDetails() {
         itemId={item?.item_id ?? ""}
         onUpdate={handleItemUpdate}
       />
+
+      {deleteSerialId && (
+        <DeleteSerialModal
+          isOpen={isDeleteSerialModalOpen}
+          onClose={() => setIsDeleteSerialModalOpen(false)}
+          serialId={deleteSerialId}
+          onDeleteSuccess={handleDeleteSerialSuccess}
+        />
+      )}
+
+      {editSerialId && (
+        <EditSerialDetailsModal
+          isOpen={isEditSerialModalOpen}
+          onClose={() => setIsEditSerialModalOpen(false)}
+          serialNum={editSerialId}
+          onUpdate={handleItemUpdate}
+        />
+      )}
     </div>
   );
 }

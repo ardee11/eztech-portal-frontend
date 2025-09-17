@@ -20,7 +20,7 @@ export interface Item {
   serialnumbers: SerialNumber[];
 }
 
-interface SerialNumber {
+export interface SerialNumber {
   id: string;
   inventory_id: string | null;
   remarks: string;
@@ -421,4 +421,86 @@ export function useSuppliers() {
   }, []);
 
   return { suppliers, loading, error };
+}
+
+export function useDeleteSerialNum() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const deleteSerialNum = async (serialId: string) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      const response = await fetch(`/api/serial-num/${serialId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete inventory item");
+      }
+
+      setSuccess(true);
+    } catch (err: any) {
+      console.error("Delete serial number error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { deleteSerialNum, loading, error, success };
+}
+
+export function useUpdateSerialNum() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateSerialNum = async (serialId: string, updates: Partial<SerialNumber>) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+
+      const cleanedUpdates = Object.fromEntries(
+        Object.entries(updates).filter(([_, v]) => v !== undefined)
+      );
+
+      const response = await fetch(`/api/serial-num/${serialId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(cleanedUpdates),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message || "Failed to update inventory item");
+      }
+
+      return responseData.item;
+    } catch (err: any) {
+      console.error("Update inventory error:", err);
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateSerialNum, loading, error };
 }
