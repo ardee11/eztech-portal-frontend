@@ -20,8 +20,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
   setSelectedManagerFilter,
   companyListRef,
 }) => {
-  const [reloadFlag, setReloadFlag] = useState(false);
-  const { data, loading, error } = useSalesAccounts(reloadFlag);
+  const { data, loading, error } = useSalesAccounts();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRemarkFilter, setSelectedRemarkFilter] = useState<string | null>(null);
@@ -350,7 +349,6 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
       <AddCompanyModal
         isOpen={isAddCompanyModalOpen}
         onClose={() => setIsAddCompanyModalOpen(false)}
-        onSuccess={() => setReloadFlag((flag) => !flag)}
       />
 
       <EditCompanyModal
@@ -360,14 +358,12 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
           setEditingCompanyId(null);
         }}
         companyId={editingCompanyId || 0}
-        onSuccess={() => setReloadFlag((flag) => !flag)}
       />
 
       <DeleteCompanyModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onCompanyDelete={() => {
-          setReloadFlag((flag) => !flag);
           setSelectedCompany(null);
         }}
         companyId={selectedCompany?.comp_id || 0}
