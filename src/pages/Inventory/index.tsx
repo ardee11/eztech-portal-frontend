@@ -514,7 +514,7 @@ export default function Inventory() {
                       </td>
                       <td className="px-3 py-4">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-sm text-gray-900 mb-1">{item.item_id}</span>
+                          <span className="text-xs italic text-gray-900 mb-1">{item.item_id}</span>
                           <span className="text-sm text-gray-800 whitespace-pre-wrap">{item.item_name}</span>
                         </div>
                       </td>

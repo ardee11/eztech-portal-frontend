@@ -12,41 +12,11 @@ export interface SalesAccount {
   created_at: string;
 }
 
-export function useSalesAccounts(reloadFlag?: boolean) {
+export function useSalesAccounts() {
   const [data, setData] = useState<SalesAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No token found");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    fetch(`/api/sales-accounts`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then(json => {
-        setData(json);
-        setError(null);
-      })
-      .catch(err => {
-        console.error(err);
-        setError("Failed to load accounts.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [reloadFlag]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -58,54 +28,53 @@ export function useSalesAccounts(reloadFlag?: boolean) {
 
     let isMounted = true;
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await fetch("/api/sales-accounts", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Failed to fetch");
         const json = await res.json();
-        setData(json);
-        setError(null);
+        if (isMounted) {
+          setData(json);
+          setError(null);
+        }
       } catch (err) {
         console.error(err);
-        setError("Failed to load accounts.");
+        if (isMounted) {
+          setError("Failed to load accounts.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
-    
-    const socket = new WebSocket(`ws://${window.location.host}/ws/sales-accounts?token=${token}`);
+
+    // Setup WebSocket connection
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const socket = new WebSocket(`${protocol}//${window.location.host}/ws/sales-accounts?token=${token}`);
     ws.current = socket;
 
-    socket.onopen = () => {
-      if (!isMounted) {
-        socket.close();
-        return;
-      }
-      //console.log("WebSocket connected");
-      setConnected(true);
-    };
-
-    ws.current.onmessage = (event) => {
+    socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-
-        if (Array.isArray(message)) {
-          setData(message);
-        } else if (message.type === "sales_update" && Array.isArray(message.data)) {
+        if (isMounted && message.type === "sales_update" && Array.isArray(message.data)) {
           setData(message.data);
-        } else {
-          console.warn("Unexpected WebSocket message format:", message);
         }
       } catch (err) {
         console.error("Failed to parse WS message", err);
       }
     };
 
-    ws.current.onclose = () => {
-      setConnected(false);
+    socket.onclose = (event) => {
+      console.log('WebSocket closed:', event.code, event.reason);
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
     };
 
     return () => {
@@ -132,12 +101,6 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     if (!res.ok) {
       throw new Error("Failed to update company");
     }
-
-    setData((prev) =>
-      prev.map((account) =>
-        account.comp_id === comp_id ? { ...account, ...payload } : account
-      )
-    );
   }
 
   async function addCompany(company: Partial<SalesAccount>) {
@@ -183,5 +146,5 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     }
   }
 
-  return { data, loading, error, connected, updateSalesAccount, addCompany, removeCompany };
+  return { data, loading, error, updateSalesAccount, addCompany, removeCompany };
 }
