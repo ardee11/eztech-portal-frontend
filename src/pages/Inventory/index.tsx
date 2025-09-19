@@ -38,6 +38,10 @@ export default function Inventory() {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
   const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
+  const [isAsc, setIsAsc] = useState(true);
+  const handleSort = () => {
+    setIsAsc(prev => !prev);
+  }
 
   const availableMonthsByYear: Record<number, number[]> = monthYearOptions.reduce((acc, { month, year }) => {
     if (!acc[year]) acc[year] = [];
@@ -80,6 +84,16 @@ export default function Inventory() {
   }, [yearOptions, selectedMonthYear, setFilterState]);
 
   const { inventoryItems, loading, error, yearlyStatusCounts } = useInventory(debouncedSearchQuery, statusFilter, selectedMonthYear);
+  
+  const sortedItems = [...inventoryItems].sort((a, b) => {
+  const dateA = new Date(a.entry_date);
+  const dateB = new Date(b.entry_date);
+
+  return isAsc
+    ? dateA.getTime() - dateB.getTime() // oldest → newest
+    : dateB.getTime() - dateA.getTime(); // newest → oldest
+});
+
   const isSearching = debouncedSearchQuery.trim().length >= 3;
 
   // 3. Update the search input handler to use the global state setter
@@ -476,8 +490,27 @@ export default function Inventory() {
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0 z-50">
                   <tr>
-                    <th className="px-6 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/6">
-                      Date of Entry
+                    <th
+                       onClick={handleSort}
+                      className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer select-none"
+                    >
+                      <button
+                          onClick={() => setIsAsc((prev) => !prev)}
+                          className="flex items-center space-x-1  text-sm font-medium text-gray-700">
+                          <span className="text-left text-xs font-semibold text-gray-600 uppercase">Date of Entry</span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            className={`w-4 h-4 transition-transform duration-200 hover:cursor-pointer ${
+                              isAsc ? "rotate-180" : ""
+                            }`}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                     </th>
                     <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
@@ -500,7 +533,7 @@ export default function Inventory() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {inventoryItems.map((item, index) => (
+                  {sortedItems.map((item, index) => (
                     <tr
                       key={item.item_id}
                       onContextMenu={(e) => handleRightClick(e, item.item_id, item.item_status, item.delivered)}
