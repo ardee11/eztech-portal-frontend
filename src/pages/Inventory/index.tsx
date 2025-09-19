@@ -22,12 +22,9 @@ export default function Inventory() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { monthYearOptions, yearOptions } = useInventoryFilterOptions();
-
-  // 1. Use the global filter state and setter
   const { filterState, setFilterState } = useFilter();
   const { searchQuery, debouncedSearchQuery, selectedMonthYear, statusFilter } = filterState;
-
-  // Local state for UI-related elements can remain
+  
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const [selectedFilterTypes, setSelectedFilterTypes] = useState<("STATUS" | "YEAR-MONTH")[]>([]);
   const [isMarkDeliveredModalOpen, setIsMarkDeliveredModalOpen] = useState(false);
@@ -72,7 +69,6 @@ export default function Inventory() {
     setContextMenu(prev => ({ ...prev, visible: false }));
   };
 
-  // 2. This useEffect correctly sets the initial year only if the global state is empty.
   useEffect(() => {
     if (yearOptions.length > 0 && !selectedMonthYear) {
       setFilterState(prev => ({ ...prev, selectedMonthYear: { month: null, year: yearOptions[0] } }));
@@ -82,12 +78,10 @@ export default function Inventory() {
   const { inventoryItems, loading, error, yearlyStatusCounts } = useInventory(debouncedSearchQuery, statusFilter, selectedMonthYear);
   const isSearching = debouncedSearchQuery.trim().length >= 3;
 
-  // 3. Update the search input handler to use the global state setter
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterState(prev => ({ ...prev, searchQuery: e.target.value }));
   };
 
-  // 4. Debounce the global search query state
   useEffect(() => {
     if (searchQuery.trim().length >= 3) {
       const timer = setTimeout(() => {
