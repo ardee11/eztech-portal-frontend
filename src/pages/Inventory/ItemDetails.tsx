@@ -133,6 +133,12 @@ function ItemDetails() {
                 {item?.order_no ? item.order_no : "N/A"}
               </p>
             </div>
+            <div>
+              <p className="text-xs 3xl:text-sm text-gray-500 font-medium">Created by</p>
+              <p className="text-md 3xl:text-lg font-bold text-gray-900">
+                {item?.created_by ?? "-"}
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-2">
