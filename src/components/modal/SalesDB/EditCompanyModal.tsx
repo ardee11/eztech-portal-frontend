@@ -39,9 +39,9 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
   };
 
   useEffect(() => {
-    if (!loading && data && companyId && isOpen) {
+    if (isOpen && companyId && data) {
       const match = data.find((account) => account.comp_id === companyId);
-  
+      
       if (match) {
         setSelectedCompany(match);
         setFormData({
@@ -53,9 +53,21 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
           comp_address: match.comp_address,
           remarks: match.remarks,
         });
+      } else {
+          showToast(`Company with ID ${companyId} not found.`, "error");
+          setFormData({
+            comp_name: "",
+            comp_person: "",
+            comp_number: "",
+            comp_email: "",
+            acc_manager: "",
+            comp_address: "",
+            remarks: "Open",
+          });
+          setSelectedCompany(null);
       }
     }
-  }, [loading, data, companyId, isOpen]);
+  }, [isOpen, companyId, data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
