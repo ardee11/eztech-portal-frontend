@@ -51,23 +51,24 @@ export default function AddItem() {
 
   const verifySerials = () => {
     if (!hasSerial) {
-      alert("Please check the 'Has Serial Number' box to enter serial numbers.");
+      showToast("Please check the 'Has Serial Number' box to enter serial numbers.", "warning");
       return;
     }
 
     const numericQuantity = Number(quantity);
     if (!quantity || numericQuantity <= 0) {
-      alert("Please ensure you entered a valid quantity.");
+      showToast("Please ensure you entered a valid quantity.", "warning");
       return;
     }
 
-    const serials = serialNumbers
+    const cleanedString = serialNumbers.replace(/\n/g, ',');
+    const serials = cleanedString
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
     if (serials.length !== numericQuantity) {
-      alert(`You entered ${serials.length} serial number(s), but quantity is ${quantity}. Please correct it.`);
+      showToast(`You entered ${serials.length} serial number(s), but quantity is ${quantity}. Please correct it.`, "warning");
       return;
     }
 
