@@ -27,8 +27,9 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
   });
 
   const filteredOptions = options.filter(option =>
-    option.name.toLowerCase().includes(search.toLowerCase())
+      option.name.toLowerCase().includes(search.toLowerCase())
   );
+  const sortedOptions = filteredOptions.sort((a, b) => a.name.localeCompare(b.name));
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -203,27 +204,27 @@ export default function StaffDropdown({ label, value, onChange, options }: Staff
             </div>
 
             <div className="p-1 py-2">
-              {filteredOptions.length === 0 ? (
+              {sortedOptions.length === 0 ? (
                 <div className="text-xs 3xl:text-sm text-gray-500 px-4 py-2">No staff found</div>
               ) : (
-                filteredOptions.map((option) => (
+                sortedOptions.map((option) => (
                   <label
                     key={option.aid}
                     className="flex items-center gap-2 px-4 py-2 text-xs 3xl:text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   >
                     <input
-                      id={`staff-${id}-${option.aid}`}
-                      type="checkbox"
-                      checked={value.includes(option.name)}
-                      onChange={() => handleToggle(option.name)}
+                        id={`staff-${id}-${option.aid}`}
+                        type="checkbox"
+                        checked={value.includes(option.name)}
+                        onChange={() => handleToggle(option.name)}
                     />
-                    {option.name}
+                      {option.name}
                   </label>
                 ))
               )}
             </div>
           </div>,
-          document.body
+            document.body
         )}
     </div>
   );
