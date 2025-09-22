@@ -146,5 +146,19 @@ export function useSalesAccounts() {
     }
   }
 
-  return { data, loading, error, updateSalesAccount, addCompany, removeCompany };
+  async function fetchSalesAccountById(comp_id: number) {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authorization token missing.");
+
+    const res = await fetch(`/api/sales-accounts/${comp_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch company details.");
+    }
+    return res.json() as Promise<SalesAccount>;
+  }
+
+  return { data, loading, error, updateSalesAccount, addCompany, removeCompany, fetchSalesAccountById };
 }

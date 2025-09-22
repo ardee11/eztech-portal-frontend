@@ -15,7 +15,8 @@ type Props = {
 export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose }: Props) {
   const { userRole } = useAuth();
   const { accountManagers } = useAccountManagers();
-  const { data, loading, updateSalesAccount } = useSalesAccounts();
+  const { updateSalesAccount, fetchSalesAccountById } = useSalesAccounts();
+  const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<SalesAccount | null>(null);
   const allowedRoles = ["Admin", "Sales Manager", "Super Admin"];
@@ -39,35 +40,30 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
   };
 
   useEffect(() => {
-    if (isOpen && companyId && data) {
-      const match = data.find((account) => account.comp_id === companyId);
-      
-      if (match) {
-        setSelectedCompany(match);
-        setFormData({
-          comp_name: match.comp_name,
-          comp_person: match.comp_person,
-          comp_number: match.comp_number,
-          comp_email: match.comp_email,
-          acc_manager: match.acc_manager,
-          comp_address: match.comp_address,
-          remarks: match.remarks,
-        });
-      } else {
-          showToast(`Company with ID ${companyId} not found.`, "error");
+    if (isOpen && companyId) {
+      const fetchAndSetCompany = async () => {
+        setLoading(true); 
+        try {
+          const company = await fetchSalesAccountById(companyId);
+          setSelectedCompany(company);
           setFormData({
-            comp_name: "",
-            comp_person: "",
-            comp_number: "",
-            comp_email: "",
-            acc_manager: "",
-            comp_address: "",
-            remarks: "Open",
+            comp_name: company.comp_name,
+            comp_person: company.comp_person,
+            comp_number: company.comp_number,
+            comp_email: company.comp_email,
+            acc_manager: company.acc_manager,
+            comp_address: company.comp_address,
+            remarks: company.remarks,
           });
-          setSelectedCompany(null);
-      }
+          setLoading(false);
+        } catch (err) {
+          console.error("Failed to fetch company for edit", err);
+          setLoading(false);
+        }
+      };
+      fetchAndSetCompany();
     }
-  }, [isOpen, companyId, data]);
+  }, [isOpen, companyId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
