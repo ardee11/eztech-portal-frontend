@@ -82,7 +82,10 @@ export default function Admin() {
                   </div>
 
                   <div className="overflow-auto max-h-[calc(100vh-440px)] divide-y divide-gray-200">
-                    {admins.map((admin) => (
+                    {admins
+                      .slice()
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((admin) => (
                       <div 
                         key={admin.aid} 
                         onClick={() => 
