@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "../contexts/authContext";
 
 export interface SalesAccount {
   comp_id: number;
@@ -13,6 +14,7 @@ export interface SalesAccount {
 }
 
 export function useSalesAccounts() {
+  const { userRole, userName } = useAuth();
   const [data, setData] = useState<SalesAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,9 +32,20 @@ export function useSalesAccounts() {
     const fetchData = async () => {
       setLoading(true);
       try {
+        const headers = new Headers();
+        headers.append("Authorization", `Bearer ${token}`);
+        
+        if (userRole) {
+          headers.append("X-User-Role", JSON.stringify(userRole));
+        }
+        if (userName) {
+          headers.append("X-User-Name", userName);
+        }
+
         const res = await fetch("/api/sales-accounts", {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: headers,
         });
+
         if (!res.ok) throw new Error("Failed to fetch");
         const json = await res.json();
         if (isMounted) {
