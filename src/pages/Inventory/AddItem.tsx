@@ -133,7 +133,8 @@ export default function AddItem() {
       showToast("Item added successfully!", "success");
       navigate(-1);
     } catch (err: any) {
-      showToast("Failed to add item. Please try again.", "error");
+      const errorMessage = err.message || "Failed to add item. Please try again.";
+      showToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
@@ -349,7 +350,7 @@ export default function AddItem() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (hasSerial && !serialVerified)}
                   className="w-full py-3 px-6 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white text-xs 3xl:text-sm font-semibold rounded-lg transition-all duration-200 hover:cursor-pointer disabled:cursor-not-allowed"
                 >
                   {loading ? "Adding Item..." : "Add Item to Inventory"}

@@ -251,6 +251,8 @@ export function useAddInventory() {
     } catch (err: any) {
       console.error("Add inventory error:", err);
       setError(err.message);
+      // Re-throw the error here so it's caught by the component
+      throw err; 
     } finally {
       setLoading(false);
     }
