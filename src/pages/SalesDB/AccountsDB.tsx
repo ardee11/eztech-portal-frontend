@@ -20,7 +20,7 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
   setSelectedManagerFilter,
   companyListRef,
 }) => {
-  const { data, loading, error } = useSalesAccounts();
+  const { data, loading, error, refresh } = useSalesAccounts();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRemarkFilter, setSelectedRemarkFilter] = useState<string | null>(null);
@@ -358,6 +358,9 @@ const AccountsDB: React.FC<AccountsDBProps> = ({
           setEditingCompanyId(null);
         }}
         companyId={editingCompanyId || 0}
+        onSuccess={()=> {
+          refresh();
+        }}  
       />
 
       <DeleteCompanyModal

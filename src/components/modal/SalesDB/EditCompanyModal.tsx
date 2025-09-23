@@ -12,7 +12,7 @@ type Props = {
   companyId: number;
 };
 
-export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose }: Props) {
+export default function EditCompanyModal({ isOpen, companyId, onClose, onSuccess }: Props) {
   const { userRole } = useAuth();
   const { accountManagers } = useAccountManagers();
   const { updateSalesAccount, fetchSalesAccountById } = useSalesAccounts();
@@ -35,8 +35,8 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
 
   const isFormValid = () => {
     return formData.comp_name.trim() !== "" && 
-           formData.comp_address.trim() !== "" && 
-           formData.comp_person.trim() !== "";
+             formData.comp_address.trim() !== "" && 
+             formData.comp_person.trim() !== "";
   };
 
   useEffect(() => {
@@ -141,8 +141,11 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
 
     try {
       await updateSalesAccount(selectedCompany.comp_id, payload);
-      if (onSuccess) onSuccess();
       showToast("Company details updated successfully!", "success");
+      // Check if onSuccess is defined before calling it
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       showToast("There was an error updating the company details. Please try again.", "error");
     } finally {
@@ -318,4 +321,4 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
       </div>
     </div>
   );
-} 
+}

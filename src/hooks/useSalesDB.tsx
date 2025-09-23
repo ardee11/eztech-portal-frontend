@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../contexts/authContext";
 
 export interface SalesAccount {
   comp_id: number;
@@ -14,13 +13,14 @@ export interface SalesAccount {
 }
 
 export function useSalesAccounts() {
-  const { userRole, userName } = useAuth();
   const [data, setData] = useState<SalesAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
-  useEffect(() => {
+  // Make fetchData accessible to call manually
+  const fetchData = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setError("No token found");
@@ -28,70 +28,59 @@ export function useSalesAccounts() {
       return;
     }
 
-    let isMounted = true;
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const headers = new Headers();
-        headers.append("Authorization", `Bearer ${token}`);
-        
-        if (userRole) {
-          headers.append("X-User-Role", JSON.stringify(userRole));
-        }
-        if (userName) {
-          headers.append("X-User-Name", userName);
-        }
+    //setLoading(true);
+    try {
+      const res = await fetch("/api/sales-accounts", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const res = await fetch("/api/sales-accounts", {
-          headers: headers,
-        });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const json: SalesAccount[] = await res.json();
 
-        if (!res.ok) throw new Error("Failed to fetch");
-        const json = await res.json();
-        if (isMounted) {
-          setData(json);
-          setError(null);
-        }
-      } catch (err) {
-        console.error(err);
-        if (isMounted) {
-          setError("Failed to load accounts.");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
+      setData(json);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load accounts.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-    // Setup WebSocket connection
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const socket = new WebSocket(`${protocol}//${window.location.host}/ws/sales-accounts?token=${token}`);
+    const socket = new WebSocket(`ws://${window.location.host}/ws/sales-accounts?token=${token}`);
     ws.current = socket;
+
+    socket.onopen = () => {
+      setConnected(true);
+    };
 
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        if (isMounted && message.type === "sales_update" && Array.isArray(message.data)) {
-          setData(message.data);
+        if (message.type === "sales_update") {
+          fetchData();
+        } else {
+          console.warn("Unhandled WebSocket message:", message);
         }
       } catch (err) {
-        console.error("Failed to parse WS message", err);
+        console.error("Failed to parse WS message:", err);
       }
     };
 
-    socket.onclose = (event) => {
-      console.log('WebSocket closed:', event.code, event.reason);
+    socket.onclose = () => {
+      setConnected(false);
     };
 
     socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket Error:", error);
     };
 
     return () => {
-      isMounted = false;
       if (socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
@@ -170,8 +159,19 @@ export function useSalesAccounts() {
     if (!res.ok) {
       throw new Error("Failed to fetch company details.");
     }
+
     return res.json() as Promise<SalesAccount>;
   }
 
-  return { data, loading, error, updateSalesAccount, addCompany, removeCompany, fetchSalesAccountById };
+  return {
+    data,
+    loading,
+    error,
+    connected,
+    updateSalesAccount,
+    addCompany,
+    removeCompany,
+    fetchSalesAccountById,
+    refresh: fetchData,
+  };
 }
