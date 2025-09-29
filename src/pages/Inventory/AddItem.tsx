@@ -51,23 +51,24 @@ export default function AddItem() {
 
   const verifySerials = () => {
     if (!hasSerial) {
-      alert("Please check the 'Has Serial Number' box to enter serial numbers.");
+      showToast("Please check the 'Has Serial Number' box to enter serial numbers.", "warning");
       return;
     }
 
     const numericQuantity = Number(quantity);
     if (!quantity || numericQuantity <= 0) {
-      alert("Please ensure you entered a valid quantity.");
+      showToast("Please ensure you entered a valid quantity.", "warning");
       return;
     }
 
-    const serials = serialNumbers
+    const cleanedString = serialNumbers.replace(/\n/g, ',');
+    const serials = cleanedString
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
     if (serials.length !== numericQuantity) {
-      alert(`You entered ${serials.length} serial number(s), but quantity is ${quantity}. Please correct it.`);
+      showToast(`You entered ${serials.length} serial number(s), but quantity is ${quantity}. Please correct it.`, "warning");
       return;
     }
 
@@ -132,7 +133,8 @@ export default function AddItem() {
       showToast("Item added successfully!", "success");
       navigate(-1);
     } catch (err: any) {
-      showToast("Failed to add item. Please try again.", "error");
+      const errorMessage = err.message || "Failed to add item. Please try again.";
+      showToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
@@ -348,7 +350,7 @@ export default function AddItem() {
               <div className="pt-4">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (hasSerial && !serialVerified)}
                   className="w-full py-3 px-6 bg-teal-600 hover:bg-teal-700 disabled:bg-gray-400 text-white text-xs 3xl:text-sm font-semibold rounded-lg transition-all duration-200 hover:cursor-pointer disabled:cursor-not-allowed"
                 >
                   {loading ? "Adding Item..." : "Add Item to Inventory"}

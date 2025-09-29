@@ -12,10 +12,11 @@ type Props = {
   companyId: number;
 };
 
-export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose }: Props) {
+export default function EditCompanyModal({ isOpen, companyId, onClose, onSuccess }: Props) {
   const { userRole } = useAuth();
   const { accountManagers } = useAccountManagers();
-  const { data, loading, updateSalesAccount } = useSalesAccounts();
+  const { updateSalesAccount, fetchSalesAccountById } = useSalesAccounts();
+  const [loading, setLoading] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<SalesAccount | null>(null);
   const allowedRoles = ["Admin", "Sales Manager", "Super Admin"];
@@ -34,28 +35,35 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
 
   const isFormValid = () => {
     return formData.comp_name.trim() !== "" && 
-           formData.comp_address.trim() !== "" && 
-           formData.comp_person.trim() !== "";
+             formData.comp_address.trim() !== "" && 
+             formData.comp_person.trim() !== "";
   };
 
   useEffect(() => {
-    if (!loading && data && companyId && isOpen) {
-      const match = data.find((account) => account.comp_id === companyId);
-  
-      if (match) {
-        setSelectedCompany(match);
-        setFormData({
-          comp_name: match.comp_name,
-          comp_person: match.comp_person,
-          comp_number: match.comp_number,
-          comp_email: match.comp_email,
-          acc_manager: match.acc_manager,
-          comp_address: match.comp_address,
-          remarks: match.remarks,
-        });
-      }
+    if (isOpen && companyId) {
+      const fetchAndSetCompany = async () => {
+        setLoading(true); 
+        try {
+          const company = await fetchSalesAccountById(companyId);
+          setSelectedCompany(company);
+          setFormData({
+            comp_name: company.comp_name,
+            comp_person: company.comp_person,
+            comp_number: company.comp_number,
+            comp_email: company.comp_email,
+            acc_manager: company.acc_manager,
+            comp_address: company.comp_address,
+            remarks: company.remarks,
+          });
+          setLoading(false);
+        } catch (err) {
+          console.error("Failed to fetch company for edit", err);
+          setLoading(false);
+        }
+      };
+      fetchAndSetCompany();
     }
-  }, [loading, data, companyId, isOpen]);
+  }, [isOpen, companyId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
@@ -133,8 +141,11 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
 
     try {
       await updateSalesAccount(selectedCompany.comp_id, payload);
-      if (onSuccess) onSuccess();
       showToast("Company details updated successfully!", "success");
+      // Check if onSuccess is defined before calling it
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       showToast("There was an error updating the company details. Please try again.", "error");
     } finally {
@@ -310,4 +321,4 @@ export default function EditCompanyModal({ isOpen, companyId, onSuccess, onClose
       </div>
     </div>
   );
-} 
+}

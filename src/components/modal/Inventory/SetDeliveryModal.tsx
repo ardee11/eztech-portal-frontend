@@ -115,6 +115,7 @@ const SetDeliveryModal = ({ isOpen, onClose, itemId, onUpdate }: Props) => {
                         type="text"
                         id="entryDate"
                         value={selectedDate}
+                        onMouseDown={handleCalendarClick}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         className="p-2 pr-10 block w-full text-xs 3xl:text-sm border border-gray-500 rounded-lg cursor-default"
                         required

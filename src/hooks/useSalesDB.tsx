@@ -12,14 +12,15 @@ export interface SalesAccount {
   created_at: string;
 }
 
-export function useSalesAccounts(reloadFlag?: boolean) {
+export function useSalesAccounts() {
   const [data, setData] = useState<SalesAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
-  useEffect(() => {
+  // Make fetchData accessible to call manually
+  const fetchData = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       setError("No token found");
@@ -27,89 +28,59 @@ export function useSalesAccounts(reloadFlag?: boolean) {
       return;
     }
 
-    setLoading(true);
-    fetch(`/api/sales-accounts`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then(json => {
-        setData(json);
-        setError(null);
-      })
-      .catch(err => {
-        console.error(err);
-        setError("Failed to load accounts.");
-      })
-      .finally(() => {
-        setLoading(false);
+    //setLoading(true);
+    try {
+      const res = await fetch("/api/sales-accounts", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-  }, [reloadFlag]);
+
+      if (!res.ok) throw new Error("Failed to fetch");
+      const json: SalesAccount[] = await res.json();
+
+      setData(json);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load accounts.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No token found");
-      setLoading(false);
-      return;
-    }
-
-    let isMounted = true;
-    const fetchData = async () => {
-      try {
-        const res = await fetch("/api/sales-accounts", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch");
-        const json = await res.json();
-        setData(json);
-        setError(null);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load accounts.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-    
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
     const socket = new WebSocket(`ws://${window.location.host}/ws/sales-accounts?token=${token}`);
     ws.current = socket;
 
     socket.onopen = () => {
-      if (!isMounted) {
-        socket.close();
-        return;
-      }
-      //console.log("WebSocket connected");
       setConnected(true);
     };
 
-    ws.current.onmessage = (event) => {
+    socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-
-        if (Array.isArray(message)) {
-          setData(message);
-        } else if (message.type === "sales_update" && Array.isArray(message.data)) {
-          setData(message.data);
+        if (message.type === "sales_update") {
+          fetchData();
         } else {
-          console.warn("Unexpected WebSocket message format:", message);
+          console.warn("Unhandled WebSocket message:", message);
         }
       } catch (err) {
-        console.error("Failed to parse WS message", err);
+        console.error("Failed to parse WS message:", err);
       }
     };
 
-    ws.current.onclose = () => {
+    socket.onclose = () => {
       setConnected(false);
     };
 
+    socket.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
     return () => {
-      isMounted = false;
       if (socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
@@ -132,12 +103,6 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     if (!res.ok) {
       throw new Error("Failed to update company");
     }
-
-    setData((prev) =>
-      prev.map((account) =>
-        account.comp_id === comp_id ? { ...account, ...payload } : account
-      )
-    );
   }
 
   async function addCompany(company: Partial<SalesAccount>) {
@@ -183,5 +148,30 @@ export function useSalesAccounts(reloadFlag?: boolean) {
     }
   }
 
-  return { data, loading, error, connected, updateSalesAccount, addCompany, removeCompany };
+  async function fetchSalesAccountById(comp_id: number) {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Authorization token missing.");
+
+    const res = await fetch(`/api/sales-accounts/${comp_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch company details.");
+    }
+
+    return res.json() as Promise<SalesAccount>;
+  }
+
+  return {
+    data,
+    loading,
+    error,
+    connected,
+    updateSalesAccount,
+    addCompany,
+    removeCompany,
+    fetchSalesAccountById,
+    refresh: fetchData,
+  };
 }
