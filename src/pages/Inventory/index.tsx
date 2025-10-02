@@ -35,7 +35,9 @@ export default function Inventory() {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
   const [deleteItemName, setDeleteItemName] = useState<string>("");
   const canEditInventoryRoles = ["Admin", "Super Admin", "Inventory Manager"];
-  const [isAsc, setIsAsc] = useState(true);
+  
+  // Default: descending (most recent first)
+  const [isAsc, setIsAsc] = useState(false);
   const handleSort = () => {
     setIsAsc(prev => !prev);
   }
@@ -80,15 +82,34 @@ export default function Inventory() {
   }, [yearOptions, selectedMonthYear, setFilterState]);
 
   const { inventoryItems, loading, error, yearlyStatusCounts } = useInventory(debouncedSearchQuery, statusFilter, selectedMonthYear);
-  
-  const sortedItems = [...inventoryItems].sort((a, b) => {
-  const dateA = new Date(a.entry_date);
-  const dateB = new Date(b.entry_date);
 
-  return isAsc
-    ? dateA.getTime() - dateB.getTime() // oldest → newest
-    : dateB.getTime() - dateA.getTime(); // newest → oldest
-});
+  // Group items by year/month
+  const itemsByMonthYear: Record<string, typeof inventoryItems> = {};
+  inventoryItems.forEach(item => {
+    const date = new Date(item.entry_date);
+    const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+    if (!itemsByMonthYear[key]) itemsByMonthYear[key] = [];
+    itemsByMonthYear[key].push(item);
+  });
+
+  // Get all month/year keys and sort them
+  const monthYearKeys = Object.keys(itemsByMonthYear).sort((a, b) => {
+    const [yearA, monthA] = a.split('-').map(Number);
+    const [yearB, monthB] = b.split('-').map(Number);
+  if (yearA !== yearB) return isAsc ? yearA - yearB : yearB - yearA;
+  return isAsc ? monthA - monthB : monthB - monthA;
+  });
+
+  // For each month/year, sort items by entry date
+  const sortedItems: typeof inventoryItems = [];
+  monthYearKeys.forEach(key => {
+    const items = itemsByMonthYear[key].sort((a, b) => {
+      const dateA = new Date(a.entry_date);
+      const dateB = new Date(b.entry_date);
+      return isAsc ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+    });
+    sortedItems.push(...items);
+  });
 
   const isSearching = debouncedSearchQuery.trim().length >= 3;
 
@@ -488,23 +509,25 @@ export default function Inventory() {
                        onClick={handleSort}
                       className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider cursor-pointer select-none"
                     >
-                      <button
+                      <div className="flex items-center space-x-1 text-sm font-medium text-gray-700">
+                        <span
+                          className="text-left text-xs font-semibold text-gray-600 uppercase hover:cursor-pointer"
                           onClick={() => setIsAsc((prev) => !prev)}
-                          className="flex items-center space-x-1  text-sm font-medium text-gray-700">
-                          <span className="text-left text-xs font-semibold text-gray-600 uppercase">Date of Entry</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="currentColor"
-                            className={`w-4 h-4 transition-transform duration-200 hover:cursor-pointer ${
-                              isAsc ? "rotate-180" : ""
-                            }`}
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
+                        >
+                          Date of Entry
+                        </span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className={`w-4 h-4 transition-transform duration-200 hover:cursor-pointer ${isAsc ? "rotate-180" : ""}`}
+                          onClick={() => setIsAsc((prev) => !prev)}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
                     </th>
                     <th className="px-3 py-3 3xl:py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/4">
                       Item Description/Model
