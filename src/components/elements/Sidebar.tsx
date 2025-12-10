@@ -166,6 +166,22 @@ export default function Sidebar() {
                     </NavLink>
                   </li>
                 )}
+
+                {/* Feedback Button - New Section */}
+                <li>
+                  <button 
+                    onClick={() => window.open('https://forms.gle/t59TuUdtkMcTdvsJ9', '_blank')} 
+                    className="w-full text-left text-sm text-slate-300 flex items-center gap-x-3 py-3 px-4 rounded-lg hover:text-white hover:cursor-pointer hover:bg-white/5 transition-all duration-200"
+                  >
+                    <div className="p-1">
+                      <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        <path d="M7 10h10M7 14h10" />
+                      </svg>
+                    </div>
+                    <span className="font-medium">Feedback Form</span>
+                  </button>
+                </li>
               </ul>
             </nav>
           </div>
