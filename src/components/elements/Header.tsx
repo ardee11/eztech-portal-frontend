@@ -94,12 +94,12 @@ export default function Header() {
             >
               <div className="py-3 px-5 bg-gray-100 rounded-t-lg">
                 <p className="text-sm text-gray-500">Signed in as</p>
-                <p className="text-sm font-medium text-gray-800">{user?.email}</p>
+                <p className="text-sm font-medium text-blue-800">{user?.email}</p>
               </div>
               <div className="p-1.5">
                 <button
                   onClick={handleSignOut}
-                  className="w-full flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 hover:cursor-pointer"
+                  className="w-full flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-red-800 hover:bg-red-100 hover:cursor-pointer"
                 >
                   <svg 
                     className="shrink-0 size-4" 
