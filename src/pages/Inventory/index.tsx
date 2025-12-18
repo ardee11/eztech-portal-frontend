@@ -6,6 +6,7 @@ import { formatTimestampToFullDate } from "../../utils/DateFormat";
 import { useNavigate } from "react-router-dom";
 import { useInventoryFilterOptions } from "../../hooks/useInventoryFilterOptions";
 import InventoryContextMenu from "../../components/elements/InventoryContextMenu";
+import InventoryArchiveCard from "../../components/elements/InventoryArchiveCard";
 import SetDeliveryModal from "../../components/modal/Inventory/SetDeliveryModal";
 import MarkAsDeliveredModal from "../../components/modal/Inventory/MarkAsDeliveredModal";
 import DeleteItemModal from "../../components/modal/Inventory/DeleteItemModal";
@@ -198,6 +199,10 @@ export default function Inventory() {
 
   return (
     <div className="w-full mx-auto px-4 py-3 relative bg-gray-50">
+      {/* Inventory Archive card - new */}
+      <div className="mb-4">
+        <InventoryArchiveCard />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         <div className="p-4 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
           <div className="flex items-start space-x-3">

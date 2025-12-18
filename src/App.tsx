@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 import Inventory from "./pages/Inventory";
 import ItemDetails from "./pages/Inventory/ItemDetails";
 import AddItem from "./pages/Inventory/AddItem";
+import InventoryArchives from "./pages/Inventory/Archives";
 import SalesDB from "./pages/SalesDB";
 import SetUpPassword from "./pages/auth/SetUpPassword";
 
@@ -41,6 +42,7 @@ function App() {
                   <Route element={<ProtectedRoute page="inventory" />}>
                     <Route path="inventory" element={<Inventory />} />
                     <Route path="inventory/:itemId" element={<ItemDetails />} />
+                    <Route path="inventory/archives" element={<InventoryArchives />} />
                   </Route>
 
                   <Route element={<ProtectedRoute page="inventory" />}>
