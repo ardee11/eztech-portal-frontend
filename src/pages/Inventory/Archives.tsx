@@ -1,5 +1,3 @@
-import React from "react";
-
 const archives = [
   { id: "2025", label: "INVENTORY 2025", url: "https://docs.google.com/spreadsheets/d/1R8SKRrR8WxPeFAb9B0GGHGS_4-axag4xC9l1ipCk7gc/edit?gid=755501823#gid=755501823" },
   { id: "2021-2024", label: "INVENTORY 2021 - 2024", url: "https://docs.google.com/spreadsheets/d/12O4TLl79wpgpeCASIlsuWq7GraE6KM8h/edit?gid=39531551#gid=39531551" },
